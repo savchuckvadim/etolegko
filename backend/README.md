@@ -25,6 +25,55 @@
 
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
+## Database Setup
+
+Проект использует три базы данных:
+- **MongoDB** (OLTP) - транзакционная БД, используется Mongoose ODM
+- **ClickHouse** (OLAP) - аналитическая БД
+- **Redis** - для EventBus и кеширования
+
+### Запуск баз данных
+
+```bash
+# Запуск всех БД через Docker Compose
+docker-compose up -d
+
+# Проверка статуса
+docker-compose ps
+
+# Остановка
+docker-compose down
+```
+
+### Подключение к MongoDB через Compass
+
+1. Установите [MongoDB Compass](https://www.mongodb.com/try/download/compass) (если еще не установлен)
+2. Откройте MongoDB Compass
+3. Вставьте connection string:
+   ```
+   mongodb://admin:admin123@localhost:27017/promo_code_manager?authSource=admin
+   ```
+4. Нажмите "Connect"
+
+**Реквизиты для подключения:**
+- **Host:** `localhost`
+- **Port:** `27017`
+- **Username:** `admin`
+- **Password:** `admin123`
+- **Database:** `promo_code_manager`
+- **Auth Source:** `admin`
+
+### Настройка окружения
+
+1. Скопируйте файл с примером конфигурации:
+```bash
+cp env.example .env
+```
+
+2. Настройте параметры подключения в `.env` файле (уже настроено для локального MongoDB)
+
+Подробная документация: [Database Setup](../../documentation/database-setup.md)
+
 ## Project setup
 
 ```bash
