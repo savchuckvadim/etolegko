@@ -17,18 +17,33 @@
 
 ### 3. ClickHouse Setup
 - ✅ Настроен ClickHouseModule и ClickHouseService
-- ✅ Создан ClickHouseMigrationService для автоматической инициализации таблиц
+- ✅ Создан ClickHouseMigrationService для ручного запуска миграций
 - ✅ Созданы SQL миграции для аналитических таблиц
+- ✅ Клиент инициализируется без блокирующих проверок подключения
+- ✅ Миграции отключены автоматически (можно запустить вручную)
 
-### 4. Конфигурация
+### 4. Users Module
+- ✅ Создан модуль users с полной архитектурой (api, application, domain, infrastructure)
+- ✅ Настроены TypeScript path aliases (@shared, @common, @users)
+- ✅ User-специфичные файлы перенесены из shared/database в модуль users
+- ✅ Созданы тесты (unit, e2e)
+
+### 5. Code Quality
+- ✅ Настроен Prettier с автоматической сортировкой импортов
+- ✅ Настроен ESLint с удалением неиспользуемых импортов
+- ✅ Исправлены все ошибки линтера
+- ✅ Настроено форматирование через Shift+Alt+F и `pnpm format`
+
+### 6. Конфигурация
 - ✅ Создан `env.example` с настройками для локального MongoDB
 - ✅ Настроен ConfigModule для работы с переменными окружения
 - ✅ Обновлен AppModule для подключения всех модулей БД
 
-### 5. Документация
+### 7. Документация
 - ✅ Создана документация по настройке БД
 - ✅ Создана документация по Mongoose архитектуре
 - ✅ Добавлены инструкции по запуску Docker и подключению к Compass
+- ✅ Добавлены инструкции по проверке ClickHouse
 
 ## Структура
 
@@ -36,13 +51,24 @@
 project/backend/
 ├── docker-compose.yml          # Конфигурация для запуска БД
 ├── env.example                  # Пример конфигурации
+├── .prettierrc                  # Настройки Prettier с сортировкой импортов
+├── .prettierignore              # Игнорируемые файлы
+├── .vscode/settings.json        # Настройки VS Code для форматирования
 ├── src/
-│   └── modules/shared/database/
-│       ├── entities/           # Domain Entities
-│       ├── schemas/            # Mongoose Schemas
-│       ├── repositories/       # Repositories
-│       ├── mongo/              # Mongoose модуль
-│       └── clickhouse/         # ClickHouse модуль
+│   ├── modules/
+│   │   ├── shared/database/    # Core БД функциональность
+│   │   │   ├── entities/       # Domain Entities (Order, PromoCode, PromoCodeUsage)
+│   │   │   ├── schemas/        # Mongoose Schemas
+│   │   │   ├── repositories/   # Repositories (BaseRepository, PromoCodeRepository)
+│   │   │   ├── mongo/          # Mongoose модуль
+│   │   │   └── clickhouse/     # ClickHouse модуль
+│   │   └── users/               # Модуль пользователей
+│   │       ├── api/            # Контроллеры и DTO
+│   │       ├── application/    # Бизнес-логика и сервисы
+│   │       ├── domain/         # Доменные сущности и константы
+│   │       ├── infrastructure/ # Репозитории и схемы
+│   │       └── __tests__/      # Тесты
+│   └── common/                  # Общие утилиты (pagination, config)
 ```
 
 ## Быстрый старт
@@ -51,3 +77,29 @@ project/backend/
 2. Подключиться к Compass: `mongodb://admin:admin123@localhost:27017/promo_code_manager?authSource=admin`
 3. Настроить `.env`: `cp env.example .env`
 4. Запустить приложение: `pnpm start:dev`
+
+## Проверка работы ClickHouse
+
+ClickHouse клиент инициализируется при старте, но миграции отключены автоматически.
+
+**Проверка через Docker:**
+```bash
+# Проверка статуса контейнера
+docker ps | grep clickhouse
+
+# Проверка через clickhouse-client
+docker exec -it promo_code_manager_clickhouse clickhouse-client --query "SELECT 1"
+
+# Проверка HTTP интерфейса
+curl http://localhost:8123/ping
+```
+
+**Проверка через приложение:**
+```typescript
+// В контроллере или сервисе
+await this.clickhouseService.ping(); // Проверка подключения
+const isConnected = this.clickhouseService.isConnected(); // Проверка наличия клиента
+```
+
+**Запуск миграций:**
+Миграции можно запустить вручную через `ClickHouseMigrationService.runMigrations()` когда ClickHouse настроен.

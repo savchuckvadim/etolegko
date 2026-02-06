@@ -118,7 +118,39 @@ pnpm start:dev
 #### Модули
 - `ClickHouseModule` - глобальный модуль для ClickHouse
 - `ClickHouseService` - сервис для работы с ClickHouse
-- `ClickHouseMigrationService` - автоматическая инициализация таблиц
+- `ClickHouseMigrationService` - сервис для ручного запуска миграций
+
+#### Особенности
+- Клиент инициализируется без блокирующих проверок подключения
+- Миграции отключены автоматически (можно запустить вручную)
+- Подключение работает без аутентификации для Docker
+
+#### Проверка работы ClickHouse
+
+**Через Docker:**
+```bash
+# Проверка статуса контейнера
+docker ps | grep clickhouse
+
+# Проверка через clickhouse-client
+docker exec -it promo_code_manager_clickhouse clickhouse-client --query "SELECT 1"
+
+# Проверка HTTP интерфейса
+curl http://localhost:8123/ping
+```
+
+**Через приложение:**
+```typescript
+// В контроллере или сервисе
+await this.clickhouseService.ping(); // Проверка подключения
+const isConnected = this.clickhouseService.isConnected(); // Проверка наличия клиента
+```
+
+**Запуск миграций вручную:**
+```typescript
+// Миграции можно запустить вручную через ClickHouseMigrationService
+await this.clickhouseMigrationService.runMigrations();
+```
 
 #### Таблицы
 - `promo_code_usages_analytics` - аналитика использований промокодов

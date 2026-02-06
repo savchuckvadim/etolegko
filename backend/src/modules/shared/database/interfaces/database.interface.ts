@@ -1,10 +1,10 @@
 export interface DatabaseConnection {
-  connect(): Promise<void>;
-  disconnect(): Promise<void>;
-  isConnected(): boolean;
+    connect(): Promise<void>;
+    disconnect(): Promise<void>;
+    isConnected(): boolean;
 }
 
 export interface Transaction {
-  commit(): Promise<void>;
-  rollback(): Promise<void>;
+    commit(): Promise<void>;
+    rollback(): Promise<void>;
 }

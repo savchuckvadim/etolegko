@@ -74,6 +74,22 @@ cp env.example .env
 
 Подробная документация: [Database Setup](../../documentation/database-setup.md)
 
+### Проверка ClickHouse
+
+ClickHouse запускается через Docker Compose, но миграции отключены автоматически.
+
+**Проверка работы:**
+```bash
+# Проверка через Docker
+docker exec -it promo_code_manager_clickhouse clickhouse-client --query "SELECT 1"
+
+# Проверка HTTP интерфейса
+curl http://localhost:8123/ping
+```
+
+**Запуск миграций:**
+Миграции можно запустить вручную через `ClickHouseMigrationService.runMigrations()` когда ClickHouse настроен.
+
 ## Project setup
 
 ```bash
