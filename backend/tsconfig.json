@@ -18,7 +18,9 @@
       "@shared/*": ["src/modules/shared/*"],
       "@common/*": ["src/common/*"],
       "@users": ["src/modules/users"],
-      "@users/*": ["src/modules/users/*"]
+      "@users/*": ["src/modules/users/*"],
+      "@auth": ["src/modules/auth"],
+      "@auth/*": ["src/modules/auth/*"]
     },
     "incremental": true,
     "skipLibCheck": true,

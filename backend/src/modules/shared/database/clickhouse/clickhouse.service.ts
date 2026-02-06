@@ -14,7 +14,7 @@ export class ClickHouseService implements OnModuleInit, OnModuleDestroy {
 
     constructor(private readonly configService: ConfigService) {}
 
-    async onModuleInit() {
+    onModuleInit() {
         try {
             const host = this.configService.get<string>(
                 'CLICKHOUSE_HOST',
@@ -27,14 +27,6 @@ export class ClickHouseService implements OnModuleInit, OnModuleDestroy {
             const database = this.configService.get<string>(
                 'CLICKHOUSE_DATABASE',
                 'analytics',
-            );
-            const username = this.configService.get<string>(
-                'CLICKHOUSE_USER',
-                'default',
-            );
-            const password = this.configService.get<string>(
-                'CLICKHOUSE_PASSWORD',
-                '',
             );
 
             // Простая конфигурация - без username/password для Docker

@@ -1,29 +1,22 @@
+import * as bcrypt from 'bcrypt';
 import { ConflictException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Model } from 'mongoose';
-import { PaginatedResult } from '@common/paginate/interfaces/paginated-result.interface';
-import { PaginationUtil } from '@common/paginate/utils/pagination.util';
 import { SortOrder } from '@common/paginate/dto/pagination.dto';
 import { CreateUserDto } from '@users/api/dto/create-user.dto';
 import { UpdateUserDto } from '@users/api/dto/update-user.dto';
 import { UserQueryDto } from '@users/api/dto/user-query.dto';
-import { UserResponseDto } from '@users/api/dto/user-response.dto';
+import { UsersService } from '@users/application/services/users.service';
 import { User } from '@users/domain/entity/user.entity';
 import { UserRepository } from '@users/infrastructure/repositories/user.repository';
 import { UserDocument } from '@users/infrastructure/schemas/user.schema';
-import { UsersService } from '@users/application/services/users.service';
 
 // Mock bcrypt module
 jest.mock('bcrypt', () => ({
     hash: jest.fn(),
 }));
 
-import * as bcrypt from 'bcrypt';
-
 describe('UsersService', () => {
     let service: UsersService;
-    let repository: UserRepository;
-    let userModel: Model<UserDocument>;
 
     const mockUser: User = {
         id: '507f1f77bcf86cd799439011',
@@ -78,17 +71,16 @@ describe('UsersService', () => {
         }).compile();
 
         service = module.get<UsersService>(UsersService);
-        repository = module.get<UserRepository>(UserRepository);
-        userModel = repository.getModel() as Model<UserDocument>;
 
         // Сброс всех моков
         jest.clearAllMocks();
         // Сброс моков репозитория
-        Object.values(mockUserRepository).forEach((mock) => {
+        Object.values(mockUserRepository).forEach(mock => {
             if (jest.isMockFunction(mock)) {
                 mock.mockReset();
             }
         });
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         (bcrypt.hash as jest.Mock).mockReset();
     });
 
@@ -103,6 +95,7 @@ describe('UsersService', () => {
         it('should create a user successfully', async () => {
             mockUserRepository.existsByEmail.mockResolvedValue(false);
             mockUserRepository.create.mockResolvedValue(mockUser);
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
             (bcrypt.hash as jest.Mock).mockResolvedValue('hashedPassword123');
 
             const result = await service.create(createDto);
@@ -110,6 +103,7 @@ describe('UsersService', () => {
             expect(mockUserRepository.existsByEmail).toHaveBeenCalledWith(
                 createDto.email,
             );
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
             expect(bcrypt.hash).toHaveBeenCalledWith(createDto.password, 10);
             expect(mockUserRepository.create).toHaveBeenCalled();
             expect(result).toMatchObject({
@@ -143,6 +137,7 @@ describe('UsersService', () => {
 
             mockUserRepository.existsByEmail.mockResolvedValue(false);
             mockUserRepository.create.mockResolvedValue(mockUser);
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
             (bcrypt.hash as jest.Mock).mockResolvedValue('hashedPassword123');
 
             const result = await service.create(dtoWithLowercase);
@@ -198,8 +193,10 @@ describe('UsersService', () => {
 
             expect(mockModel.find).toHaveBeenCalledWith(
                 expect.objectContaining({
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
                     $or: expect.arrayContaining([
                         expect.objectContaining({
+                            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
                             email: expect.objectContaining({
                                 $regex: 'test',
                             }),
@@ -234,9 +231,7 @@ describe('UsersService', () => {
             const emptyQuery: UserQueryDto = {};
 
             mockUserRepository.getModel.mockReturnValue(mockModel);
-            mockModel.exec
-                .mockResolvedValueOnce([])
-                .mockResolvedValueOnce(0);
+            mockModel.exec.mockResolvedValueOnce([]).mockResolvedValueOnce(0);
             mockUserRepository.mapDocumentToEntity.mockReturnValue(mockUser);
 
             const result = await service.findAll(emptyQuery);
@@ -371,9 +366,7 @@ describe('UsersService', () => {
             expect(mockUserRepository.findById).toHaveBeenCalledWith(
                 mockUser.id,
             );
-            expect(mockUserRepository.delete).toHaveBeenCalledWith(
-                mockUser.id,
-            );
+            expect(mockUserRepository.delete).toHaveBeenCalledWith(mockUser.id);
         });
 
         it('should throw NotFoundException if user not found', async () => {

@@ -1,3 +1,4 @@
+import { AuthModule } from '@auth';
 import { UsersModule } from '@users';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
@@ -13,6 +14,7 @@ import { MongoModule } from './modules/shared/database/mongo/mongo.module';
         MongoModule,
         ClickHouseModule,
         UsersModule,
+        AuthModule,
     ],
 })
 export class AppModule {}

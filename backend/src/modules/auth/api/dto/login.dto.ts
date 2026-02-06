@@ -1,0 +1,13 @@
+import { IsString } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsEmailWithLowerCase } from '@common/decorators/dto/is-email-with-lower-case.decorator';
+
+export class LoginDto {
+    @ApiProperty({ example: 'user@example.com' })
+    @IsEmailWithLowerCase()
+    email: string;
+
+    @ApiProperty({ example: 'Password123' })
+    @IsString()
+    password: string;
+}

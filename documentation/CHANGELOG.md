@@ -27,19 +27,43 @@
 - ✅ Настроены TypeScript path aliases (@shared, @common, @users)
 - ✅ User-специфичные файлы перенесены из shared/database в модуль users
 - ✅ Созданы тесты (unit, e2e)
+- ✅ Добавлен метод `findByEmailForAuth` для получения пользователя с паролем для аутентификации
 
-### 5. Code Quality
+### 5. Auth Module
+- ✅ Создан модуль auth с полной архитектурой (api, application, domain, infrastructure)
+- ✅ Реализована регистрация пользователей (POST /auth/register)
+- ✅ Реализован вход пользователей (POST /auth/login) с Local Strategy
+- ✅ Реализовано обновление токена (POST /auth/refresh)
+- ✅ Реализовано получение текущего пользователя (GET /auth/me)
+- ✅ Настроен JWT модуль с конфигурацией из переменных окружения
+- ✅ Созданы Passport стратегии (JWT Strategy, Local Strategy)
+- ✅ Созданы Guards (JwtAuthGuard, LocalAuthGuard)
+- ✅ Созданы декораторы (@Public, @JwtAuth, @CurrentUser)
+- ✅ Реализована генерация access и refresh токенов
+- ✅ Добавлена валидация JWT payload
+- ✅ Настроена Swagger документация для всех эндпоинтов
+- ✅ Настроены TypeScript path aliases (@auth)
+
+### 6. Common Decorators and Utilities
+- ✅ Создан кастомный декоратор `@IsEmailWithLowerCase` для автоматического приведения email к нижнему регистру
+- ✅ Созданы декораторы для Swagger документации (@ApiSuccessResponseDecorator, @ApiPaginatedResponse, @ApiErrorResponse)
+- ✅ Создан ResponseInterceptor для обертки всех ответов в { result: ... }
+- ✅ Создан GlobalExceptionFilter для обработки ошибок
+- ✅ Настроена структура ответов API (успешные ответы и ошибки)
+
+### 7. Code Quality
 - ✅ Настроен Prettier с автоматической сортировкой импортов
 - ✅ Настроен ESLint с удалением неиспользуемых импортов
 - ✅ Исправлены все ошибки линтера
 - ✅ Настроено форматирование через Shift+Alt+F и `pnpm format`
 
-### 6. Конфигурация
+### 8. Конфигурация
 - ✅ Создан `env.example` с настройками для локального MongoDB
 - ✅ Настроен ConfigModule для работы с переменными окружения
+- ✅ Добавлены переменные окружения для JWT (JWT_SECRET, JWT_ACCESS_TOKEN_EXPIRES_IN, JWT_REFRESH_TOKEN_EXPIRES_IN, JWT_REFRESH_SECRET)
 - ✅ Обновлен AppModule для подключения всех модулей БД
 
-### 7. Документация
+### 9. Документация
 - ✅ Создана документация по настройке БД
 - ✅ Создана документация по Mongoose архитектуре
 - ✅ Добавлены инструкции по запуску Docker и подключению к Compass
@@ -62,13 +86,23 @@ project/backend/
 │   │   │   ├── repositories/   # Repositories (BaseRepository, PromoCodeRepository)
 │   │   │   ├── mongo/          # Mongoose модуль
 │   │   │   └── clickhouse/     # ClickHouse модуль
-│   │   └── users/               # Модуль пользователей
+│   │   ├── users/               # Модуль пользователей
+│   │   │   ├── api/            # Контроллеры и DTO
+│   │   │   ├── application/    # Бизнес-логика и сервисы
+│   │   │   ├── domain/         # Доменные сущности и константы
+│   │   │   ├── infrastructure/ # Репозитории и схемы
+│   │   │   └── __tests__/      # Тесты
+│   │   └── auth/                # Модуль аутентификации
 │   │       ├── api/            # Контроллеры и DTO
 │   │       ├── application/    # Бизнес-логика и сервисы
-│   │       ├── domain/         # Доменные сущности и константы
-│   │       ├── infrastructure/ # Репозитории и схемы
-│   │       └── __tests__/      # Тесты
-│   └── common/                  # Общие утилиты (pagination, config)
+│   │       ├── domain/         # Интерфейсы (JWT payload)
+│   │       └── infrastructure/ # Стратегии и Guards
+│   └── common/                  # Общие утилиты
+│       ├── decorators/         # Декораторы (auth, response, dto)
+│       ├── dto/                # Общие DTO (api-success-response, api-error-response)
+│       ├── filters/            # Exception filters
+│       ├── interceptors/       # Response interceptors
+│       └── paginate/            # Пагинация
 ```
 
 ## Быстрый старт

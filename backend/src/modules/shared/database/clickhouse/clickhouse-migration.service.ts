@@ -17,7 +17,15 @@ export class ClickHouseMigrationService implements OnModuleInit {
             return distPath;
         }
         // Если нет в dist, используем исходники (dev режим)
-        const srcPath = join(process.cwd(), 'src', 'modules', 'shared', 'database', 'clickhouse', 'migrations');
+        const srcPath = join(
+            process.cwd(),
+            'src',
+            'modules',
+            'shared',
+            'database',
+            'clickhouse',
+            'migrations',
+        );
         return srcPath;
     }
 
@@ -31,7 +39,7 @@ export class ClickHouseMigrationService implements OnModuleInit {
         try {
             // Проверяем подключение перед миграциями
             await this.clickhouseService.ping();
-        } catch (error) {
+        } catch {
             this.logger.warn(
                 'ClickHouse connection check failed, skipping migrations',
             );

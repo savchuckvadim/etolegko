@@ -18,15 +18,18 @@ import { applyDecorators } from '@nestjs/common';
  * ```
  */
 export function IsEmailWithLowerCase(
-    options?: ValidationOptions & { allow_display_name?: boolean; require_tld?: boolean },
+    options?: ValidationOptions & {
+        allow_display_name?: boolean;
+        require_tld?: boolean;
+    },
 ) {
     return applyDecorators(
         // Трансформация: приводим email к нижнему регистру
-        Transform(({ value }) => {
+        Transform(({ value }): string => {
             if (typeof value === 'string') {
                 return value.toLowerCase().trim();
             }
-            return value;
+            return String(value);
         }),
         // Валидация: проверяем, что это валидный email
         IsEmail(options),

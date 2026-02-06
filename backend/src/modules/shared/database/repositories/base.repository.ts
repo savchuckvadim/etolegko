@@ -49,7 +49,7 @@ export abstract class BaseRepository<TDocument, TEntity> {
     async create(data: Partial<TEntity>): Promise<TEntity> {
         // TEntity и TDocument могут иметь разные поля, но в runtime они совместимы
         // через маппинг. Это безопасное приведение типов для создания документа.
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+
         const doc = await this.model.create(
             data as unknown as Partial<TDocument>,
         );

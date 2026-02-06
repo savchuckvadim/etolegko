@@ -18,9 +18,27 @@ export const getSwaggerConfig = (app: INestApplication) => {
             const cleanController = controllerKey.replace(/Controller$/i, '');
             return `${cleanController}_${methodKey}`;
         },
+        deepScanRoutes: true,
     };
-    const documentFactory = () =>
-        SwaggerModule.createDocument(app, config, options);
 
-    SwaggerModule.setup('docs', app, documentFactory);
+    // Обработка ошибок при создании документации
+    try {
+        const documentFactory = () => {
+            try {
+                return SwaggerModule.createDocument(app, config, options);
+            } catch (error) {
+                console.error('❌ Swagger document creation error:', error);
+                if (error instanceof Error) {
+                    console.error('Error message:', error.message);
+                    console.error('Error stack:', error.stack);
+                }
+                throw error;
+            }
+        };
+
+        SwaggerModule.setup('docs', app, documentFactory);
+    } catch (error) {
+        console.error('❌ Swagger setup error:', error);
+        // Не прерываем запуск приложения, просто логируем ошибку
+    }
 };

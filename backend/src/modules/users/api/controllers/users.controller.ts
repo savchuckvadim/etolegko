@@ -11,12 +11,16 @@ import {
     Query,
 } from '@nestjs/common';
 import {
+    ApiNoContentResponse,
     ApiOperation,
     ApiParam,
     ApiQuery,
-    ApiResponse,
     ApiTags,
 } from '@nestjs/swagger';
+import { JwtAuth } from '@common/decorators/auth/jwt-auth.decorator';
+import { ApiErrorResponse } from '@common/decorators/response/api-error-response.decorator';
+import { ApiPaginatedResponse } from '@common/decorators/response/api-paginated-response.decorator';
+import { ApiSuccessResponseDecorator } from '@common/decorators/response/api-success-response.decorator';
 import { PaginatedResult } from '@common/paginate/interfaces/paginated-result.interface';
 import { CreateUserDto } from '@users/api/dto/create-user.dto';
 import { UpdateUserDto } from '@users/api/dto/update-user.dto';
@@ -26,20 +30,17 @@ import { UsersService } from '@users/application/services/users.service';
 
 @ApiTags('Users')
 @Controller('users')
+@JwtAuth() // Все роуты в контроллере защищены JWT
 export class UsersController {
     constructor(private readonly usersService: UsersService) {}
 
     @Post()
     @ApiOperation({ summary: 'Create a new user' })
-    @ApiResponse({
+    @ApiSuccessResponseDecorator(UserResponseDto, {
         status: 201,
         description: 'User created successfully',
-        type: UserResponseDto,
     })
-    @ApiResponse({
-        status: 409,
-        description: 'User with this email already exists',
-    })
+    @ApiErrorResponse([400, 409])
     async create(
         @Body() createUserDto: CreateUserDto,
     ): Promise<UserResponseDto> {
@@ -74,10 +75,10 @@ export class UsersController {
         type: Boolean,
         example: true,
     })
-    @ApiResponse({
-        status: 200,
+    @ApiPaginatedResponse(UserResponseDto, {
         description: 'Users retrieved successfully',
     })
+    @ApiErrorResponse([400])
     async findAll(
         @Query() query: UserQueryDto,
     ): Promise<PaginatedResult<UserResponseDto>> {
@@ -87,12 +88,10 @@ export class UsersController {
     @Get(':id')
     @ApiOperation({ summary: 'Get user by ID' })
     @ApiParam({ name: 'id', description: 'User ID' })
-    @ApiResponse({
-        status: 200,
+    @ApiSuccessResponseDecorator(UserResponseDto, {
         description: 'User found',
-        type: UserResponseDto,
     })
-    @ApiResponse({ status: 404, description: 'User not found' })
+    @ApiErrorResponse([404])
     async findOne(@Param('id') id: string): Promise<UserResponseDto> {
         return this.usersService.findById(id);
     }
@@ -100,12 +99,10 @@ export class UsersController {
     @Patch(':id')
     @ApiOperation({ summary: 'Update user' })
     @ApiParam({ name: 'id', description: 'User ID' })
-    @ApiResponse({
-        status: 200,
+    @ApiSuccessResponseDecorator(UserResponseDto, {
         description: 'User updated successfully',
-        type: UserResponseDto,
     })
-    @ApiResponse({ status: 404, description: 'User not found' })
+    @ApiErrorResponse([400, 404])
     async update(
         @Param('id') id: string,
         @Body() updateUserDto: UpdateUserDto,
@@ -117,8 +114,8 @@ export class UsersController {
     @HttpCode(HttpStatus.NO_CONTENT)
     @ApiOperation({ summary: 'Delete user' })
     @ApiParam({ name: 'id', description: 'User ID' })
-    @ApiResponse({ status: 204, description: 'User deleted successfully' })
-    @ApiResponse({ status: 404, description: 'User not found' })
+    @ApiNoContentResponse({ description: 'User deleted successfully' })
+    @ApiErrorResponse([404])
     async remove(@Param('id') id: string): Promise<void> {
         return this.usersService.delete(id);
     }

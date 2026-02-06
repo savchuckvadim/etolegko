@@ -154,6 +154,14 @@ export class UsersService {
     }
 
     /**
+     * Получить пользователя по email (для аутентификации)
+     * Возвращает Entity с passwordHash
+     */
+    async findByEmailForAuth(email: string): Promise<User | null> {
+        return this.userRepository.findByEmail(email);
+    }
+
+    /**
      * Преобразование Entity в Response DTO
      */
     private toResponseDto(user: User): UserResponseDto {

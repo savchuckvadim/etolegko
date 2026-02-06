@@ -1,16 +1,15 @@
 import { ConflictException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { PaginatedResult } from '@common/paginate/interfaces/paginated-result.interface';
+import { UsersController } from '@users/api/controllers/users.controller';
 import { CreateUserDto } from '@users/api/dto/create-user.dto';
 import { UpdateUserDto } from '@users/api/dto/update-user.dto';
 import { UserQueryDto } from '@users/api/dto/user-query.dto';
 import { UserResponseDto } from '@users/api/dto/user-response.dto';
 import { UsersService } from '@users/application/services/users.service';
-import { UsersController } from '@users/api/controllers/users.controller';
 
 describe('UsersController', () => {
     let controller: UsersController;
-    let service: UsersService;
 
     const mockUserResponse: UserResponseDto = {
         id: '507f1f77bcf86cd799439011',
@@ -50,7 +49,6 @@ describe('UsersController', () => {
         }).compile();
 
         controller = module.get<UsersController>(UsersController);
-        service = module.get<UsersService>(UsersService);
 
         jest.clearAllMocks();
     });
@@ -68,7 +66,7 @@ describe('UsersController', () => {
 
             const result = await controller.create(createDto);
 
-            expect(service.create).toHaveBeenCalledWith(createDto);
+            expect(mockUsersService.create).toHaveBeenCalledWith(createDto);
             expect(result).toEqual(mockUserResponse);
         });
 
@@ -80,7 +78,7 @@ describe('UsersController', () => {
             await expect(controller.create(createDto)).rejects.toThrow(
                 ConflictException,
             );
-            expect(service.create).toHaveBeenCalledWith(createDto);
+            expect(mockUsersService.create).toHaveBeenCalledWith(createDto);
         });
     });
 
@@ -95,7 +93,7 @@ describe('UsersController', () => {
 
             const result = await controller.findAll(queryDto);
 
-            expect(service.findAll).toHaveBeenCalledWith(queryDto);
+            expect(mockUsersService.findAll).toHaveBeenCalledWith(queryDto);
             expect(result).toEqual(mockPaginatedResult);
             expect(result.items).toHaveLength(1);
         });
@@ -111,7 +109,7 @@ describe('UsersController', () => {
 
             await controller.findAll(searchQuery);
 
-            expect(service.findAll).toHaveBeenCalledWith(searchQuery);
+            expect(mockUsersService.findAll).toHaveBeenCalledWith(searchQuery);
         });
     });
 
@@ -123,7 +121,7 @@ describe('UsersController', () => {
 
             const result = await controller.findOne(userId);
 
-            expect(service.findById).toHaveBeenCalledWith(userId);
+            expect(mockUsersService.findById).toHaveBeenCalledWith(userId);
             expect(result).toEqual(mockUserResponse);
         });
 
@@ -135,7 +133,7 @@ describe('UsersController', () => {
             await expect(controller.findOne(userId)).rejects.toThrow(
                 NotFoundException,
             );
-            expect(service.findById).toHaveBeenCalledWith(userId);
+            expect(mockUsersService.findById).toHaveBeenCalledWith(userId);
         });
     });
 
@@ -156,7 +154,10 @@ describe('UsersController', () => {
 
             const result = await controller.update(userId, updateDto);
 
-            expect(service.update).toHaveBeenCalledWith(userId, updateDto);
+            expect(mockUsersService.update).toHaveBeenCalledWith(
+                userId,
+                updateDto,
+            );
             expect(result).toEqual(updatedUser);
         });
 
@@ -168,7 +169,10 @@ describe('UsersController', () => {
             await expect(controller.update(userId, updateDto)).rejects.toThrow(
                 NotFoundException,
             );
-            expect(service.update).toHaveBeenCalledWith(userId, updateDto);
+            expect(mockUsersService.update).toHaveBeenCalledWith(
+                userId,
+                updateDto,
+            );
         });
     });
 
@@ -180,7 +184,7 @@ describe('UsersController', () => {
 
             await controller.remove(userId);
 
-            expect(service.delete).toHaveBeenCalledWith(userId);
+            expect(mockUsersService.delete).toHaveBeenCalledWith(userId);
         });
 
         it('should throw NotFoundException if user not found', async () => {
@@ -191,7 +195,7 @@ describe('UsersController', () => {
             await expect(controller.remove(userId)).rejects.toThrow(
                 NotFoundException,
             );
-            expect(service.delete).toHaveBeenCalledWith(userId);
+            expect(mockUsersService.delete).toHaveBeenCalledWith(userId);
         });
     });
 });
