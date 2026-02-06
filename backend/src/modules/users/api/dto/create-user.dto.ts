@@ -1,15 +1,15 @@
 import {
-    IsEmail,
     IsOptional,
     IsString,
     Matches,
     MinLength,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsEmailWithLowerCase } from '@common/decorators/dto/is-email-with-lower-case.decorator';
 
 export class CreateUserDto {
     @ApiProperty({ example: 'user@example.com' })
-    @IsEmail()
+    @IsEmailWithLowerCase()
     email: string;
 
     @ApiProperty({ example: 'password123', minLength: 8 })

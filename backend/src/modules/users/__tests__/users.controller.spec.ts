@@ -1,7 +1,197 @@
-/**
- * Unit tests для UsersController
- * TODO: Реализовать тесты
- */
+import { ConflictException, NotFoundException } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { PaginatedResult } from '@common/paginate/interfaces/paginated-result.interface';
+import { CreateUserDto } from '@users/api/dto/create-user.dto';
+import { UpdateUserDto } from '@users/api/dto/update-user.dto';
+import { UserQueryDto } from '@users/api/dto/user-query.dto';
+import { UserResponseDto } from '@users/api/dto/user-response.dto';
+import { UsersService } from '@users/application/services/users.service';
+import { UsersController } from '@users/api/controllers/users.controller';
+
 describe('UsersController', () => {
-    // TODO: Добавить тесты
+    let controller: UsersController;
+    let service: UsersService;
+
+    const mockUserResponse: UserResponseDto = {
+        id: '507f1f77bcf86cd799439011',
+        email: 'test@example.com',
+        name: 'Test User',
+        phone: '+1234567890',
+        isActive: true,
+        createdAt: new Date('2024-01-01'),
+        updatedAt: new Date('2024-01-01'),
+    };
+
+    const mockPaginatedResult: PaginatedResult<UserResponseDto> = {
+        items: [mockUserResponse],
+        total: 1,
+        page: 1,
+        limit: 10,
+        totalPages: 1,
+    };
+
+    const mockUsersService = {
+        create: jest.fn(),
+        findAll: jest.fn(),
+        findById: jest.fn(),
+        update: jest.fn(),
+        delete: jest.fn(),
+    };
+
+    beforeEach(async () => {
+        const module: TestingModule = await Test.createTestingModule({
+            controllers: [UsersController],
+            providers: [
+                {
+                    provide: UsersService,
+                    useValue: mockUsersService,
+                },
+            ],
+        }).compile();
+
+        controller = module.get<UsersController>(UsersController);
+        service = module.get<UsersService>(UsersService);
+
+        jest.clearAllMocks();
+    });
+
+    describe('create', () => {
+        const createDto: CreateUserDto = {
+            email: 'test@example.com',
+            password: 'password123',
+            name: 'Test User',
+            phone: '+1234567890',
+        };
+
+        it('should create a user', async () => {
+            mockUsersService.create.mockResolvedValue(mockUserResponse);
+
+            const result = await controller.create(createDto);
+
+            expect(service.create).toHaveBeenCalledWith(createDto);
+            expect(result).toEqual(mockUserResponse);
+        });
+
+        it('should throw ConflictException if user exists', async () => {
+            mockUsersService.create.mockRejectedValue(
+                new ConflictException('User with this email already exists'),
+            );
+
+            await expect(controller.create(createDto)).rejects.toThrow(
+                ConflictException,
+            );
+            expect(service.create).toHaveBeenCalledWith(createDto);
+        });
+    });
+
+    describe('findAll', () => {
+        const queryDto: UserQueryDto = {
+            page: 1,
+            limit: 10,
+        };
+
+        it('should return paginated users', async () => {
+            mockUsersService.findAll.mockResolvedValue(mockPaginatedResult);
+
+            const result = await controller.findAll(queryDto);
+
+            expect(service.findAll).toHaveBeenCalledWith(queryDto);
+            expect(result).toEqual(mockPaginatedResult);
+            expect(result.items).toHaveLength(1);
+        });
+
+        it('should pass query parameters to service', async () => {
+            const searchQuery: UserQueryDto = {
+                ...queryDto,
+                search: 'test',
+                isActive: true,
+            };
+
+            mockUsersService.findAll.mockResolvedValue(mockPaginatedResult);
+
+            await controller.findAll(searchQuery);
+
+            expect(service.findAll).toHaveBeenCalledWith(searchQuery);
+        });
+    });
+
+    describe('findOne', () => {
+        const userId = '507f1f77bcf86cd799439011';
+
+        it('should return user by id', async () => {
+            mockUsersService.findById.mockResolvedValue(mockUserResponse);
+
+            const result = await controller.findOne(userId);
+
+            expect(service.findById).toHaveBeenCalledWith(userId);
+            expect(result).toEqual(mockUserResponse);
+        });
+
+        it('should throw NotFoundException if user not found', async () => {
+            mockUsersService.findById.mockRejectedValue(
+                new NotFoundException(`User with ID ${userId} not found`),
+            );
+
+            await expect(controller.findOne(userId)).rejects.toThrow(
+                NotFoundException,
+            );
+            expect(service.findById).toHaveBeenCalledWith(userId);
+        });
+    });
+
+    describe('update', () => {
+        const userId = '507f1f77bcf86cd799439011';
+        const updateDto: UpdateUserDto = {
+            name: 'Updated Name',
+            isActive: false,
+        };
+
+        const updatedUser: UserResponseDto = {
+            ...mockUserResponse,
+            ...updateDto,
+        };
+
+        it('should update user', async () => {
+            mockUsersService.update.mockResolvedValue(updatedUser);
+
+            const result = await controller.update(userId, updateDto);
+
+            expect(service.update).toHaveBeenCalledWith(userId, updateDto);
+            expect(result).toEqual(updatedUser);
+        });
+
+        it('should throw NotFoundException if user not found', async () => {
+            mockUsersService.update.mockRejectedValue(
+                new NotFoundException(`User with ID ${userId} not found`),
+            );
+
+            await expect(controller.update(userId, updateDto)).rejects.toThrow(
+                NotFoundException,
+            );
+            expect(service.update).toHaveBeenCalledWith(userId, updateDto);
+        });
+    });
+
+    describe('remove', () => {
+        const userId = '507f1f77bcf86cd799439011';
+
+        it('should delete user', async () => {
+            mockUsersService.delete.mockResolvedValue(undefined);
+
+            await controller.remove(userId);
+
+            expect(service.delete).toHaveBeenCalledWith(userId);
+        });
+
+        it('should throw NotFoundException if user not found', async () => {
+            mockUsersService.delete.mockRejectedValue(
+                new NotFoundException(`User with ID ${userId} not found`),
+            );
+
+            await expect(controller.remove(userId)).rejects.toThrow(
+                NotFoundException,
+            );
+            expect(service.delete).toHaveBeenCalledWith(userId);
+        });
+    });
 });

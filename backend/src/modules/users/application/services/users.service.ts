@@ -22,7 +22,7 @@ export class UsersService {
      * Создать пользователя
      */
     async create(dto: CreateUserDto): Promise<UserResponseDto> {
-        // Проверка существования
+        // Проверка существования (email уже в нижнем регистре благодаря @IsEmailWithLowerCase)
         const exists = await this.userRepository.existsByEmail(dto.email);
         if (exists) {
             throw new ConflictException('User with this email already exists');
@@ -34,7 +34,7 @@ export class UsersService {
 
         // Создание entity
         const user = new User({
-            email: dto.email.toLowerCase(),
+            email: dto.email, // email уже в нижнем регистре
             passwordHash,
             name: dto.name,
             phone: dto.phone,
