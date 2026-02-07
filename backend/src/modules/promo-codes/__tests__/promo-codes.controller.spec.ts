@@ -1,3 +1,5 @@
+import { Order } from '@orders/domain/entity/order.entity';
+import { OrderRepository } from '@orders/infrastructure/repositories/order.repository';
 import { PromoCodesController } from '@promo-codes/api/controllers/promo-codes.controller';
 import { ApplyPromoCodeResponseDto } from '@promo-codes/api/dto/apply-promo-code-response.dto';
 import { ApplyPromoCodeDto } from '@promo-codes/api/dto/apply-promo-code.dto';
@@ -65,6 +67,10 @@ describe('PromoCodesController', () => {
         execute: jest.fn(),
     };
 
+    const mockOrderRepository = {
+        findById: jest.fn(),
+    };
+
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
             controllers: [PromoCodesController],
@@ -76,6 +82,10 @@ describe('PromoCodesController', () => {
                 {
                     provide: ApplyPromoCodeUseCase,
                     useValue: mockApplyPromoCodeUseCase,
+                },
+                {
+                    provide: OrderRepository,
+                    useValue: mockOrderRepository,
                 },
             ],
         }).compile();
@@ -124,29 +134,85 @@ describe('PromoCodesController', () => {
             promoCode: 'SUMMER2024',
         };
 
+        const mockOrder = new Order({
+            id: applyDto.orderId,
+            userId: mockUser.id,
+            amount: 500,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        });
+
         it('should apply promo code', async () => {
+            mockOrderRepository.findById.mockResolvedValue(mockOrder);
             mockApplyPromoCodeUseCase.execute.mockResolvedValue(
                 mockApplyResponse,
             );
 
             const result = await controller.apply(applyDto, mockUser);
 
+            expect(mockOrderRepository.findById).toHaveBeenCalledWith(
+                applyDto.orderId,
+            );
             expect(mockApplyPromoCodeUseCase.execute).toHaveBeenCalledWith(
                 applyDto.orderId,
                 applyDto.promoCode,
                 mockUser.id,
-                500, // orderAmount заглушка
+                mockOrder.amount,
             );
             expect(result).toEqual(mockApplyResponse);
         });
 
+        it('should throw NotFoundException if order not found', async () => {
+            mockOrderRepository.findById.mockResolvedValue(null);
+
+            await expect(controller.apply(applyDto, mockUser)).rejects.toThrow(
+                NotFoundException,
+            );
+            await expect(controller.apply(applyDto, mockUser)).rejects.toThrow(
+                `Order with ID ${applyDto.orderId} not found`,
+            );
+            expect(mockOrderRepository.findById).toHaveBeenCalledWith(
+                applyDto.orderId,
+            );
+            expect(mockApplyPromoCodeUseCase.execute).not.toHaveBeenCalled();
+        });
+
+        it('should throw NotFoundException if order does not belong to user', async () => {
+            const otherUserOrder = new Order({
+                ...mockOrder,
+                userId: 'other-user-id',
+            });
+            mockOrderRepository.findById.mockResolvedValue(otherUserOrder);
+
+            await expect(controller.apply(applyDto, mockUser)).rejects.toThrow(
+                NotFoundException,
+            );
+            await expect(controller.apply(applyDto, mockUser)).rejects.toThrow(
+                `Order with ID ${applyDto.orderId} not found`,
+            );
+            expect(mockOrderRepository.findById).toHaveBeenCalledWith(
+                applyDto.orderId,
+            );
+            expect(mockApplyPromoCodeUseCase.execute).not.toHaveBeenCalled();
+        });
+
         it('should throw NotFoundException if promo code not found', async () => {
+            mockOrderRepository.findById.mockResolvedValue(mockOrder);
             mockApplyPromoCodeUseCase.execute.mockRejectedValue(
                 new NotFoundException('Promo code SUMMER2024 not found'),
             );
 
             await expect(controller.apply(applyDto, mockUser)).rejects.toThrow(
                 NotFoundException,
+            );
+            expect(mockOrderRepository.findById).toHaveBeenCalledWith(
+                applyDto.orderId,
+            );
+            expect(mockApplyPromoCodeUseCase.execute).toHaveBeenCalledWith(
+                applyDto.orderId,
+                applyDto.promoCode,
+                mockUser.id,
+                mockOrder.amount,
             );
         });
     });

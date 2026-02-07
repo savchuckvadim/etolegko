@@ -1,3 +1,4 @@
+import { OrderRepository } from '@orders/infrastructure/repositories/order.repository';
 import { ApplyPromoCodeResponseDto } from '@promo-codes/api/dto/apply-promo-code-response.dto';
 import { ApplyPromoCodeDto } from '@promo-codes/api/dto/apply-promo-code.dto';
 import { CreatePromoCodeDto } from '@promo-codes/api/dto/create-promo-code.dto';
@@ -31,7 +32,6 @@ import { ApiErrorResponse } from '@common/decorators/response/api-error-response
 import { ApiPaginatedResponse } from '@common/decorators/response/api-paginated-response.decorator';
 import { ApiSuccessResponseDecorator } from '@common/decorators/response/api-success-response.decorator';
 import { PaginatedResult } from '@common/paginate/interfaces/paginated-result.interface';
-import { OrderRepository } from '@orders/infrastructure/repositories/order.repository';
 import { User } from '@users/domain/entity/user.entity';
 
 @ApiTags('Promo Codes')
