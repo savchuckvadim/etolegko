@@ -20,7 +20,9 @@
       "@users": ["src/modules/users"],
       "@users/*": ["src/modules/users/*"],
       "@auth": ["src/modules/auth"],
-      "@auth/*": ["src/modules/auth/*"]
+      "@auth/*": ["src/modules/auth/*"],
+      "@promo-codes": ["src/modules/promo-codes"],
+      "@promo-codes/*": ["src/modules/promo-codes/*"]
     },
     "incremental": true,
     "skipLibCheck": true,

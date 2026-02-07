@@ -162,8 +162,9 @@ export class AuthService {
                 name: user.name,
             };
 
-            const jwtSecret =
-                this.configService.get<string>(JWT_ENV_KEYS.SECRET);
+            const jwtSecret = this.configService.get<string>(
+                JWT_ENV_KEYS.SECRET,
+            );
             const accessTokenExpiresIn: string =
                 this.configService.get<string>(
                     JWT_ENV_KEYS.ACCESS_TOKEN_EXPIRES_IN,
@@ -198,8 +199,7 @@ export class AuthService {
             name: user.name,
         };
 
-        const jwtSecret =
-            this.configService.get<string>(JWT_ENV_KEYS.SECRET);
+        const jwtSecret = this.configService.get<string>(JWT_ENV_KEYS.SECRET);
         const refreshSecret =
             this.configService.get<string>(JWT_ENV_KEYS.REFRESH_SECRET) ||
             jwtSecret;

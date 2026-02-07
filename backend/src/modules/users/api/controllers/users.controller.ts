@@ -14,7 +14,6 @@ import {
     ApiNoContentResponse,
     ApiOperation,
     ApiParam,
-    ApiQuery,
     ApiTags,
 } from '@nestjs/swagger';
 import { JwtAuth } from '@common/decorators/auth/jwt-auth.decorator';
@@ -49,32 +48,6 @@ export class UsersController {
 
     @Get()
     @ApiOperation({ summary: 'Get all users with pagination' })
-    @ApiQuery({ name: 'page', required: false, type: Number, example: 1 })
-    @ApiQuery({ name: 'limit', required: false, type: Number, example: 10 })
-    @ApiQuery({
-        name: 'sortBy',
-        required: false,
-        type: String,
-        example: 'createdAt',
-    })
-    @ApiQuery({
-        name: 'sortOrder',
-        required: false,
-        enum: ['asc', 'desc'],
-        example: 'desc',
-    })
-    @ApiQuery({
-        name: 'search',
-        required: false,
-        type: String,
-        example: 'john',
-    })
-    @ApiQuery({
-        name: 'isActive',
-        required: false,
-        type: Boolean,
-        example: true,
-    })
     @ApiPaginatedResponse(UserResponseDto, {
         description: 'Users retrieved successfully',
     })

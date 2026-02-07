@@ -69,6 +69,44 @@
 - ✅ Добавлены инструкции по запуску Docker и подключению к Compass
 - ✅ Добавлены инструкции по проверке ClickHouse
 
+### 10. Promo Codes Module
+- ✅ Создан модуль promo-codes с полной архитектурой (api, application, domain, infrastructure)
+- ✅ Реализованы CRUD операции для промокодов
+- ✅ Реализовано применение промокодов к заказам (POST /promo-codes/apply)
+- ✅ Создана Domain Entity PromoCode с бизнес-логикой (validateUsage, calculateDiscount, incrementUsage)
+- ✅ Реализована валидация использования промокодов:
+  - Проверка активности промокода
+  - Проверка общего лимита использований
+  - Проверка лимита использований на пользователя
+  - Проверка сроков действия (startsAt, endsAt)
+- ✅ Создан Use Case `ApplyPromoCodeUseCase` для координации бизнес-логики и публикации событий
+- ✅ Реализована Event-Driven архитектура:
+  - EventBus через Redis/Bull для асинхронной обработки событий
+  - Consumer `PromoCodeAnalyticsConsumer` для записи аналитики в ClickHouse
+  - Событие `PromoCodeAppliedEvent` при применении промокода
+- ✅ Настроена Swagger документация для всех эндпоинтов
+- ✅ Настроены TypeScript path aliases (@promo-codes)
+- ✅ Созданы тесты для всех компонентов:
+  - Unit тесты для сервиса (19 тестов)
+  - Unit тесты для контроллера (6 тестов)
+  - Unit тесты для use case (5 тестов)
+  - Unit тесты для consumer (11 тестов)
+- ✅ Все тесты проходят успешно (41 тест)
+- ✅ Исправлены все ошибки ESLint и TypeScript
+
+### 11. Event Bus & Queue System
+- ✅ Реализован EventBus через Redis/Bull для асинхронной обработки событий
+- ✅ Создан интерфейс `EventBus` для абстракции публикации событий
+- ✅ Реализован `RedisEventBus` с настройками очереди:
+  - Повторные попытки (3 attempts)
+  - Exponential backoff (2 секунды)
+  - Ограничение хранения завершенных/неудачных задач
+- ✅ Настроен `EventBusModule` с интеграцией Bull/Redis
+- ✅ Реализован Consumer для обработки событий применения промокодов
+- ✅ Автоматическая запись аналитики в ClickHouse через очередь
+- ✅ Обработка ошибок с логированием и повторными попытками
+- ✅ Создана документация по системе Event Bus & Queue
+
 ## Структура
 
 ```
@@ -92,11 +130,20 @@ project/backend/
 │   │   │   ├── domain/         # Доменные сущности и константы
 │   │   │   ├── infrastructure/ # Репозитории и схемы
 │   │   │   └── __tests__/      # Тесты
-│   │   └── auth/                # Модуль аутентификации
-│   │       ├── api/            # Контроллеры и DTO
-│   │       ├── application/    # Бизнес-логика и сервисы
-│   │       ├── domain/         # Интерфейсы (JWT payload)
-│   │       └── infrastructure/ # Стратегии и Guards
+│   │   ├── auth/                # Модуль аутентификации
+│   │   │   ├── api/            # Контроллеры и DTO
+│   │   │   ├── application/    # Бизнес-логика и сервисы
+│   │   │   ├── domain/         # Интерфейсы (JWT payload)
+│   │   │   └── infrastructure/ # Стратегии и Guards
+│   │   ├── promo-codes/         # Модуль промокодов
+│   │   │   ├── api/            # Контроллеры и DTO
+│   │   │   ├── application/    # Бизнес-логика, сервисы, use cases, события
+│   │   │   ├── domain/         # Доменные сущности и константы
+│   │   │   ├── infrastructure/ # Репозитории, схемы, consumers
+│   │   │   └── __tests__/      # Тесты
+│   │   └── shared/              # Общие модули
+│   │       ├── database/        # MongoDB, ClickHouse
+│   │       └── events/          # EventBus (Redis/Bull)
 │   └── common/                  # Общие утилиты
 │       ├── decorators/         # Декораторы (auth, response, dto)
 │       ├── dto/                # Общие DTO (api-success-response, api-error-response)
