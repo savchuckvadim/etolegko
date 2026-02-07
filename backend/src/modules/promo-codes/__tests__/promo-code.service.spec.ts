@@ -277,6 +277,7 @@ describe('PromoCodeService', () => {
 
             expect(mockPromoCodeRepository.findByCode).toHaveBeenCalledWith(
                 'SUMMER2024',
+                undefined, // session не передаётся при обычном вызове
             );
             expect(result).toEqual(mockPromoCode);
         });
@@ -288,6 +289,7 @@ describe('PromoCodeService', () => {
 
             expect(mockPromoCodeRepository.findByCode).toHaveBeenCalledWith(
                 'SUMMER2024',
+                undefined, // session не передаётся при обычном вызове
             );
         });
 

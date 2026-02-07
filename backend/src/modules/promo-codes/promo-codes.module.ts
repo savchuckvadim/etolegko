@@ -8,6 +8,7 @@ import { PromoCodeRepository } from '@promo-codes/infrastructure/repositories/pr
 import { PromoCodeSchemaFactory } from '@promo-codes/infrastructure/schemas/promo-code.schema';
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
+import { MongoModule } from '@shared/database/mongo/mongo.module';
 import { EventBusModule } from '@shared/events/event-bus.module';
 
 @Module({
@@ -21,6 +22,7 @@ import { EventBusModule } from '@shared/events/event-bus.module';
         EventBusModule,
         OrdersModule,
         AnalyticsModule,
+        MongoModule,
     ],
     controllers: [PromoCodesController],
     providers: [

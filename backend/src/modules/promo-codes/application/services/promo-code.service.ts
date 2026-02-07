@@ -5,6 +5,7 @@ import { UpdatePromoCodeDto } from '@promo-codes/api/dto/update-promo-code.dto';
 import { PromoCode } from '@promo-codes/domain/entity/promo-code.entity';
 import { PromoCodeRepository } from '@promo-codes/infrastructure/repositories/promo-code.repository';
 import { PromoCodeDocument } from '@promo-codes/infrastructure/schemas/promo-code.schema';
+import { ClientSession } from 'mongoose';
 import {
     ConflictException,
     Injectable,
@@ -116,8 +117,11 @@ export class PromoCodeService {
     /**
      * Получить промокод по коду
      */
-    async findByCode(code: string): Promise<PromoCode | null> {
-        return this.promoCodeRepository.findByCode(code.toUpperCase());
+    async findByCode(
+        code: string,
+        session?: ClientSession,
+    ): Promise<PromoCode | null> {
+        return this.promoCodeRepository.findByCode(code.toUpperCase(), session);
     }
 
     /**

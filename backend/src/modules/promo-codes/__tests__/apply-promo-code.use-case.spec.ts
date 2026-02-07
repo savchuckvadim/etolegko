@@ -8,6 +8,7 @@ import { PromoCode } from '@promo-codes/domain/entity/promo-code.entity';
 import { PromoCodeRepository } from '@promo-codes/infrastructure/repositories/promo-code.repository';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { MongoService } from '@shared/database/mongo/mongo.service';
 
 describe('ApplyPromoCodeUseCase', () => {
     let useCase: ApplyPromoCodeUseCase;
@@ -38,7 +39,7 @@ describe('ApplyPromoCodeUseCase', () => {
     };
 
     const mockPromoCodeRepositoryValue = {
-        update: jest.fn(),
+        incrementUsageIfWithinLimit: jest.fn(),
     };
 
     const mockOrderRepositoryValue = {
@@ -53,7 +54,26 @@ describe('ApplyPromoCodeUseCase', () => {
         publish: jest.fn(),
     };
 
+    const mockMongoServiceValue = {
+        startSession: jest.fn(),
+    };
+
     beforeEach(async () => {
+        // Мок сессии MongoDB
+        const mockSession = {
+            withTransaction: jest.fn(),
+            endSession: jest.fn(),
+        };
+
+        // withTransaction принимает callback и вызывает его
+        mockSession.withTransaction.mockImplementation(
+            async (callback: () => Promise<unknown>) => {
+                return callback();
+            },
+        );
+
+        mockMongoServiceValue.startSession.mockResolvedValue(mockSession);
+
         const module: TestingModule = await Test.createTestingModule({
             providers: [
                 ApplyPromoCodeUseCase,
@@ -74,6 +94,10 @@ describe('ApplyPromoCodeUseCase', () => {
                     useValue: mockAnalyticsRepositoryValue,
                 },
                 {
+                    provide: MongoService,
+                    useValue: mockMongoServiceValue,
+                },
+                {
                     provide: 'EventBus',
                     useValue: mockEventBusValue,
                 },
@@ -83,6 +107,7 @@ describe('ApplyPromoCodeUseCase', () => {
         useCase = module.get<ApplyPromoCodeUseCase>(ApplyPromoCodeUseCase);
 
         jest.clearAllMocks();
+        mockMongoServiceValue.startSession.mockClear();
     });
 
     describe('execute', () => {
@@ -102,17 +127,17 @@ describe('ApplyPromoCodeUseCase', () => {
                 createdAt: new Date(),
                 updatedAt: new Date(),
             });
+            const updatedPromoCode = createMockPromoCode({ usedCount: 1 });
             mockPromoCodeServiceValue.findByCode.mockResolvedValue(
                 mockPromoCode,
             );
             mockAnalyticsRepositoryValue.getUserPromoCodeUsageCount.mockResolvedValue(
                 0,
             );
-            mockOrderRepositoryValue.update.mockResolvedValue(mockOrder);
-            const updatedPromoCode = createMockPromoCode({ usedCount: 1 });
-            mockPromoCodeRepositoryValue.update.mockResolvedValue(
+            mockPromoCodeRepositoryValue.incrementUsageIfWithinLimit.mockResolvedValue(
                 updatedPromoCode,
             );
+            mockOrderRepositoryValue.update.mockResolvedValue(mockOrder);
             mockEventBusValue.publish.mockResolvedValue(undefined);
 
             const result = await useCase.execute(
@@ -122,22 +147,28 @@ describe('ApplyPromoCodeUseCase', () => {
                 orderAmount,
             );
 
+            expect(mockMongoServiceValue.startSession).toHaveBeenCalled();
             expect(mockPromoCodeServiceValue.findByCode).toHaveBeenCalledWith(
                 promoCode,
+                expect.anything(), // session
             );
             expect(
                 mockAnalyticsRepositoryValue.getUserPromoCodeUsageCount,
             ).toHaveBeenCalledWith(userId, mockPromoCode.id);
+            expect(
+                mockPromoCodeRepositoryValue.incrementUsageIfWithinLimit,
+            ).toHaveBeenCalledWith(
+                mockPromoCode.id,
+                mockPromoCode.totalLimit,
+                expect.anything(), // session
+            );
             expect(mockOrderRepositoryValue.update).toHaveBeenCalledWith(
                 orderId,
                 {
                     promoCodeId: mockPromoCode.id,
                     discountAmount: 100,
                 },
-            );
-            expect(mockPromoCodeRepositoryValue.update).toHaveBeenCalledWith(
-                mockPromoCode.id,
-                { usedCount: 1 },
+                expect.anything(), // session
             );
             expect(mockEventBusValue.publish).toHaveBeenCalledWith(
                 expect.any(PromoCodeAppliedEvent),
@@ -181,14 +212,14 @@ describe('ApplyPromoCodeUseCase', () => {
             mockAnalyticsRepositoryValue.getUserPromoCodeUsageCount.mockResolvedValue(
                 0,
             );
-            mockOrderRepositoryValue.update.mockResolvedValue(mockOrder);
             const updatedPromoCode = createMockPromoCode({
                 discountPercent: 30,
                 usedCount: 1,
             });
-            mockPromoCodeRepositoryValue.update.mockResolvedValue(
+            mockPromoCodeRepositoryValue.incrementUsageIfWithinLimit.mockResolvedValue(
                 updatedPromoCode,
             );
+            mockOrderRepositoryValue.update.mockResolvedValue(mockOrder);
             mockEventBusValue.publish.mockResolvedValue(undefined);
 
             const result = await useCase.execute(
@@ -214,7 +245,9 @@ describe('ApplyPromoCodeUseCase', () => {
 
             expect(mockEventBusValue.publish).not.toHaveBeenCalled();
             expect(mockOrderRepositoryValue.update).not.toHaveBeenCalled();
-            expect(mockPromoCodeRepositoryValue.update).not.toHaveBeenCalled();
+            expect(
+                mockPromoCodeRepositoryValue.incrementUsageIfWithinLimit,
+            ).not.toHaveBeenCalled();
         });
 
         it('should throw BadRequestException if promo code validation fails', async () => {
@@ -235,7 +268,9 @@ describe('ApplyPromoCodeUseCase', () => {
 
             expect(mockEventBusValue.publish).not.toHaveBeenCalled();
             expect(mockOrderRepositoryValue.update).not.toHaveBeenCalled();
-            expect(mockPromoCodeRepositoryValue.update).not.toHaveBeenCalled();
+            expect(
+                mockPromoCodeRepositoryValue.incrementUsageIfWithinLimit,
+            ).not.toHaveBeenCalled();
         });
 
         it('should throw BadRequestException if user limit exceeded', async () => {
@@ -256,16 +291,25 @@ describe('ApplyPromoCodeUseCase', () => {
 
             expect(mockEventBusValue.publish).not.toHaveBeenCalled();
             expect(mockOrderRepositoryValue.update).not.toHaveBeenCalled();
-            expect(mockPromoCodeRepositoryValue.update).not.toHaveBeenCalled();
+            expect(
+                mockPromoCodeRepositoryValue.incrementUsageIfWithinLimit,
+            ).not.toHaveBeenCalled();
         });
 
-        it('should throw BadRequestException if total limit exceeded', async () => {
-            const mockPromoCode = createMockPromoCode({ usedCount: 100 });
+        it('should throw BadRequestException if total limit exceeded during race condition', async () => {
+            // Симуляция race condition: промокод с usedCount = 99 (лимит 100)
+            // Валидация проходит (99 < 100), но incrementUsageIfWithinLimit вернёт null
+            // так как другой запрос уже увеличил счётчик до 100
+            const mockPromoCode = createMockPromoCode({ usedCount: 99 });
             mockPromoCodeServiceValue.findByCode.mockResolvedValue(
                 mockPromoCode,
             );
             mockAnalyticsRepositoryValue.getUserPromoCodeUsageCount.mockResolvedValue(
                 0,
+            );
+            // incrementUsageIfWithinLimit вернёт null, так как лимит уже достигнут другим запросом
+            mockPromoCodeRepositoryValue.incrementUsageIfWithinLimit.mockResolvedValue(
+                null,
             );
 
             await expect(
@@ -275,9 +319,15 @@ describe('ApplyPromoCodeUseCase', () => {
                 useCase.execute(orderId, promoCode, userId, orderAmount),
             ).rejects.toThrow('Promo code total limit exceeded');
 
+            expect(
+                mockPromoCodeRepositoryValue.incrementUsageIfWithinLimit,
+            ).toHaveBeenCalledWith(
+                mockPromoCode.id,
+                mockPromoCode.totalLimit,
+                expect.anything(), // session
+            );
             expect(mockEventBusValue.publish).not.toHaveBeenCalled();
             expect(mockOrderRepositoryValue.update).not.toHaveBeenCalled();
-            expect(mockPromoCodeRepositoryValue.update).not.toHaveBeenCalled();
         });
 
         it('should publish event with correct data structure', async () => {
@@ -297,11 +347,11 @@ describe('ApplyPromoCodeUseCase', () => {
             mockAnalyticsRepositoryValue.getUserPromoCodeUsageCount.mockResolvedValue(
                 0,
             );
-            mockOrderRepositoryValue.update.mockResolvedValue(mockOrder);
             const updatedPromoCode = createMockPromoCode({ usedCount: 1 });
-            mockPromoCodeRepositoryValue.update.mockResolvedValue(
+            mockPromoCodeRepositoryValue.incrementUsageIfWithinLimit.mockResolvedValue(
                 updatedPromoCode,
             );
+            mockOrderRepositoryValue.update.mockResolvedValue(mockOrder);
             mockEventBusValue.publish.mockResolvedValue(undefined);
 
             await useCase.execute(orderId, promoCode, userId, orderAmount);
@@ -338,14 +388,14 @@ describe('ApplyPromoCodeUseCase', () => {
             mockAnalyticsRepositoryValue.getUserPromoCodeUsageCount.mockResolvedValue(
                 0,
             );
-            mockOrderRepositoryValue.update.mockResolvedValue(mockOrder);
             const updatedPromoCode = createMockPromoCode({
                 discountPercent: 0,
                 usedCount: 1,
             });
-            mockPromoCodeRepositoryValue.update.mockResolvedValue(
+            mockPromoCodeRepositoryValue.incrementUsageIfWithinLimit.mockResolvedValue(
                 updatedPromoCode,
             );
+            mockOrderRepositoryValue.update.mockResolvedValue(mockOrder);
             mockEventBusValue.publish.mockResolvedValue(undefined);
 
             const result = await useCase.execute(

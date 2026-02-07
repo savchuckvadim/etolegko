@@ -294,3 +294,22 @@ Get-Content clickhouse/init/001-create-tables.sql | docker exec -i promo_code_ma
 ```
 
 Подробнее: [ClickHouse Guide](./clickhouse-guide.md)
+
+### 16. Обработка Race Conditions при применении промокода (бонусное задание)
+- ✅ **MongoDB транзакции**:
+  - Реализована поддержка MongoDB транзакций в `BaseRepository` (опциональный параметр `session` во всех методах).
+  - Добавлен метод `incrementUsageIfWithinLimit` в `PromoCodeRepository` для атомарного увеличения счётчика с проверкой лимита.
+  - Обновлён `ApplyPromoCodeUseCase` для использования MongoDB транзакций при применении промокода.
+  - Все операции (чтение промокода, увеличение счётчика, обновление заказа) выполняются в одной транзакции.
+- ✅ **Атомарная операция**:
+  - Используется `findOneAndUpdate` с условием `usedCount: { $lt: totalLimit }` для атомарной проверки и увеличения.
+  - Если лимит превышен, операция не выполнится (вернёт `null`), и транзакция откатится.
+  - Защита от race conditions гарантируется на уровне MongoDB.
+- ✅ **Тесты**:
+  - Обновлены тесты `apply-promo-code.use-case.spec.ts` для поддержки MongoDB транзакций.
+  - Добавлен мок `MongoService` с поддержкой `startSession` и `withTransaction`.
+  - Добавлен тест для проверки race condition (лимит превышен во время транзакции).
+  - Обновлены тесты `promo-code.service.spec.ts` для поддержки опционального параметра `session`.
+- ✅ **Документация**:
+  - Обновлён `README.md` с описанием реализации race conditions через MongoDB транзакции.
+  - Обновлён `backend/README.md` с разделом про обработку race conditions.

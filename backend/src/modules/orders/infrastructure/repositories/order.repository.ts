@@ -29,9 +29,11 @@ export class OrderRepository extends BaseRepository<OrderDocument, Order> {
     /**
      * Найти все заказы пользователя
      */
-    async findByUserId(userId: string): Promise<Order[]> {
-        const docs = await this.orderModel.find({ userId }).exec();
-        return docs.map(doc => this.mapToEntity(doc));
+    async findByUserId(
+        userId: string,
+        session?: Parameters<typeof this.findAll>[1],
+    ): Promise<Order[]> {
+        return this.findAll({ userId }, session);
     }
 
     /**

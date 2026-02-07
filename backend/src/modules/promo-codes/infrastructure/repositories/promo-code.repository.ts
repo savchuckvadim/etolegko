@@ -3,7 +3,7 @@ import {
     mapPromoCodeDocumentToEntity,
     PromoCodeDocument,
 } from '@promo-codes/infrastructure/schemas/promo-code.schema';
-import { Model } from 'mongoose';
+import { ClientSession, Model } from 'mongoose';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { BaseRepository } from '@shared/database/repositories/base.repository';
@@ -32,8 +32,37 @@ export class PromoCodeRepository extends BaseRepository<
     /**
      * Найти по коду
      */
-    async findByCode(code: string): Promise<PromoCode | null> {
-        return this.findOne({ code: code.toUpperCase() });
+    async findByCode(
+        code: string,
+        session?: ClientSession,
+    ): Promise<PromoCode | null> {
+        return this.findOne({ code: code.toUpperCase() }, session);
+    }
+
+    /**
+     * Атомарно увеличить счётчик использований с проверкой лимита
+     * Используется для предотвращения race conditions
+     */
+    async incrementUsageIfWithinLimit(
+        promoCodeId: string,
+        totalLimit: number,
+        session?: ClientSession,
+    ): Promise<PromoCode | null> {
+        const query = this.promoCodeModel.findOneAndUpdate(
+            {
+                _id: promoCodeId,
+                usedCount: { $lt: totalLimit }, // Условие проверяется атомарно
+            },
+            { $inc: { usedCount: 1 } },
+            { new: true },
+        );
+
+        if (session) {
+            query.session(session);
+        }
+
+        const doc = await query.exec();
+        return doc ? this.mapToEntity(doc) : null;
     }
 
     /**

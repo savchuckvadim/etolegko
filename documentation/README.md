@@ -14,26 +14,7 @@
   - Инструкции по запуску и подключению
 - [Mongoose Architecture](./mongoose-architecture.md) - Production-стандартная архитектура с Mongoose
 
-## Планы разработки
 
-Все планы разработки находятся в папке `plan/`:
-
-### Backend
-- [00-overview.md](./plan/00-overview.md) - Обзор проекта
-- [07-backend-db.md](./plan/07-backend-db.md) - Архитектура баз данных
-- [08-backend-mongo.md](./plan/08-backend-mongo.md) - Настройка MongoDB
-- [09-backend-clickhouse.md](./plan/09-backend-clickhouse.md) - Настройка ClickHouse
-- [10-backend-module-users.md](./plan/10-backend-module-users.md) - Модуль пользователей
-- [11-backend-module-promocodes.md](./plan/11-backend-module-promocodes.md) - Модуль промокодов
-- [12-backend-module-orders.md](./plan/12-backend-module-orders.md) - Модуль заказов
-- [13-backend-module-analytics.md](./plan/13-backend-module-analytics.md) - Модуль аналитики
-- [22-event-bus.md](./plan/22-event-bus.md) - Event Bus для синхронизации данных
-
-### Frontend
-- [17-frontend-next.md](./plan/17-frontend-next.md) - Next.js настройка
-- [18-frontend-shadcn.md](./plan/18-frontend-shadcn.md) - Shadcn UI
-- [19-frontend-orval.md](./plan/19-frontend-orval.md) - Orval для API клиента
-- [20-frontend-modules.md](./plan/20-frontend-modules.md) - Модули фронтенда
 
 ## Быстрый старт
 
