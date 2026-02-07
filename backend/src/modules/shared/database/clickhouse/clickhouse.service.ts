@@ -28,12 +28,30 @@ export class ClickHouseService implements OnModuleInit, OnModuleDestroy {
                 'CLICKHOUSE_DATABASE',
                 'analytics',
             );
+            const username = this.configService.get<string>(
+                'CLICKHOUSE_USER',
+                'default',
+            );
+            const password = this.configService.get<string>(
+                'CLICKHOUSE_PASSWORD',
+                '',
+            );
 
-            // Простая конфигурация - без username/password для Docker
-            this.client = createClient({
+            // Конфигурация клиента с поддержкой username/password
+            const clientConfig: Parameters<typeof createClient>[0] = {
                 url: `http://${host}:${port}`,
                 database,
-            });
+            };
+
+            // Добавляем username и password, если они указаны
+            if (username) {
+                clientConfig.username = username;
+            }
+            if (password) {
+                clientConfig.password = password;
+            }
+
+            this.client = createClient(clientConfig);
 
             // Клиент создан, но не проверяем подключение автоматически
             // Проверка будет при первом использовании

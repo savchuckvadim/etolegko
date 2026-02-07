@@ -34,6 +34,7 @@ services:
     volumes:
       - clickhouse_data:/var/lib/clickhouse
       - clickhouse_logs:/var/log/clickhouse-server
+      - ./clickhouse/config/users.xml:/etc/clickhouse-server/users.d/users.xml:ro
     networks:
       - db_network
     ulimits:
