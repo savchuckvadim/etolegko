@@ -5,6 +5,7 @@ import { useUsers } from '@features/users';
 import type { UsersFindAllParams } from '@entities/users';
 import { isSuccessResponse } from '@shared/lib/utils/error.utils';
 import { Pagination } from '@shared/ui';
+import { CreateUserDialog } from '@widgets/users/create-user-dialog';
 
 /**
  * Страница управления пользователями
@@ -16,8 +17,9 @@ export const UsersPage = () => {
         sortBy: 'createdAt',
         sortOrder: 'desc',
     });
+    const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
 
-    const { findAll, create, update, remove } = useUsers(params);
+    const { findAll } = useUsers(params);
 
     const handlePageChange = (page: number) => {
         setParams((prev) => ({ ...prev, page }));
@@ -48,10 +50,19 @@ export const UsersPage = () => {
         <MainLayout>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
                 <Typography variant="h4">Пользователи</Typography>
-                <Button variant="contained" color="primary">
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => setIsCreateDialogOpen(true)}
+                >
                     Создать пользователя
                 </Button>
             </Box>
+
+            <CreateUserDialog
+                open={isCreateDialogOpen}
+                onClose={() => setIsCreateDialogOpen(false)}
+            />
 
             {data && (
                 <>
