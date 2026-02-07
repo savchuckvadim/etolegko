@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { createContext, useContext, useEffect, useState } from 'react';
 import { useNavigate, useLocation, Outlet } from 'react-router-dom';
+import { Box, CircularProgress } from '@mui/material';
 import { useAuthGetMe, type UserMeResponseDto } from '@entities/auth';
 import { tokenStorage } from '@shared/lib';
 
@@ -23,6 +24,7 @@ interface AuthProviderProps {
 export const AuthContextProvider = ({ children }: AuthProviderProps) => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [hasTokens, setHasTokens] = useState(() => tokenStorage.hasTokens());
+    const [isInitialCheck, setIsInitialCheck] = useState(true); // Флаг начальной проверки
 
     // Слушаем изменения localStorage для токенов
     useEffect(() => {
@@ -68,6 +70,20 @@ export const AuthContextProvider = ({ children }: AuthProviderProps) => {
         }
     }, [hasTokens, isLoading, userData, refetch]);
 
+    // Отслеживаем завершение начальной проверки
+    useEffect(() => {
+        if (isInitialCheck) {
+            // Если токенов нет, проверка завершена сразу
+            if (!hasTokens) {
+                setIsInitialCheck(false);
+            }
+            // Если токены есть, ждем завершения запроса
+            else if (!isLoading) {
+                setIsInitialCheck(false);
+            }
+        }
+    }, [hasTokens, isLoading, isInitialCheck]);
+
     useEffect(() => {
         if (hasTokens && userData && 'status' in userData && userData.status === 200) {
             // Пользователь авторизован
@@ -84,7 +100,8 @@ export const AuthContextProvider = ({ children }: AuthProviderProps) => {
 
     const value: AuthContextValue = {
         isAuthenticated,
-        isLoading: isLoading && hasTokens, // Показываем загрузку только если есть токены
+        // Показываем загрузку во время начальной проверки или если идет запрос с токенами
+        isLoading: isInitialCheck || (isLoading && hasTokens),
         user: userData && 'status' in userData && userData.status === 200 ? userData.data : null,
     };
 
@@ -124,6 +141,22 @@ export const AuthGuard = () => {
             }
         }
     }, [isAuthenticated, isLoading, location.pathname, navigate]);
+
+    // Показываем прелоадер во время проверки аутентификации
+    if (isLoading) {
+        return (
+            <Box
+                sx={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    minHeight: '100vh',
+                }}
+            >
+                <CircularProgress />
+            </Box>
+        );
+    }
 
     return <Outlet />;
 };

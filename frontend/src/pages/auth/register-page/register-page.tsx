@@ -17,7 +17,14 @@ export const RegisterPage = () => {
                 px: 2,
             }}
         >
-            <Container maxWidth="sm" sx={{ width: '100%' }}>
+            <Container maxWidth="sm" sx={{
+                width: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+
+            }}>
                 <RegisterForm />
             </Container>
         </Box>
