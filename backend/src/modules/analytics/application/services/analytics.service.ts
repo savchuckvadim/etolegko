@@ -16,7 +16,7 @@ import { PaginatedResult } from '@common/paginate/interfaces/paginated-result.in
 export class AnalyticsService {
     private readonly logger = new Logger(AnalyticsService.name);
 
-    constructor(private readonly analyticsRepository: AnalyticsRepository) {}
+    constructor(private readonly analyticsRepository: AnalyticsRepository) { }
 
     /**
      * Получить статистику по промокоду

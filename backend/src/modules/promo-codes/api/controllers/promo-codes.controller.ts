@@ -13,6 +13,7 @@ import {
     Get,
     HttpCode,
     HttpStatus,
+    NotFoundException,
     Param,
     Patch,
     Post,
@@ -30,6 +31,7 @@ import { ApiErrorResponse } from '@common/decorators/response/api-error-response
 import { ApiPaginatedResponse } from '@common/decorators/response/api-paginated-response.decorator';
 import { ApiSuccessResponseDecorator } from '@common/decorators/response/api-success-response.decorator';
 import { PaginatedResult } from '@common/paginate/interfaces/paginated-result.interface';
+import { OrderRepository } from '@orders/infrastructure/repositories/order.repository';
 import { User } from '@users/domain/entity/user.entity';
 
 @ApiTags('Promo Codes')
@@ -39,6 +41,7 @@ export class PromoCodesController {
     constructor(
         private readonly promoCodeService: PromoCodeService,
         private readonly applyPromoCodeUseCase: ApplyPromoCodeUseCase,
+        private readonly orderRepository: OrderRepository,
     ) {}
 
     @Post()
@@ -64,14 +67,28 @@ export class PromoCodesController {
         @Body() applyPromoCodeDto: ApplyPromoCodeDto,
         @CurrentUser() user: User,
     ): Promise<ApplyPromoCodeResponseDto> {
-        // TODO: Получить orderAmount из OrderRepository когда модуль Orders будет готов
-        // Пока используем заглушку для демонстрации работы EventBus
-        const orderAmount = 500; // Заглушка
+        // Получаем заказ для получения суммы
+        const order = await this.orderRepository.findById(
+            applyPromoCodeDto.orderId,
+        );
+        if (!order) {
+            throw new NotFoundException(
+                `Order with ID ${applyPromoCodeDto.orderId} not found`,
+            );
+        }
+
+        // Проверяем, что заказ принадлежит текущему пользователю
+        if (order.userId !== user.id) {
+            throw new NotFoundException(
+                `Order with ID ${applyPromoCodeDto.orderId} not found`,
+            );
+        }
+
         return this.applyPromoCodeUseCase.execute(
             applyPromoCodeDto.orderId,
             applyPromoCodeDto.promoCode,
             user.id,
-            orderAmount,
+            order.amount,
         );
     }
 

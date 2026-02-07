@@ -445,7 +445,14 @@ pnpm run test -- promo-codes
 - ✅ Auth Module — полное покрытие
 - ✅ Promo Codes Module — 41 тест (service, controller, use case, consumer)
 - ✅ Orders Module — 40 тестов (service, controller, use case, consumer)
-- ✅ Analytics Module — 18 тестов (service, controller, consumer)
+- ✅ Analytics Module — 24 теста (service, controller, consumer)
+
+**Архитектурные улучшения:**
+- ✅ Analytics Module: добавлен `AnalyticsRepository` для инкапсуляции SQL-запросов к ClickHouse
+- ✅ Promo Codes Module: интеграция с `OrderRepository` для получения реальной суммы заказа
+- ✅ Все модули используют единую архитектуру: Repository → Service → Use Case
+- ✅ Устранены все ошибки ESLint, связанные с `any` типами
+- ✅ Улучшена типобезопасность во всех тестах
 
 ## 📝 API Endpoints
 

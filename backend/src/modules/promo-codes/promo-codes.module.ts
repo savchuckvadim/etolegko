@@ -4,6 +4,7 @@ import { ApplyPromoCodeUseCase } from '@promo-codes/application/use-cases/apply-
 import { PromoCodeAnalyticsConsumer } from '@promo-codes/infrastructure/consumers/promo-code-analytics.consumer';
 import { PromoCodeRepository } from '@promo-codes/infrastructure/repositories/promo-code.repository';
 import { PromoCodeSchemaFactory } from '@promo-codes/infrastructure/schemas/promo-code.schema';
+import { OrdersModule } from '@orders/orders.module';
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { EventBusModule } from '@shared/events/event-bus.module';
@@ -17,6 +18,7 @@ import { EventBusModule } from '@shared/events/event-bus.module';
             },
         ]),
         EventBusModule,
+        OrdersModule,
     ],
     controllers: [PromoCodesController],
     providers: [
