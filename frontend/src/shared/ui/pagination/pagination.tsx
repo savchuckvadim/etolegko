@@ -27,12 +27,7 @@ export const Pagination = ({
             shape="rounded"
             showFirstButton
             showLastButton
-            renderItem={(item) => (
-                <PaginationItem
-                    {...item}
-                    disabled={disabled || item.disabled}
-                />
-            )}
+            renderItem={(item) => <PaginationItem {...item} disabled={disabled || item.disabled} />}
         />
     );
 };

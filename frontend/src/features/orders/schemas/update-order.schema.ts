@@ -6,10 +6,7 @@ import type { UpdateOrderDto } from '@entities/orders';
  * Соответствует UpdateOrderDto от Orval
  */
 export const updateOrderSchema = z.object({
-    amount: z
-        .number()
-        .min(0, 'Сумма заказа должна быть не менее 0')
-        .optional(),
+    amount: z.number().min(0, 'Сумма заказа должна быть не менее 0').optional(),
 }) satisfies z.ZodType<UpdateOrderDto>;
 
 export type UpdateOrderFormData = z.infer<typeof updateOrderSchema>;

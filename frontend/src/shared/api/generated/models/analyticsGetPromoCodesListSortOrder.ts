@@ -6,10 +6,10 @@
  * OpenAPI spec version: 1.0
  */
 
-export type AnalyticsGetPromoCodesListSortOrder = typeof AnalyticsGetPromoCodesListSortOrder[keyof typeof AnalyticsGetPromoCodesListSortOrder];
-
+export type AnalyticsGetPromoCodesListSortOrder =
+    (typeof AnalyticsGetPromoCodesListSortOrder)[keyof typeof AnalyticsGetPromoCodesListSortOrder];
 
 export const AnalyticsGetPromoCodesListSortOrder = {
-  asc: 'asc',
-  desc: 'desc',
+    asc: 'asc',
+    desc: 'desc',
 } as const;

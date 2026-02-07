@@ -15,7 +15,7 @@ import { createOrderSchema, type CreateOrderFormData } from '../schemas/create-o
  */
 export const useCreateOrderForm = (onSuccess?: () => void) => {
     const queryClient = useQueryClient();
-    
+
     const {
         register,
         handleSubmit,
@@ -52,7 +52,7 @@ export const useCreateOrderForm = (onSuccess?: () => void) => {
         const createOrderData: CreateOrderDto = {
             amount: data.amount,
         };
-        
+
         createOrder({ data: createOrderData });
     };
 

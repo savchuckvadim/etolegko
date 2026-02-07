@@ -8,14 +8,14 @@
 import type { PromoCodeAnalyticsDto } from './promoCodeAnalyticsDto';
 
 export interface PaginatedResponsePromoCodeAnalyticsDto {
-  /** Array of items */
-  items: PromoCodeAnalyticsDto[];
-  /** Total number of items */
-  total: number;
-  /** Current page number */
-  page: number;
-  /** Items per page */
-  limit: number;
-  /** Total number of pages */
-  totalPages: number;
+    /** Array of items */
+    items: PromoCodeAnalyticsDto[];
+    /** Total number of items */
+    total: number;
+    /** Current page number */
+    page: number;
+    /** Items per page */
+    limit: number;
+    /** Total number of pages */
+    totalPages: number;
 }

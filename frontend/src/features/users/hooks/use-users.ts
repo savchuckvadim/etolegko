@@ -118,7 +118,10 @@ export const useUpdateUser = () => {
             },
             onError: (error) => {
                 const errorData = extractErrorData(error);
-                const errorMessage = getErrorMessage(errorData, 'Ошибка при обновлении пользователя');
+                const errorMessage = getErrorMessage(
+                    errorData,
+                    'Ошибка при обновлении пользователя',
+                );
                 console.error(errorMessage);
             },
         },

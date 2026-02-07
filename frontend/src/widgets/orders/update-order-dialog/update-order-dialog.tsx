@@ -22,15 +22,12 @@ export interface UpdateOrderDialogProps {
  * Модальное окно для обновления заказа
  */
 export const UpdateOrderDialog = ({ open, onClose, order }: UpdateOrderDialogProps) => {
-    const {
-        register,
-        handleSubmit,
-        errors,
-        isSubmitting,
-        reset,
-    } = useUpdateOrderForm(order.id, () => {
-        onClose();
-    });
+    const { register, handleSubmit, errors, isSubmitting, reset } = useUpdateOrderForm(
+        order.id,
+        () => {
+            onClose();
+        },
+    );
 
     const handleClose = () => {
         if (!isSubmitting) {
@@ -68,11 +65,7 @@ export const UpdateOrderDialog = ({ open, onClose, order }: UpdateOrderDialogPro
                     <Button onClick={handleClose} disabled={isSubmitting}>
                         Отмена
                     </Button>
-                    <Button
-                        type="submit"
-                        variant="contained"
-                        disabled={isSubmitting}
-                    >
+                    <Button type="submit" variant="contained" disabled={isSubmitting}>
                         {isSubmitting ? <CircularProgress size={24} /> : 'Обновить'}
                     </Button>
                 </DialogActions>

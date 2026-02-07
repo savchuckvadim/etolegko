@@ -17,7 +17,7 @@ import { createUserSchema, type CreateUserFormData } from '../schemas/create-use
  */
 export const useCreateUserForm = (onSuccess?: () => void) => {
     const queryClient = useQueryClient();
-    
+
     const {
         register,
         handleSubmit,
@@ -60,7 +60,7 @@ export const useCreateUserForm = (onSuccess?: () => void) => {
             name: data.name,
             phone: data.phone?.trim() || undefined,
         };
-        
+
         createUser({ data: createUserData });
     };
 

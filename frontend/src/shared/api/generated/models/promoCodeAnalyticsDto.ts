@@ -7,16 +7,16 @@
  */
 
 export interface PromoCodeAnalyticsDto {
-  /** Promo code ID */
-  promo_code_id: string;
-  /** Promo code */
-  promo_code: string;
-  /** Usage count */
-  usage_count: number;
-  /** Total discount amount */
-  total_discount: number;
-  /** Total revenue */
-  total_revenue: number;
-  /** Number of unique users */
-  unique_users: number;
+    /** Promo code ID */
+    promo_code_id: string;
+    /** Promo code */
+    promo_code: string;
+    /** Usage count */
+    usage_count: number;
+    /** Total discount amount */
+    total_discount: number;
+    /** Total revenue */
+    total_revenue: number;
+    /** Number of unique users */
+    unique_users: number;
 }

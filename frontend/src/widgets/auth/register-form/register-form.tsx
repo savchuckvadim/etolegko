@@ -1,11 +1,4 @@
-import {
-    Box,
-    Button,
-    TextField,
-    Typography,
-    Alert,
-    CircularProgress,
-} from '@mui/material';
+import { Box, Button, TextField, Typography, Alert, CircularProgress } from '@mui/material';
 import { useRegisterForm } from '@features/auth';
 
 /**
@@ -13,13 +6,7 @@ import { useRegisterForm } from '@features/auth';
  * Использует react-hook-form и хук useRegisterForm для управления состоянием
  */
 export const RegisterForm = () => {
-    const {
-        register,
-        handleSubmit,
-        errors,
-        isSubmitting,
-        goToLogin,
-    } = useRegisterForm();
+    const { register, handleSubmit, errors, isSubmitting, goToLogin } = useRegisterForm();
 
     return (
         <Box
@@ -83,24 +70,17 @@ export const RegisterForm = () => {
                 disabled={isSubmitting}
                 autoComplete="new-password"
                 error={!!errors.password}
-                helperText={errors.password?.message || 'Пароль должен содержать заглавные, строчные буквы и цифры'}
+                helperText={
+                    errors.password?.message ||
+                    'Пароль должен содержать заглавные, строчные буквы и цифры'
+                }
             />
 
-            <Button
-                type="submit"
-                variant="contained"
-                fullWidth
-                disabled={isSubmitting}
-            >
+            <Button type="submit" variant="contained" fullWidth disabled={isSubmitting}>
                 {isSubmitting ? <CircularProgress size={24} /> : 'Зарегистрироваться'}
             </Button>
 
-            <Button
-                variant="text"
-                fullWidth
-                onClick={goToLogin}
-                disabled={isSubmitting}
-            >
+            <Button variant="text" fullWidth onClick={goToLogin} disabled={isSubmitting}>
                 Уже есть аккаунт? Войти
             </Button>
         </Box>

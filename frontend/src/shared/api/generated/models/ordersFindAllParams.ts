@@ -8,27 +8,27 @@
 import type { OrdersFindAllSortOrder } from './ordersFindAllSortOrder';
 
 export type OrdersFindAllParams = {
-/**
- * @minimum 1
- */
-page?: number;
-/**
- * @minimum 1
- * @maximum 100
- */
-limit?: number;
-sortBy?: string;
-sortOrder?: OrdersFindAllSortOrder;
-/**
- * Filter by user ID
- */
-userId?: string;
-/**
- * Filter by date from
- */
-dateFrom?: string;
-/**
- * Filter by date to
- */
-dateTo?: string;
+    /**
+     * @minimum 1
+     */
+    page?: number;
+    /**
+     * @minimum 1
+     * @maximum 100
+     */
+    limit?: number;
+    sortBy?: string;
+    sortOrder?: OrdersFindAllSortOrder;
+    /**
+     * Filter by user ID
+     */
+    userId?: string;
+    /**
+     * Filter by date from
+     */
+    dateFrom?: string;
+    /**
+     * Filter by date to
+     */
+    dateTo?: string;
 };

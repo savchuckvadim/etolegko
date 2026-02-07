@@ -9,27 +9,27 @@ import type { AnalyticsGetPromoCodesListDatePreset } from './analyticsGetPromoCo
 import type { AnalyticsGetPromoCodesListSortOrder } from './analyticsGetPromoCodesListSortOrder';
 
 export type AnalyticsGetPromoCodesListParams = {
-/**
- * @minimum 1
- */
-page?: number;
-/**
- * @minimum 1
- * @maximum 100
- */
-limit?: number;
-sortBy?: string;
-sortOrder?: AnalyticsGetPromoCodesListSortOrder;
-/**
- * Date preset for filtering
- */
-datePreset?: AnalyticsGetPromoCodesListDatePreset;
-/**
- * Start date for filtering (used when datePreset is "custom")
- */
-dateFrom?: string;
-/**
- * End date for filtering (used when datePreset is "custom")
- */
-dateTo?: string;
+    /**
+     * @minimum 1
+     */
+    page?: number;
+    /**
+     * @minimum 1
+     * @maximum 100
+     */
+    limit?: number;
+    sortBy?: string;
+    sortOrder?: AnalyticsGetPromoCodesListSortOrder;
+    /**
+     * Date preset for filtering
+     */
+    datePreset?: AnalyticsGetPromoCodesListDatePreset;
+    /**
+     * Start date for filtering (used when datePreset is "custom")
+     */
+    dateFrom?: string;
+    /**
+     * End date for filtering (used when datePreset is "custom")
+     */
+    dateTo?: string;
 };

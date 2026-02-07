@@ -20,13 +20,7 @@ export interface CreateOrderDialogProps {
  * Модальное окно для создания нового заказа
  */
 export const CreateOrderDialog = ({ open, onClose }: CreateOrderDialogProps) => {
-    const {
-        register,
-        handleSubmit,
-        errors,
-        isSubmitting,
-        reset,
-    } = useCreateOrderForm(() => {
+    const { register, handleSubmit, errors, isSubmitting, reset } = useCreateOrderForm(() => {
         onClose();
     });
 
@@ -65,11 +59,7 @@ export const CreateOrderDialog = ({ open, onClose }: CreateOrderDialogProps) => 
                     <Button onClick={handleClose} disabled={isSubmitting}>
                         Отмена
                     </Button>
-                    <Button
-                        type="submit"
-                        variant="contained"
-                        disabled={isSubmitting}
-                    >
+                    <Button type="submit" variant="contained" disabled={isSubmitting}>
                         {isSubmitting ? <CircularProgress size={24} /> : 'Создать'}
                     </Button>
                 </DialogActions>

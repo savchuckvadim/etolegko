@@ -7,16 +7,16 @@
  */
 
 export interface PromoCodeUsageHistoryDto {
-  /** Promo code */
-  promo_code: string;
-  /** User ID */
-  user_id: string;
-  /** Order ID */
-  order_id: string;
-  /** Order amount */
-  order_amount: number;
-  /** Discount amount */
-  discount_amount: number;
-  /** Created at */
-  created_at: string;
+    /** Promo code */
+    promo_code: string;
+    /** User ID */
+    user_id: string;
+    /** Order ID */
+    order_id: string;
+    /** Order amount */
+    order_amount: number;
+    /** Discount amount */
+    discount_amount: number;
+    /** Created at */
+    created_at: string;
 }

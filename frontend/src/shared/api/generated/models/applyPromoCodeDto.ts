@@ -7,6 +7,6 @@
  */
 
 export interface ApplyPromoCodeDto {
-  orderId: string;
-  promoCode: string;
+    orderId: string;
+    promoCode: string;
 }

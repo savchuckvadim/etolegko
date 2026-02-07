@@ -56,7 +56,14 @@ export const PromoCodesPage = () => {
 
     return (
         <MainLayout>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+            <Box
+                sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    mb: 3,
+                }}
+            >
                 <Typography variant="h4">Промокоды</Typography>
                 <Box sx={{ display: 'flex', gap: 1 }}>
                     <Button
@@ -122,7 +129,9 @@ export const PromoCodesPage = () => {
                                         {promoCode.code} {!promoCode.isActive && '(Неактивен)'}
                                     </Typography>
                                     <Typography variant="body2" color="text.secondary">
-                                        Скидка: {promoCode.discountPercent}% | Лимит: {promoCode.totalLimit} | На пользователя: {promoCode.perUserLimit}
+                                        Скидка: {promoCode.discountPercent}% | Лимит:{' '}
+                                        {promoCode.totalLimit} | На пользователя:{' '}
+                                        {promoCode.perUserLimit}
                                     </Typography>
                                 </Box>
                                 <Box sx={{ display: 'flex', gap: 1 }}>
@@ -136,7 +145,11 @@ export const PromoCodesPage = () => {
                                     <IconButton
                                         size="small"
                                         onClick={() => {
-                                            if (window.confirm('Вы уверены, что хотите удалить промокод?')) {
+                                            if (
+                                                window.confirm(
+                                                    'Вы уверены, что хотите удалить промокод?',
+                                                )
+                                            ) {
                                                 remove.mutate({ id: promoCode.id });
                                             }
                                         }}

@@ -48,9 +48,7 @@ export function getErrorMessage(
 /**
  * Извлекает ApiErrorResponseDto из ошибки TanStack Query/Orval
  */
-export function extractErrorData(
-    error: unknown,
-): ApiErrorResponseDto | null {
+export function extractErrorData(error: unknown): ApiErrorResponseDto | null {
     if (typeof error !== 'object' || error === null) {
         return null;
     }
@@ -65,8 +63,7 @@ export function extractErrorData(
             // Проверяем, что это ApiErrorResponseDto (должен быть message или errors)
             if (
                 'message' in errorData &&
-                (typeof errorData.message === 'string' ||
-                    Array.isArray(errorData.message))
+                (typeof errorData.message === 'string' || Array.isArray(errorData.message))
             ) {
                 return data as ApiErrorResponseDto;
             }
@@ -98,8 +95,7 @@ export function extractErrorData(
                 // Проверяем message
                 if (
                     'message' in errorData &&
-                    (typeof errorData.message === 'string' ||
-                        Array.isArray(errorData.message))
+                    (typeof errorData.message === 'string' || Array.isArray(errorData.message))
                 ) {
                     return data as ApiErrorResponseDto;
                 }
@@ -121,10 +117,7 @@ export function extractErrorData(
     // Вариант 3: Прямой объект с message или errors (на случай, если ошибка уже распарсена)
     const directError = error as { message?: unknown; errors?: unknown };
     if ('message' in directError) {
-        if (
-            typeof directError.message === 'string' ||
-            Array.isArray(directError.message)
-        ) {
+        if (typeof directError.message === 'string' || Array.isArray(directError.message)) {
             return error as ApiErrorResponseDto;
         }
     }

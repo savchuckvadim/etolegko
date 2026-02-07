@@ -8,10 +8,10 @@
 import type { PromoCodesFindAllSortOrder } from './promoCodesFindAllSortOrder';
 
 export type PromoCodesFindAllParams = {
-page?: number;
-limit?: number;
-sortBy?: string;
-sortOrder?: PromoCodesFindAllSortOrder;
-isActive?: boolean;
-search?: string;
+    page?: number;
+    limit?: number;
+    sortBy?: string;
+    sortOrder?: PromoCodesFindAllSortOrder;
+    isActive?: boolean;
+    search?: string;
 };

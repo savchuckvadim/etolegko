@@ -7,10 +7,10 @@
  */
 
 export interface CreateUserDto {
-  email: string;
-  /** @minLength 8 */
-  password: string;
-  /** @minLength 2 */
-  name: string;
-  phone?: string;
+    email: string;
+    /** @minLength 8 */
+    password: string;
+    /** @minLength 2 */
+    name: string;
+    phone?: string;
 }

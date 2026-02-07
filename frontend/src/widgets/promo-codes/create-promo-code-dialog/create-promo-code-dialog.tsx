@@ -20,13 +20,7 @@ export interface CreatePromoCodeDialogProps {
  * Модальное окно для создания нового промокода
  */
 export const CreatePromoCodeDialog = ({ open, onClose }: CreatePromoCodeDialogProps) => {
-    const {
-        register,
-        handleSubmit,
-        errors,
-        isSubmitting,
-        reset,
-    } = useCreatePromoCodeForm(() => {
+    const { register, handleSubmit, errors, isSubmitting, reset } = useCreatePromoCodeForm(() => {
         onClose();
     });
 
@@ -119,11 +113,7 @@ export const CreatePromoCodeDialog = ({ open, onClose }: CreatePromoCodeDialogPr
                     <Button onClick={handleClose} disabled={isSubmitting}>
                         Отмена
                     </Button>
-                    <Button
-                        type="submit"
-                        variant="contained"
-                        disabled={isSubmitting}
-                    >
+                    <Button type="submit" variant="contained" disabled={isSubmitting}>
                         {isSubmitting ? <CircularProgress size={24} /> : 'Создать'}
                     </Button>
                 </DialogActions>

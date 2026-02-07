@@ -21,9 +21,7 @@ export interface BackendErrorResponse {
 /**
  * Type guard для проверки успешного ответа
  */
-export function isBackendSuccessResponse<T>(
-    data: unknown,
-): data is BackendSuccessResponse<T> {
+export function isBackendSuccessResponse<T>(data: unknown): data is BackendSuccessResponse<T> {
     return (
         typeof data === 'object' &&
         data !== null &&
@@ -36,9 +34,7 @@ export function isBackendSuccessResponse<T>(
 /**
  * Type guard для проверки ошибки
  */
-export function isBackendErrorResponse(
-    data: unknown,
-): data is BackendErrorResponse {
+export function isBackendErrorResponse(data: unknown): data is BackendErrorResponse {
     return (
         typeof data === 'object' &&
         data !== null &&

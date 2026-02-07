@@ -8,14 +8,14 @@
 import type { UserResponseDto } from './userResponseDto';
 
 export interface PaginatedResponseUserResponseDto {
-  /** Array of items */
-  items: UserResponseDto[];
-  /** Total number of items */
-  total: number;
-  /** Current page number */
-  page: number;
-  /** Items per page */
-  limit: number;
-  /** Total number of pages */
-  totalPages: number;
+    /** Array of items */
+    items: UserResponseDto[];
+    /** Total number of items */
+    total: number;
+    /** Current page number */
+    page: number;
+    /** Items per page */
+    limit: number;
+    /** Total number of pages */
+    totalPages: number;
 }

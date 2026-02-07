@@ -5,572 +5,654 @@
  * API для управления промокодами
  * OpenAPI spec version: 1.0
  */
-import {
-  useMutation,
-  useQuery
-} from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import type {
-  DataTag,
-  DefinedInitialDataOptions,
-  DefinedUseQueryResult,
-  MutationFunction,
-  QueryClient,
-  QueryFunction,
-  QueryKey,
-  UndefinedInitialDataOptions,
-  UseMutationOptions,
-  UseMutationResult,
-  UseQueryOptions,
-  UseQueryResult
+    DataTag,
+    DefinedInitialDataOptions,
+    DefinedUseQueryResult,
+    MutationFunction,
+    QueryClient,
+    QueryFunction,
+    QueryKey,
+    UndefinedInitialDataOptions,
+    UseMutationOptions,
+    UseMutationResult,
+    UseQueryOptions,
+    UseQueryResult,
 } from '@tanstack/react-query';
 
 import type {
-  ApiErrorResponseDto,
-  CreateOrderDto,
-  OrderResponseDto,
-  OrdersFindAllParams,
-  PaginatedResponseOrderResponseDto,
-  UpdateOrderDto
+    ApiErrorResponseDto,
+    CreateOrderDto,
+    OrderResponseDto,
+    OrdersFindAllParams,
+    PaginatedResponseOrderResponseDto,
+    UpdateOrderDto,
 } from '.././models';
 
 import { customInstance } from '../../axios-instance';
 
-
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
-
-
 
 /**
  * @summary Create a new order
  */
 export type ordersCreateResponse201 = {
-  data: OrderResponseDto
-  status: 201
-}
+    data: OrderResponseDto;
+    status: 201;
+};
 
 export type ordersCreateResponse400 = {
-  data: ApiErrorResponseDto
-  status: 400
-}
-    
-export type ordersCreateResponseSuccess = (ordersCreateResponse201) & {
-  headers: Headers;
-};
-export type ordersCreateResponseError = (ordersCreateResponse400) & {
-  headers: Headers;
+    data: ApiErrorResponseDto;
+    status: 400;
 };
 
-export type ordersCreateResponse = (ordersCreateResponseSuccess | ordersCreateResponseError)
+export type ordersCreateResponseSuccess = ordersCreateResponse201 & {
+    headers: Headers;
+};
+export type ordersCreateResponseError = ordersCreateResponse400 & {
+    headers: Headers;
+};
+
+export type ordersCreateResponse = ordersCreateResponseSuccess | ordersCreateResponseError;
 
 export const getOrdersCreateUrl = () => {
+    return `/orders`;
+};
 
+export const ordersCreate = async (
+    createOrderDto: CreateOrderDto,
+    options?: RequestInit,
+): Promise<ordersCreateResponse> => {
+    return customInstance<ordersCreateResponse>(getOrdersCreateUrl(), {
+        ...options,
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...options?.headers },
+        body: JSON.stringify(createOrderDto),
+    });
+};
 
-  
-
-  return `/orders`
-}
-
-export const ordersCreate = async (createOrderDto: CreateOrderDto, options?: RequestInit): Promise<ordersCreateResponse> => {
-  
-  return customInstance<ordersCreateResponse>(getOrdersCreateUrl(),
-  {      
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      createOrderDto,)
-  }
-);}
-
-
-
-
-export const getOrdersCreateMutationOptions = <TError = ApiErrorResponseDto,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof ordersCreate>>, TError,{data: CreateOrderDto}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof ordersCreate>>, TError,{data: CreateOrderDto}, TContext> => {
-
-const mutationKey = ['ordersCreate'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
-
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof ordersCreate>>, {data: CreateOrderDto}> = (props) => {
-          const {data} = props ?? {};
-
-          return  ordersCreate(data,requestOptions)
-        }
-
-
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type OrdersCreateMutationResult = NonNullable<Awaited<ReturnType<typeof ordersCreate>>>
-    export type OrdersCreateMutationBody = CreateOrderDto
-    export type OrdersCreateMutationError = ApiErrorResponseDto
-
-    /**
- * @summary Create a new order
- */
-export const useOrdersCreate = <TError = ApiErrorResponseDto,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof ordersCreate>>, TError,{data: CreateOrderDto}, TContext>, request?: SecondParameter<typeof customInstance>}
- , queryClient?: QueryClient): UseMutationResult<
+export const getOrdersCreateMutationOptions = <
+    TError = ApiErrorResponseDto,
+    TContext = unknown,
+>(options?: {
+    mutation?: UseMutationOptions<
         Awaited<ReturnType<typeof ordersCreate>>,
         TError,
-        {data: CreateOrderDto},
+        { data: CreateOrderDto },
         TContext
-      > => {
-      return useMutation(getOrdersCreateMutationOptions(options), queryClient);
-    }
-    /**
+    >;
+    request?: SecondParameter<typeof customInstance>;
+}): UseMutationOptions<
+    Awaited<ReturnType<typeof ordersCreate>>,
+    TError,
+    { data: CreateOrderDto },
+    TContext
+> => {
+    const mutationKey = ['ordersCreate'];
+    const { mutation: mutationOptions, request: requestOptions } = options
+        ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
+            ? options
+            : { ...options, mutation: { ...options.mutation, mutationKey } }
+        : { mutation: { mutationKey }, request: undefined };
+
+    const mutationFn: MutationFunction<
+        Awaited<ReturnType<typeof ordersCreate>>,
+        { data: CreateOrderDto }
+    > = (props) => {
+        const { data } = props ?? {};
+
+        return ordersCreate(data, requestOptions);
+    };
+
+    return { mutationFn, ...mutationOptions };
+};
+
+export type OrdersCreateMutationResult = NonNullable<Awaited<ReturnType<typeof ordersCreate>>>;
+export type OrdersCreateMutationBody = CreateOrderDto;
+export type OrdersCreateMutationError = ApiErrorResponseDto;
+
+/**
+ * @summary Create a new order
+ */
+export const useOrdersCreate = <TError = ApiErrorResponseDto, TContext = unknown>(
+    options?: {
+        mutation?: UseMutationOptions<
+            Awaited<ReturnType<typeof ordersCreate>>,
+            TError,
+            { data: CreateOrderDto },
+            TContext
+        >;
+        request?: SecondParameter<typeof customInstance>;
+    },
+    queryClient?: QueryClient,
+): UseMutationResult<
+    Awaited<ReturnType<typeof ordersCreate>>,
+    TError,
+    { data: CreateOrderDto },
+    TContext
+> => {
+    return useMutation(getOrdersCreateMutationOptions(options), queryClient);
+};
+/**
  * @summary Get all orders with pagination
  */
 export type ordersFindAllResponse200 = {
-  data: PaginatedResponseOrderResponseDto
-  status: 200
-}
+    data: PaginatedResponseOrderResponseDto;
+    status: 200;
+};
 
 export type ordersFindAllResponse400 = {
-  data: ApiErrorResponseDto
-  status: 400
-}
+    data: ApiErrorResponseDto;
+    status: 400;
+};
 
 export type ordersFindAllResponse403 = {
-  data: ApiErrorResponseDto
-  status: 403
-}
-    
-export type ordersFindAllResponseSuccess = (ordersFindAllResponse200) & {
-  headers: Headers;
+    data: ApiErrorResponseDto;
+    status: 403;
+};
+
+export type ordersFindAllResponseSuccess = ordersFindAllResponse200 & {
+    headers: Headers;
 };
 export type ordersFindAllResponseError = (ordersFindAllResponse400 | ordersFindAllResponse403) & {
-  headers: Headers;
+    headers: Headers;
 };
 
-export type ordersFindAllResponse = (ordersFindAllResponseSuccess | ordersFindAllResponseError)
+export type ordersFindAllResponse = ordersFindAllResponseSuccess | ordersFindAllResponseError;
 
-export const getOrdersFindAllUrl = (params?: OrdersFindAllParams,) => {
-  const normalizedParams = new URLSearchParams();
+export const getOrdersFindAllUrl = (params?: OrdersFindAllParams) => {
+    const normalizedParams = new URLSearchParams();
 
-  Object.entries(params || {}).forEach(([key, value]) => {
-    
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString())
-    }
-  });
+    Object.entries(params || {}).forEach(([key, value]) => {
+        if (value !== undefined) {
+            normalizedParams.append(key, value === null ? 'null' : value.toString());
+        }
+    });
 
-  const stringifiedParams = normalizedParams.toString();
+    const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `/orders?${stringifiedParams}` : `/orders`
-}
+    return stringifiedParams.length > 0 ? `/orders?${stringifiedParams}` : `/orders`;
+};
 
-export const ordersFindAll = async (params?: OrdersFindAllParams, options?: RequestInit): Promise<ordersFindAllResponse> => {
-  
-  return customInstance<ordersFindAllResponse>(getOrdersFindAllUrl(params),
-  {      
-    ...options,
-    method: 'GET'
-    
-    
-  }
-);}
+export const ordersFindAll = async (
+    params?: OrdersFindAllParams,
+    options?: RequestInit,
+): Promise<ordersFindAllResponse> => {
+    return customInstance<ordersFindAllResponse>(getOrdersFindAllUrl(params), {
+        ...options,
+        method: 'GET',
+    });
+};
 
+export const getOrdersFindAllQueryKey = (params?: OrdersFindAllParams) => {
+    return [`/orders`, ...(params ? [params] : [])] as const;
+};
 
-
-
-
-export const getOrdersFindAllQueryKey = (params?: OrdersFindAllParams,) => {
-    return [
-    `/orders`, ...(params ? [params] : [])
-    ] as const;
-    }
-
-    
-export const getOrdersFindAllQueryOptions = <TData = Awaited<ReturnType<typeof ordersFindAll>>, TError = ApiErrorResponseDto>(params?: OrdersFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof ordersFindAll>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getOrdersFindAllQueryOptions = <
+    TData = Awaited<ReturnType<typeof ordersFindAll>>,
+    TError = ApiErrorResponseDto,
+>(
+    params?: OrdersFindAllParams,
+    options?: {
+        query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof ordersFindAll>>, TError, TData>>;
+        request?: SecondParameter<typeof customInstance>;
+    },
 ) => {
+    const { query: queryOptions, request: requestOptions } = options ?? {};
 
-const {query: queryOptions, request: requestOptions} = options ?? {};
+    const queryKey = queryOptions?.queryKey ?? getOrdersFindAllQueryKey(params);
 
-  const queryKey =  queryOptions?.queryKey ?? getOrdersFindAllQueryKey(params);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof ordersFindAll>>> = ({ signal }) =>
+        ordersFindAll(params, { signal, ...requestOptions });
 
-  
+    return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+        Awaited<ReturnType<typeof ordersFindAll>>,
+        TError,
+        TData
+    > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof ordersFindAll>>> = ({ signal }) => ordersFindAll(params, { signal, ...requestOptions });
+export type OrdersFindAllQueryResult = NonNullable<Awaited<ReturnType<typeof ordersFindAll>>>;
+export type OrdersFindAllQueryError = ApiErrorResponseDto;
 
-      
-
-      
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof ordersFindAll>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type OrdersFindAllQueryResult = NonNullable<Awaited<ReturnType<typeof ordersFindAll>>>
-export type OrdersFindAllQueryError = ApiErrorResponseDto
-
-
-export function useOrdersFindAll<TData = Awaited<ReturnType<typeof ordersFindAll>>, TError = ApiErrorResponseDto>(
- params: undefined |  OrdersFindAllParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof ordersFindAll>>, TError, TData>> & Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof ordersFindAll>>,
-          TError,
-          Awaited<ReturnType<typeof ordersFindAll>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof customInstance>}
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useOrdersFindAll<TData = Awaited<ReturnType<typeof ordersFindAll>>, TError = ApiErrorResponseDto>(
- params?: OrdersFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof ordersFindAll>>, TError, TData>> & Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof ordersFindAll>>,
-          TError,
-          Awaited<ReturnType<typeof ordersFindAll>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof customInstance>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useOrdersFindAll<TData = Awaited<ReturnType<typeof ordersFindAll>>, TError = ApiErrorResponseDto>(
- params?: OrdersFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof ordersFindAll>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useOrdersFindAll<
+    TData = Awaited<ReturnType<typeof ordersFindAll>>,
+    TError = ApiErrorResponseDto,
+>(
+    params: undefined | OrdersFindAllParams,
+    options: {
+        query: Partial<UseQueryOptions<Awaited<ReturnType<typeof ordersFindAll>>, TError, TData>> &
+            Pick<
+                DefinedInitialDataOptions<
+                    Awaited<ReturnType<typeof ordersFindAll>>,
+                    TError,
+                    Awaited<ReturnType<typeof ordersFindAll>>
+                >,
+                'initialData'
+            >;
+        request?: SecondParameter<typeof customInstance>;
+    },
+    queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useOrdersFindAll<
+    TData = Awaited<ReturnType<typeof ordersFindAll>>,
+    TError = ApiErrorResponseDto,
+>(
+    params?: OrdersFindAllParams,
+    options?: {
+        query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof ordersFindAll>>, TError, TData>> &
+            Pick<
+                UndefinedInitialDataOptions<
+                    Awaited<ReturnType<typeof ordersFindAll>>,
+                    TError,
+                    Awaited<ReturnType<typeof ordersFindAll>>
+                >,
+                'initialData'
+            >;
+        request?: SecondParameter<typeof customInstance>;
+    },
+    queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useOrdersFindAll<
+    TData = Awaited<ReturnType<typeof ordersFindAll>>,
+    TError = ApiErrorResponseDto,
+>(
+    params?: OrdersFindAllParams,
+    options?: {
+        query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof ordersFindAll>>, TError, TData>>;
+        request?: SecondParameter<typeof customInstance>;
+    },
+    queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 /**
  * @summary Get all orders with pagination
  */
 
-export function useOrdersFindAll<TData = Awaited<ReturnType<typeof ordersFindAll>>, TError = ApiErrorResponseDto>(
- params?: OrdersFindAllParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof ordersFindAll>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
- , queryClient?: QueryClient 
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+export function useOrdersFindAll<
+    TData = Awaited<ReturnType<typeof ordersFindAll>>,
+    TError = ApiErrorResponseDto,
+>(
+    params?: OrdersFindAllParams,
+    options?: {
+        query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof ordersFindAll>>, TError, TData>>;
+        request?: SecondParameter<typeof customInstance>;
+    },
+    queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+    const queryOptions = getOrdersFindAllQueryOptions(params, options);
 
-  const queryOptions = getOrdersFindAllQueryOptions(params,options)
+    const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+        queryKey: DataTag<QueryKey, TData, TError>;
+    };
 
-  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return { ...query, queryKey: queryOptions.queryKey };
+    return { ...query, queryKey: queryOptions.queryKey };
 }
-
-
-
 
 /**
  * @summary Get order by ID
  */
 export type ordersFindByIdResponse200 = {
-  data: OrderResponseDto
-  status: 200
-}
+    data: OrderResponseDto;
+    status: 200;
+};
 
 export type ordersFindByIdResponse403 = {
-  data: ApiErrorResponseDto
-  status: 403
-}
+    data: ApiErrorResponseDto;
+    status: 403;
+};
 
 export type ordersFindByIdResponse404 = {
-  data: ApiErrorResponseDto
-  status: 404
-}
-    
-export type ordersFindByIdResponseSuccess = (ordersFindByIdResponse200) & {
-  headers: Headers;
-};
-export type ordersFindByIdResponseError = (ordersFindByIdResponse403 | ordersFindByIdResponse404) & {
-  headers: Headers;
+    data: ApiErrorResponseDto;
+    status: 404;
 };
 
-export type ordersFindByIdResponse = (ordersFindByIdResponseSuccess | ordersFindByIdResponseError)
+export type ordersFindByIdResponseSuccess = ordersFindByIdResponse200 & {
+    headers: Headers;
+};
+export type ordersFindByIdResponseError = (
+    | ordersFindByIdResponse403
+    | ordersFindByIdResponse404
+) & {
+    headers: Headers;
+};
 
-export const getOrdersFindByIdUrl = (id: string,) => {
+export type ordersFindByIdResponse = ordersFindByIdResponseSuccess | ordersFindByIdResponseError;
 
+export const getOrdersFindByIdUrl = (id: string) => {
+    return `/orders/${id}`;
+};
 
-  
+export const ordersFindById = async (
+    id: string,
+    options?: RequestInit,
+): Promise<ordersFindByIdResponse> => {
+    return customInstance<ordersFindByIdResponse>(getOrdersFindByIdUrl(id), {
+        ...options,
+        method: 'GET',
+    });
+};
 
-  return `/orders/${id}`
-}
+export const getOrdersFindByIdQueryKey = (id: string) => {
+    return [`/orders/${id}`] as const;
+};
 
-export const ordersFindById = async (id: string, options?: RequestInit): Promise<ordersFindByIdResponse> => {
-  
-  return customInstance<ordersFindByIdResponse>(getOrdersFindByIdUrl(id),
-  {      
-    ...options,
-    method: 'GET'
-    
-    
-  }
-);}
-
-
-
-
-
-export const getOrdersFindByIdQueryKey = (id: string,) => {
-    return [
-    `/orders/${id}`
-    ] as const;
-    }
-
-    
-export const getOrdersFindByIdQueryOptions = <TData = Awaited<ReturnType<typeof ordersFindById>>, TError = ApiErrorResponseDto>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof ordersFindById>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getOrdersFindByIdQueryOptions = <
+    TData = Awaited<ReturnType<typeof ordersFindById>>,
+    TError = ApiErrorResponseDto,
+>(
+    id: string,
+    options?: {
+        query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof ordersFindById>>, TError, TData>>;
+        request?: SecondParameter<typeof customInstance>;
+    },
 ) => {
+    const { query: queryOptions, request: requestOptions } = options ?? {};
 
-const {query: queryOptions, request: requestOptions} = options ?? {};
+    const queryKey = queryOptions?.queryKey ?? getOrdersFindByIdQueryKey(id);
 
-  const queryKey =  queryOptions?.queryKey ?? getOrdersFindByIdQueryKey(id);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof ordersFindById>>> = ({ signal }) =>
+        ordersFindById(id, { signal, ...requestOptions });
 
-  
+    return { queryKey, queryFn, enabled: !!id, ...queryOptions } as UseQueryOptions<
+        Awaited<ReturnType<typeof ordersFindById>>,
+        TError,
+        TData
+    > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof ordersFindById>>> = ({ signal }) => ordersFindById(id, { signal, ...requestOptions });
+export type OrdersFindByIdQueryResult = NonNullable<Awaited<ReturnType<typeof ordersFindById>>>;
+export type OrdersFindByIdQueryError = ApiErrorResponseDto;
 
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof ordersFindById>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type OrdersFindByIdQueryResult = NonNullable<Awaited<ReturnType<typeof ordersFindById>>>
-export type OrdersFindByIdQueryError = ApiErrorResponseDto
-
-
-export function useOrdersFindById<TData = Awaited<ReturnType<typeof ordersFindById>>, TError = ApiErrorResponseDto>(
- id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof ordersFindById>>, TError, TData>> & Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof ordersFindById>>,
-          TError,
-          Awaited<ReturnType<typeof ordersFindById>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof customInstance>}
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useOrdersFindById<TData = Awaited<ReturnType<typeof ordersFindById>>, TError = ApiErrorResponseDto>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof ordersFindById>>, TError, TData>> & Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof ordersFindById>>,
-          TError,
-          Awaited<ReturnType<typeof ordersFindById>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof customInstance>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useOrdersFindById<TData = Awaited<ReturnType<typeof ordersFindById>>, TError = ApiErrorResponseDto>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof ordersFindById>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useOrdersFindById<
+    TData = Awaited<ReturnType<typeof ordersFindById>>,
+    TError = ApiErrorResponseDto,
+>(
+    id: string,
+    options: {
+        query: Partial<UseQueryOptions<Awaited<ReturnType<typeof ordersFindById>>, TError, TData>> &
+            Pick<
+                DefinedInitialDataOptions<
+                    Awaited<ReturnType<typeof ordersFindById>>,
+                    TError,
+                    Awaited<ReturnType<typeof ordersFindById>>
+                >,
+                'initialData'
+            >;
+        request?: SecondParameter<typeof customInstance>;
+    },
+    queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useOrdersFindById<
+    TData = Awaited<ReturnType<typeof ordersFindById>>,
+    TError = ApiErrorResponseDto,
+>(
+    id: string,
+    options?: {
+        query?: Partial<
+            UseQueryOptions<Awaited<ReturnType<typeof ordersFindById>>, TError, TData>
+        > &
+            Pick<
+                UndefinedInitialDataOptions<
+                    Awaited<ReturnType<typeof ordersFindById>>,
+                    TError,
+                    Awaited<ReturnType<typeof ordersFindById>>
+                >,
+                'initialData'
+            >;
+        request?: SecondParameter<typeof customInstance>;
+    },
+    queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useOrdersFindById<
+    TData = Awaited<ReturnType<typeof ordersFindById>>,
+    TError = ApiErrorResponseDto,
+>(
+    id: string,
+    options?: {
+        query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof ordersFindById>>, TError, TData>>;
+        request?: SecondParameter<typeof customInstance>;
+    },
+    queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 /**
  * @summary Get order by ID
  */
 
-export function useOrdersFindById<TData = Awaited<ReturnType<typeof ordersFindById>>, TError = ApiErrorResponseDto>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof ordersFindById>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
- , queryClient?: QueryClient 
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+export function useOrdersFindById<
+    TData = Awaited<ReturnType<typeof ordersFindById>>,
+    TError = ApiErrorResponseDto,
+>(
+    id: string,
+    options?: {
+        query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof ordersFindById>>, TError, TData>>;
+        request?: SecondParameter<typeof customInstance>;
+    },
+    queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+    const queryOptions = getOrdersFindByIdQueryOptions(id, options);
 
-  const queryOptions = getOrdersFindByIdQueryOptions(id,options)
+    const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+        queryKey: DataTag<QueryKey, TData, TError>;
+    };
 
-  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return { ...query, queryKey: queryOptions.queryKey };
+    return { ...query, queryKey: queryOptions.queryKey };
 }
-
-
-
 
 /**
  * @summary Update order
  */
 export type ordersUpdateResponse200 = {
-  data: OrderResponseDto
-  status: 200
-}
+    data: OrderResponseDto;
+    status: 200;
+};
 
 export type ordersUpdateResponse400 = {
-  data: ApiErrorResponseDto
-  status: 400
-}
+    data: ApiErrorResponseDto;
+    status: 400;
+};
 
 export type ordersUpdateResponse403 = {
-  data: ApiErrorResponseDto
-  status: 403
-}
+    data: ApiErrorResponseDto;
+    status: 403;
+};
 
 export type ordersUpdateResponse404 = {
-  data: ApiErrorResponseDto
-  status: 404
-}
-    
-export type ordersUpdateResponseSuccess = (ordersUpdateResponse200) & {
-  headers: Headers;
-};
-export type ordersUpdateResponseError = (ordersUpdateResponse400 | ordersUpdateResponse403 | ordersUpdateResponse404) & {
-  headers: Headers;
+    data: ApiErrorResponseDto;
+    status: 404;
 };
 
-export type ordersUpdateResponse = (ordersUpdateResponseSuccess | ordersUpdateResponseError)
+export type ordersUpdateResponseSuccess = ordersUpdateResponse200 & {
+    headers: Headers;
+};
+export type ordersUpdateResponseError = (
+    | ordersUpdateResponse400
+    | ordersUpdateResponse403
+    | ordersUpdateResponse404
+) & {
+    headers: Headers;
+};
 
-export const getOrdersUpdateUrl = (id: string,) => {
+export type ordersUpdateResponse = ordersUpdateResponseSuccess | ordersUpdateResponseError;
 
+export const getOrdersUpdateUrl = (id: string) => {
+    return `/orders/${id}`;
+};
 
-  
+export const ordersUpdate = async (
+    id: string,
+    updateOrderDto: UpdateOrderDto,
+    options?: RequestInit,
+): Promise<ordersUpdateResponse> => {
+    return customInstance<ordersUpdateResponse>(getOrdersUpdateUrl(id), {
+        ...options,
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', ...options?.headers },
+        body: JSON.stringify(updateOrderDto),
+    });
+};
 
-  return `/orders/${id}`
-}
-
-export const ordersUpdate = async (id: string,
-    updateOrderDto: UpdateOrderDto, options?: RequestInit): Promise<ordersUpdateResponse> => {
-  
-  return customInstance<ordersUpdateResponse>(getOrdersUpdateUrl(id),
-  {      
-    ...options,
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      updateOrderDto,)
-  }
-);}
-
-
-
-
-export const getOrdersUpdateMutationOptions = <TError = ApiErrorResponseDto,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof ordersUpdate>>, TError,{id: string;data: UpdateOrderDto}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof ordersUpdate>>, TError,{id: string;data: UpdateOrderDto}, TContext> => {
-
-const mutationKey = ['ordersUpdate'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
-
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof ordersUpdate>>, {id: string;data: UpdateOrderDto}> = (props) => {
-          const {id,data} = props ?? {};
-
-          return  ordersUpdate(id,data,requestOptions)
-        }
-
-
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type OrdersUpdateMutationResult = NonNullable<Awaited<ReturnType<typeof ordersUpdate>>>
-    export type OrdersUpdateMutationBody = UpdateOrderDto
-    export type OrdersUpdateMutationError = ApiErrorResponseDto
-
-    /**
- * @summary Update order
- */
-export const useOrdersUpdate = <TError = ApiErrorResponseDto,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof ordersUpdate>>, TError,{id: string;data: UpdateOrderDto}, TContext>, request?: SecondParameter<typeof customInstance>}
- , queryClient?: QueryClient): UseMutationResult<
+export const getOrdersUpdateMutationOptions = <
+    TError = ApiErrorResponseDto,
+    TContext = unknown,
+>(options?: {
+    mutation?: UseMutationOptions<
         Awaited<ReturnType<typeof ordersUpdate>>,
         TError,
-        {id: string;data: UpdateOrderDto},
+        { id: string; data: UpdateOrderDto },
         TContext
-      > => {
-      return useMutation(getOrdersUpdateMutationOptions(options), queryClient);
-    }
-    /**
+    >;
+    request?: SecondParameter<typeof customInstance>;
+}): UseMutationOptions<
+    Awaited<ReturnType<typeof ordersUpdate>>,
+    TError,
+    { id: string; data: UpdateOrderDto },
+    TContext
+> => {
+    const mutationKey = ['ordersUpdate'];
+    const { mutation: mutationOptions, request: requestOptions } = options
+        ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
+            ? options
+            : { ...options, mutation: { ...options.mutation, mutationKey } }
+        : { mutation: { mutationKey }, request: undefined };
+
+    const mutationFn: MutationFunction<
+        Awaited<ReturnType<typeof ordersUpdate>>,
+        { id: string; data: UpdateOrderDto }
+    > = (props) => {
+        const { id, data } = props ?? {};
+
+        return ordersUpdate(id, data, requestOptions);
+    };
+
+    return { mutationFn, ...mutationOptions };
+};
+
+export type OrdersUpdateMutationResult = NonNullable<Awaited<ReturnType<typeof ordersUpdate>>>;
+export type OrdersUpdateMutationBody = UpdateOrderDto;
+export type OrdersUpdateMutationError = ApiErrorResponseDto;
+
+/**
+ * @summary Update order
+ */
+export const useOrdersUpdate = <TError = ApiErrorResponseDto, TContext = unknown>(
+    options?: {
+        mutation?: UseMutationOptions<
+            Awaited<ReturnType<typeof ordersUpdate>>,
+            TError,
+            { id: string; data: UpdateOrderDto },
+            TContext
+        >;
+        request?: SecondParameter<typeof customInstance>;
+    },
+    queryClient?: QueryClient,
+): UseMutationResult<
+    Awaited<ReturnType<typeof ordersUpdate>>,
+    TError,
+    { id: string; data: UpdateOrderDto },
+    TContext
+> => {
+    return useMutation(getOrdersUpdateMutationOptions(options), queryClient);
+};
+/**
  * @summary Delete order
  */
 export type ordersRemoveResponse204 = {
-  data: void
-  status: 204
-}
+    data: void;
+    status: 204;
+};
 
 export type ordersRemoveResponse403 = {
-  data: ApiErrorResponseDto
-  status: 403
-}
+    data: ApiErrorResponseDto;
+    status: 403;
+};
 
 export type ordersRemoveResponse404 = {
-  data: ApiErrorResponseDto
-  status: 404
-}
-    
-export type ordersRemoveResponseSuccess = (ordersRemoveResponse204) & {
-  headers: Headers;
+    data: ApiErrorResponseDto;
+    status: 404;
+};
+
+export type ordersRemoveResponseSuccess = ordersRemoveResponse204 & {
+    headers: Headers;
 };
 export type ordersRemoveResponseError = (ordersRemoveResponse403 | ordersRemoveResponse404) & {
-  headers: Headers;
+    headers: Headers;
 };
 
-export type ordersRemoveResponse = (ordersRemoveResponseSuccess | ordersRemoveResponseError)
+export type ordersRemoveResponse = ordersRemoveResponseSuccess | ordersRemoveResponseError;
 
-export const getOrdersRemoveUrl = (id: string,) => {
+export const getOrdersRemoveUrl = (id: string) => {
+    return `/orders/${id}`;
+};
 
+export const ordersRemove = async (
+    id: string,
+    options?: RequestInit,
+): Promise<ordersRemoveResponse> => {
+    return customInstance<ordersRemoveResponse>(getOrdersRemoveUrl(id), {
+        ...options,
+        method: 'DELETE',
+    });
+};
 
-  
-
-  return `/orders/${id}`
-}
-
-export const ordersRemove = async (id: string, options?: RequestInit): Promise<ordersRemoveResponse> => {
-  
-  return customInstance<ordersRemoveResponse>(getOrdersRemoveUrl(id),
-  {      
-    ...options,
-    method: 'DELETE'
-    
-    
-  }
-);}
-
-
-
-
-export const getOrdersRemoveMutationOptions = <TError = ApiErrorResponseDto,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof ordersRemove>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof ordersRemove>>, TError,{id: string}, TContext> => {
-
-const mutationKey = ['ordersRemove'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
-
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof ordersRemove>>, {id: string}> = (props) => {
-          const {id} = props ?? {};
-
-          return  ordersRemove(id,requestOptions)
-        }
-
-
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type OrdersRemoveMutationResult = NonNullable<Awaited<ReturnType<typeof ordersRemove>>>
-    
-    export type OrdersRemoveMutationError = ApiErrorResponseDto
-
-    /**
- * @summary Delete order
- */
-export const useOrdersRemove = <TError = ApiErrorResponseDto,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof ordersRemove>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof customInstance>}
- , queryClient?: QueryClient): UseMutationResult<
+export const getOrdersRemoveMutationOptions = <
+    TError = ApiErrorResponseDto,
+    TContext = unknown,
+>(options?: {
+    mutation?: UseMutationOptions<
         Awaited<ReturnType<typeof ordersRemove>>,
         TError,
-        {id: string},
+        { id: string },
         TContext
-      > => {
-      return useMutation(getOrdersRemoveMutationOptions(options), queryClient);
-    }
-    
+    >;
+    request?: SecondParameter<typeof customInstance>;
+}): UseMutationOptions<
+    Awaited<ReturnType<typeof ordersRemove>>,
+    TError,
+    { id: string },
+    TContext
+> => {
+    const mutationKey = ['ordersRemove'];
+    const { mutation: mutationOptions, request: requestOptions } = options
+        ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
+            ? options
+            : { ...options, mutation: { ...options.mutation, mutationKey } }
+        : { mutation: { mutationKey }, request: undefined };
+
+    const mutationFn: MutationFunction<Awaited<ReturnType<typeof ordersRemove>>, { id: string }> = (
+        props,
+    ) => {
+        const { id } = props ?? {};
+
+        return ordersRemove(id, requestOptions);
+    };
+
+    return { mutationFn, ...mutationOptions };
+};
+
+export type OrdersRemoveMutationResult = NonNullable<Awaited<ReturnType<typeof ordersRemove>>>;
+
+export type OrdersRemoveMutationError = ApiErrorResponseDto;
+
+/**
+ * @summary Delete order
+ */
+export const useOrdersRemove = <TError = ApiErrorResponseDto, TContext = unknown>(
+    options?: {
+        mutation?: UseMutationOptions<
+            Awaited<ReturnType<typeof ordersRemove>>,
+            TError,
+            { id: string },
+            TContext
+        >;
+        request?: SecondParameter<typeof customInstance>;
+    },
+    queryClient?: QueryClient,
+): UseMutationResult<
+    Awaited<ReturnType<typeof ordersRemove>>,
+    TError,
+    { id: string },
+    TContext
+> => {
+    return useMutation(getOrdersRemoveMutationOptions(options), queryClient);
+};

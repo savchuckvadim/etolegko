@@ -8,16 +8,16 @@
 import type { AnalyticsGetPromoCodeStatsDatePreset } from './analyticsGetPromoCodeStatsDatePreset';
 
 export type AnalyticsGetPromoCodeStatsParams = {
-/**
- * Date preset for filtering
- */
-datePreset?: AnalyticsGetPromoCodeStatsDatePreset;
-/**
- * Start date for filtering (used when datePreset is "custom")
- */
-dateFrom?: string;
-/**
- * End date for filtering (used when datePreset is "custom")
- */
-dateTo?: string;
+    /**
+     * Date preset for filtering
+     */
+    datePreset?: AnalyticsGetPromoCodeStatsDatePreset;
+    /**
+     * Start date for filtering (used when datePreset is "custom")
+     */
+    dateFrom?: string;
+    /**
+     * End date for filtering (used when datePreset is "custom")
+     */
+    dateTo?: string;
 };

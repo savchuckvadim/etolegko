@@ -18,15 +18,14 @@ export interface RefreshTokenResponse {
  * @returns Новый access token
  * @throws Error если refresh token невалиден или истёк
  */
-export async function refreshAccessToken(
-    refreshToken: string,
-): Promise<string> {
+export async function refreshAccessToken(refreshToken: string): Promise<string> {
     try {
-        const response = await axios.post<
-            BackendSuccessResponse<RefreshTokenResponse>
-        >(`${API_BASE_URL}/auth/refresh`, {
-            refreshToken,
-        });
+        const response = await axios.post<BackendSuccessResponse<RefreshTokenResponse>>(
+            `${API_BASE_URL}/auth/refresh`,
+            {
+                refreshToken,
+            },
+        );
 
         // Backend возвращает { result: { accessToken: string } }
         const data = response.data;
@@ -42,9 +41,7 @@ export async function refreshAccessToken(
             if (error.response?.status === HTTP_STATUS.UNAUTHORIZED) {
                 throw new Error('Invalid or expired refresh token');
             }
-            throw new Error(
-                error.response?.data?.message || 'Failed to refresh token',
-            );
+            throw new Error(error.response?.data?.message || 'Failed to refresh token');
         }
         throw error;
     }

@@ -7,6 +7,6 @@
  */
 
 export interface UpdateOrderDto {
-  /** @minimum 0 */
-  amount?: number;
+    /** @minimum 0 */
+    amount?: number;
 }

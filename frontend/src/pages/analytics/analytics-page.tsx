@@ -2,11 +2,7 @@ import { memo, useMemo } from 'react';
 import { Typography, Box, Tabs, Tab } from '@mui/material';
 import { MainLayout } from '@widgets/layout/main-layout';
 import { useAnalyticsPage } from '@features/analytics';
-import {
-    PromoCodesAnalyticsTab,
-    UsersAnalyticsTab,
-    HistoryAnalyticsTab,
-} from '@widgets/analytics';
+import { PromoCodesAnalyticsTab, UsersAnalyticsTab, HistoryAnalyticsTab } from '@widgets/analytics';
 
 /**
  * Страница аналитики

@@ -7,16 +7,16 @@
  */
 
 export interface CreatePromoCodeDto {
-  code: string;
-  /**
-   * @minimum 1
-   * @maximum 100
-   */
-  discountPercent: number;
-  /** @minimum 1 */
-  totalLimit: number;
-  /** @minimum 1 */
-  perUserLimit: number;
-  startsAt?: string;
-  endsAt?: string;
+    code: string;
+    /**
+     * @minimum 1
+     * @maximum 100
+     */
+    discountPercent: number;
+    /** @minimum 1 */
+    totalLimit: number;
+    /** @minimum 1 */
+    perUserLimit: number;
+    startsAt?: string;
+    endsAt?: string;
 }

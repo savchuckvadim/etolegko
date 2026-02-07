@@ -7,10 +7,10 @@
  */
 
 export interface UpdatePromoCodeDto {
-  /**
-   * @minimum 1
-   * @maximum 100
-   */
-  discountPercent?: number;
-  isActive?: boolean;
+    /**
+     * @minimum 1
+     * @maximum 100
+     */
+    discountPercent?: number;
+    isActive?: boolean;
 }

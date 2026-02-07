@@ -1,11 +1,4 @@
-import {
-    Box,
-    Button,
-    TextField,
-    Typography,
-    Alert,
-    CircularProgress,
-} from '@mui/material';
+import { Box, Button, TextField, Typography, Alert, CircularProgress } from '@mui/material';
 import { useLoginForm } from '@features/auth';
 
 /**
@@ -13,13 +6,7 @@ import { useLoginForm } from '@features/auth';
  * Использует react-hook-form и хук useLoginForm для управления состоянием
  */
 export const LoginForm = () => {
-    const {
-        register,
-        handleSubmit,
-        errors,
-        isSubmitting,
-        goToRegister,
-    } = useLoginForm();
+    const { register, handleSubmit, errors, isSubmitting, goToRegister } = useLoginForm();
 
     return (
         <Box
@@ -65,21 +52,11 @@ export const LoginForm = () => {
                 helperText={errors.password?.message}
             />
 
-            <Button
-                type="submit"
-                variant="contained"
-                fullWidth
-                disabled={isSubmitting}
-            >
+            <Button type="submit" variant="contained" fullWidth disabled={isSubmitting}>
                 {isSubmitting ? <CircularProgress size={24} /> : 'Войти'}
             </Button>
 
-            <Button
-                variant="text"
-                fullWidth
-                onClick={goToRegister}
-                disabled={isSubmitting}
-            >
+            <Button variant="text" fullWidth onClick={goToRegister} disabled={isSubmitting}>
                 Нет аккаунта? Зарегистрироваться
             </Button>
         </Box>

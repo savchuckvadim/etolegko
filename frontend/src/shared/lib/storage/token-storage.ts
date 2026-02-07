@@ -74,9 +74,6 @@ export const tokenStorage = {
      * Проверить, есть ли токены
      */
     hasTokens: (): boolean => {
-        return (
-            tokenStorage.getAccessToken() !== null &&
-            tokenStorage.getRefreshToken() !== null
-        );
+        return tokenStorage.getAccessToken() !== null && tokenStorage.getRefreshToken() !== null;
     },
 };

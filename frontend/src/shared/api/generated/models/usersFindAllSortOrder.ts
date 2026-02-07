@@ -6,10 +6,10 @@
  * OpenAPI spec version: 1.0
  */
 
-export type UsersFindAllSortOrder = typeof UsersFindAllSortOrder[keyof typeof UsersFindAllSortOrder];
-
+export type UsersFindAllSortOrder =
+    (typeof UsersFindAllSortOrder)[keyof typeof UsersFindAllSortOrder];
 
 export const UsersFindAllSortOrder = {
-  asc: 'asc',
-  desc: 'desc',
+    asc: 'asc',
+    desc: 'desc',
 } as const;

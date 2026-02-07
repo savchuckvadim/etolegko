@@ -8,14 +8,14 @@
 import type { PromoCodeResponseDto } from './promoCodeResponseDto';
 
 export interface PaginatedResponsePromoCodeResponseDto {
-  /** Array of items */
-  items: PromoCodeResponseDto[];
-  /** Total number of items */
-  total: number;
-  /** Current page number */
-  page: number;
-  /** Items per page */
-  limit: number;
-  /** Total number of pages */
-  totalPages: number;
+    /** Array of items */
+    items: PromoCodeResponseDto[];
+    /** Total number of items */
+    total: number;
+    /** Current page number */
+    page: number;
+    /** Items per page */
+    limit: number;
+    /** Total number of pages */
+    totalPages: number;
 }

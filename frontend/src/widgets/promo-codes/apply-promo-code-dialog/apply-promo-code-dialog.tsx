@@ -21,13 +21,7 @@ export interface ApplyPromoCodeDialogProps {
  * Модальное окно для применения промокода к заказу
  */
 export const ApplyPromoCodeDialog = ({ open, onClose, orderId }: ApplyPromoCodeDialogProps) => {
-    const {
-        register,
-        handleSubmit,
-        errors,
-        isSubmitting,
-        reset,
-    } = useApplyPromoCodeForm(() => {
+    const { register, handleSubmit, errors, isSubmitting, reset } = useApplyPromoCodeForm(() => {
         onClose();
     });
 
@@ -75,11 +69,7 @@ export const ApplyPromoCodeDialog = ({ open, onClose, orderId }: ApplyPromoCodeD
                     <Button onClick={handleClose} disabled={isSubmitting}>
                         Отмена
                     </Button>
-                    <Button
-                        type="submit"
-                        variant="contained"
-                        disabled={isSubmitting}
-                    >
+                    <Button type="submit" variant="contained" disabled={isSubmitting}>
                         {isSubmitting ? <CircularProgress size={24} /> : 'Применить'}
                     </Button>
                 </DialogActions>

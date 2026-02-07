@@ -8,14 +8,17 @@ import {
     getErrorMessage,
     isSuccessResponse,
 } from '@shared/lib/utils/error.utils';
-import { createPromoCodeSchema, type CreatePromoCodeFormData } from '../schemas/create-promo-code.schema';
+import {
+    createPromoCodeSchema,
+    type CreatePromoCodeFormData,
+} from '../schemas/create-promo-code.schema';
 
 /**
  * Хук для управления формой создания промокода
  */
 export const useCreatePromoCodeForm = (onSuccess?: () => void) => {
     const queryClient = useQueryClient();
-    
+
     const {
         register,
         handleSubmit,
@@ -62,7 +65,7 @@ export const useCreatePromoCodeForm = (onSuccess?: () => void) => {
             startsAt: data.startsAt || undefined,
             endsAt: data.endsAt || undefined,
         };
-        
+
         createPromoCode({ data: createPromoCodeData });
     };
 

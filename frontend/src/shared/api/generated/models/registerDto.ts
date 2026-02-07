@@ -7,9 +7,9 @@
  */
 
 export interface RegisterDto {
-  email: string;
-  /** Password must contain uppercase, lowercase and number */
-  password: string;
-  name: string;
-  phone?: string;
+    email: string;
+    /** Password must contain uppercase, lowercase and number */
+    password: string;
+    name: string;
+    phone?: string;
 }

@@ -7,14 +7,14 @@
  */
 
 export interface PromoCodeStatsDto {
-  /** Total number of usages */
-  usage_count: number;
-  /** Total discount amount */
-  total_discount: number;
-  /** Total revenue */
-  total_revenue: number;
-  /** Number of unique users */
-  unique_users: number;
-  /** Average discount amount */
-  avg_discount: number;
+    /** Total number of usages */
+    usage_count: number;
+    /** Total discount amount */
+    total_discount: number;
+    /** Total revenue */
+    total_revenue: number;
+    /** Number of unique users */
+    unique_users: number;
+    /** Average discount amount */
+    avg_discount: number;
 }

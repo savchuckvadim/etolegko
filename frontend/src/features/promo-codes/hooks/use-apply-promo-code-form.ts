@@ -8,14 +8,17 @@ import {
     getErrorMessage,
     isSuccessResponse,
 } from '@shared/lib/utils/error.utils';
-import { applyPromoCodeSchema, type ApplyPromoCodeFormData } from '../schemas/apply-promo-code.schema';
+import {
+    applyPromoCodeSchema,
+    type ApplyPromoCodeFormData,
+} from '../schemas/apply-promo-code.schema';
 
 /**
  * Хук для управления формой применения промокода
  */
 export const useApplyPromoCodeForm = (onSuccess?: () => void) => {
     const queryClient = useQueryClient();
-    
+
     const {
         register,
         handleSubmit,
@@ -55,7 +58,7 @@ export const useApplyPromoCodeForm = (onSuccess?: () => void) => {
             orderId: data.orderId,
             promoCode: data.promoCode,
         };
-        
+
         applyPromoCode({ data: applyPromoCodeData });
     };
 

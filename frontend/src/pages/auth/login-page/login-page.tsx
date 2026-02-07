@@ -17,13 +17,16 @@ export const LoginPage = () => {
                 px: 2,
             }}
         >
-            <Container maxWidth="sm" sx={{
-                width: '100%', 
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-            }}>
+            <Container
+                maxWidth="sm"
+                sx={{
+                    width: '100%',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                }}
+            >
                 <LoginForm />
             </Container>
         </Box>

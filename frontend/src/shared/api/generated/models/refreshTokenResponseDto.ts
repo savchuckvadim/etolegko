@@ -7,6 +7,6 @@
  */
 
 export interface RefreshTokenResponseDto {
-  /** New access token */
-  accessToken: string;
+    /** New access token */
+    accessToken: string;
 }

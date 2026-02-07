@@ -7,13 +7,13 @@
  */
 
 export interface OrderResponseDto {
-  id: string;
-  userId: string;
-  amount: number;
-  promoCodeId?: string;
-  discountAmount?: number;
-  /** Final amount after discount */
-  finalAmount: number;
-  createdAt: string;
-  updatedAt: string;
+    id: string;
+    userId: string;
+    amount: number;
+    promoCodeId?: string;
+    discountAmount?: number;
+    /** Final amount after discount */
+    finalAmount: number;
+    createdAt: string;
+    updatedAt: string;
 }

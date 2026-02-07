@@ -3,10 +3,7 @@ import { axiosInstance } from '../axios-instance';
 import { HTTP_STATUS } from '../constants/error-codes.const';
 import { refreshAccessToken } from '../utils/refresh-token.util';
 import { tokenStorage } from '@shared/lib';
-import {
-    isBackendSuccessResponse,
-    isBackendErrorResponse,
-} from '../types/backend-response.types';
+import { isBackendSuccessResponse, isBackendErrorResponse } from '../types/backend-response.types';
 
 /**
  * Response interceptor для обработки ответов и ошибок
@@ -30,9 +27,7 @@ export function setupResponseInterceptor(): void {
             // Обработка 401 (Unauthorized) - токен истёк или невалиден
             if (error.response?.status === HTTP_STATUS.UNAUTHORIZED) {
                 // Проверяем, что это не запрос на refresh (чтобы избежать бесконечного цикла)
-                const isRefreshRequest = originalRequest.url?.includes(
-                    '/auth/refresh',
-                );
+                const isRefreshRequest = originalRequest.url?.includes('/auth/refresh');
                 const alreadyRetried = originalRequest._retry === true;
 
                 if (isRefreshRequest || alreadyRetried) {
@@ -56,9 +51,7 @@ export function setupResponseInterceptor(): void {
                     originalRequest._retry = true;
 
                     // Обновляем токен
-                    const newAccessToken = await refreshAccessToken(
-                        refreshToken,
-                    );
+                    const newAccessToken = await refreshAccessToken(refreshToken);
                     tokenStorage.setAccessToken(newAccessToken);
 
                     // Повторяем оригинальный запрос с новым токеном

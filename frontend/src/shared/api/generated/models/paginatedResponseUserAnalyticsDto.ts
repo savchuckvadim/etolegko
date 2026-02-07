@@ -8,14 +8,14 @@
 import type { UserAnalyticsDto } from './userAnalyticsDto';
 
 export interface PaginatedResponseUserAnalyticsDto {
-  /** Array of items */
-  items: UserAnalyticsDto[];
-  /** Total number of items */
-  total: number;
-  /** Current page number */
-  page: number;
-  /** Items per page */
-  limit: number;
-  /** Total number of pages */
-  totalPages: number;
+    /** Array of items */
+    items: UserAnalyticsDto[];
+    /** Total number of items */
+    total: number;
+    /** Current page number */
+    page: number;
+    /** Items per page */
+    limit: number;
+    /** Total number of pages */
+    totalPages: number;
 }

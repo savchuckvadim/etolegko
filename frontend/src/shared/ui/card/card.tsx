@@ -11,12 +11,7 @@ export interface CardProps {
 /**
  * Универсальный компонент карточки
  */
-export const Card = ({
-    title,
-    children,
-    actions,
-    variant = 'elevation',
-}: CardProps) => {
+export const Card = ({ title, children, actions, variant = 'elevation' }: CardProps) => {
     return (
         <MuiCard variant={variant}>
             {title && <CardHeader title={title} />}

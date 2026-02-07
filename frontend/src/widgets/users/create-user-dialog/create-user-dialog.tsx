@@ -20,13 +20,7 @@ export interface CreateUserDialogProps {
  * Модальное окно для создания нового пользователя
  */
 export const CreateUserDialog = ({ open, onClose }: CreateUserDialogProps) => {
-    const {
-        register,
-        handleSubmit,
-        errors,
-        isSubmitting,
-        reset,
-    } = useCreateUserForm(() => {
+    const { register, handleSubmit, errors, isSubmitting, reset } = useCreateUserForm(() => {
         onClose();
     });
 
@@ -89,7 +83,10 @@ export const CreateUserDialog = ({ open, onClose }: CreateUserDialogProps) => {
                             disabled={isSubmitting}
                             autoComplete="new-password"
                             error={!!errors.password}
-                            helperText={errors.password?.message || 'Пароль должен содержать заглавные, строчные буквы и цифры'}
+                            helperText={
+                                errors.password?.message ||
+                                'Пароль должен содержать заглавные, строчные буквы и цифры'
+                            }
                         />
                     </Box>
                 </DialogContent>
@@ -97,11 +94,7 @@ export const CreateUserDialog = ({ open, onClose }: CreateUserDialogProps) => {
                     <Button onClick={handleClose} disabled={isSubmitting}>
                         Отмена
                     </Button>
-                    <Button
-                        type="submit"
-                        variant="contained"
-                        disabled={isSubmitting}
-                    >
+                    <Button type="submit" variant="contained" disabled={isSubmitting}>
                         {isSubmitting ? <CircularProgress size={24} /> : 'Создать'}
                     </Button>
                 </DialogActions>

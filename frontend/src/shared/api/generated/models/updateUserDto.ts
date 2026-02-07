@@ -7,8 +7,8 @@
  */
 
 export interface UpdateUserDto {
-  /** @minLength 2 */
-  name?: string;
-  phone?: string;
-  isActive?: boolean;
+    /** @minLength 2 */
+    name?: string;
+    phone?: string;
+    isActive?: boolean;
 }

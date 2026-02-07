@@ -1,11 +1,4 @@
-import {
-    Box,
-    FormControl,
-    InputLabel,
-    Select,
-    MenuItem,
-    TextField,
-} from '@mui/material';
+import { Box, FormControl, InputLabel, Select, MenuItem, TextField } from '@mui/material';
 import type { SelectChangeEvent } from '@mui/material';
 
 export type DatePreset = 'today' | 'last7days' | 'last30days' | 'custom';
@@ -58,11 +51,7 @@ export const DateFilter = ({
         <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', flexWrap: 'wrap', mb: 2 }}>
             <FormControl sx={{ minWidth: 200 }}>
                 <InputLabel>Период</InputLabel>
-                <Select
-                    value={preset}
-                    label="Период"
-                    onChange={handlePresetChange}
-                >
+                <Select value={preset} label="Период" onChange={handlePresetChange}>
                     <MenuItem value="today">Сегодня</MenuItem>
                     <MenuItem value="last7days">Последние 7 дней</MenuItem>
                     <MenuItem value="last30days">Последние 30 дней</MenuItem>

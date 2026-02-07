@@ -37,7 +37,7 @@ export const AuthContextProvider = ({ children }: AuthProviderProps) => {
 
         // Слушаем события изменения localStorage (срабатывает при изменении в других вкладках)
         window.addEventListener('storage', checkTokens);
-        
+
         // Слушаем кастомное событие для изменений в той же вкладке
         window.addEventListener('tokensUpdated', checkTokens);
 
@@ -133,8 +133,7 @@ export const AuthGuard = () => {
             // Пользователь не авторизован
             // Если находимся на защищенной странице, редиректим на логин
             const isPublicRoute =
-                location.pathname === '/login' ||
-                location.pathname === '/register';
+                location.pathname === '/login' || location.pathname === '/register';
 
             if (!isPublicRoute) {
                 navigate('/login', { replace: true });

@@ -7,7 +7,7 @@
  */
 
 export interface ApplyPromoCodeResponseDto {
-  discountAmount: number;
-  finalAmount: number;
-  promoCode: string;
+    discountAmount: number;
+    finalAmount: number;
+    promoCode: string;
 }

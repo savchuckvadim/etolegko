@@ -33,9 +33,7 @@ export const HomePage = () => {
                     )}
                 </Box>
             ) : (
-                <Typography variant="body1">
-                    Вы не авторизованы
-                </Typography>
+                <Typography variant="body1">Вы не авторизованы</Typography>
             )}
         </MainLayout>
     );

@@ -23,7 +23,10 @@ export const usePromoCodesAnalytics = (params?: AnalyticsGetPromoCodesListParams
 /**
  * Хук для получения статистики по промокоду
  */
-export const usePromoCodeStats = (promoCodeId: string | undefined, params?: AnalyticsGetPromoCodeStatsParams) => {
+export const usePromoCodeStats = (
+    promoCodeId: string | undefined,
+    params?: AnalyticsGetPromoCodeStatsParams,
+) => {
     return useAnalyticsGetPromoCodeStats(promoCodeId ?? '', params, {
         query: {
             enabled: !!promoCodeId,

@@ -6,12 +6,12 @@
  * OpenAPI spec version: 1.0
  */
 
-export type AnalyticsGetPromoCodesListDatePreset = typeof AnalyticsGetPromoCodesListDatePreset[keyof typeof AnalyticsGetPromoCodesListDatePreset];
-
+export type AnalyticsGetPromoCodesListDatePreset =
+    (typeof AnalyticsGetPromoCodesListDatePreset)[keyof typeof AnalyticsGetPromoCodesListDatePreset];
 
 export const AnalyticsGetPromoCodesListDatePreset = {
-  today: 'today',
-  last7days: 'last7days',
-  last30days: 'last30days',
-  custom: 'custom',
+    today: 'today',
+    last7days: 'last7days',
+    last30days: 'last30days',
+    custom: 'custom',
 } as const;

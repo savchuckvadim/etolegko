@@ -7,15 +7,15 @@
  */
 
 export interface PromoCodeResponseDto {
-  id: string;
-  code: string;
-  discountPercent: number;
-  totalLimit: number;
-  perUserLimit: number;
-  usedCount: number;
-  isActive: boolean;
-  startsAt?: string;
-  endsAt?: string;
-  createdAt: string;
-  updatedAt: string;
+    id: string;
+    code: string;
+    discountPercent: number;
+    totalLimit: number;
+    perUserLimit: number;
+    usedCount: number;
+    isActive: boolean;
+    startsAt?: string;
+    endsAt?: string;
+    createdAt: string;
+    updatedAt: string;
 }

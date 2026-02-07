@@ -6,10 +6,10 @@
  * OpenAPI spec version: 1.0
  */
 
-export type PromoCodesFindAllSortOrder = typeof PromoCodesFindAllSortOrder[keyof typeof PromoCodesFindAllSortOrder];
-
+export type PromoCodesFindAllSortOrder =
+    (typeof PromoCodesFindAllSortOrder)[keyof typeof PromoCodesFindAllSortOrder];
 
 export const PromoCodesFindAllSortOrder = {
-  asc: 'asc',
-  desc: 'desc',
+    asc: 'asc',
+    desc: 'desc',
 } as const;

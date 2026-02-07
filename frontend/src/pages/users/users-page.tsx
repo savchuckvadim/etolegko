@@ -48,7 +48,14 @@ export const UsersPage = () => {
 
     return (
         <MainLayout>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+            <Box
+                sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    mb: 3,
+                }}
+            >
                 <Typography variant="h4">Пользователи</Typography>
                 <Button
                     variant="contained"

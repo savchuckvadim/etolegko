@@ -24,15 +24,12 @@ export interface UpdatePromoCodeDialogProps {
  * Модальное окно для обновления промокода
  */
 export const UpdatePromoCodeDialog = ({ open, onClose, promoCode }: UpdatePromoCodeDialogProps) => {
-    const {
-        register,
-        handleSubmit,
-        errors,
-        isSubmitting,
-        reset,
-    } = useUpdatePromoCodeForm(promoCode.id, () => {
-        onClose();
-    });
+    const { register, handleSubmit, errors, isSubmitting, reset } = useUpdatePromoCodeForm(
+        promoCode.id,
+        () => {
+            onClose();
+        },
+    );
 
     const handleClose = () => {
         if (!isSubmitting) {
@@ -81,11 +78,7 @@ export const UpdatePromoCodeDialog = ({ open, onClose, promoCode }: UpdatePromoC
                     <Button onClick={handleClose} disabled={isSubmitting}>
                         Отмена
                     </Button>
-                    <Button
-                        type="submit"
-                        variant="contained"
-                        disabled={isSubmitting}
-                    >
+                    <Button type="submit" variant="contained" disabled={isSubmitting}>
                         {isSubmitting ? <CircularProgress size={24} /> : 'Обновить'}
                     </Button>
                 </DialogActions>

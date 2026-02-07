@@ -103,19 +103,22 @@ export const useAnalyticsPage = () => {
     }, []);
 
     // Обработчики для промокодов
-    const handlePromoCodesDatePresetChange = useCallback((preset: DatePreset) => {
-        setPromoCodesDatePreset(preset);
-        const { dateFrom, dateTo } = calculateDatesForPreset(preset);
-        setPromoCodesDateFrom(dateFrom);
-        setPromoCodesDateTo(dateTo);
-        setPromoCodesParams((prev) => ({
-            ...prev,
-            page: 1,
-            datePreset: preset,
-            dateFrom: preset === 'custom' ? promoCodesDateFrom : dateFrom,
-            dateTo: preset === 'custom' ? promoCodesDateTo : dateTo,
-        }));
-    }, [calculateDatesForPreset, promoCodesDateFrom, promoCodesDateTo]);
+    const handlePromoCodesDatePresetChange = useCallback(
+        (preset: DatePreset) => {
+            setPromoCodesDatePreset(preset);
+            const { dateFrom, dateTo } = calculateDatesForPreset(preset);
+            setPromoCodesDateFrom(dateFrom);
+            setPromoCodesDateTo(dateTo);
+            setPromoCodesParams((prev) => ({
+                ...prev,
+                page: 1,
+                datePreset: preset,
+                dateFrom: preset === 'custom' ? promoCodesDateFrom : dateFrom,
+                dateTo: preset === 'custom' ? promoCodesDateTo : dateTo,
+            }));
+        },
+        [calculateDatesForPreset, promoCodesDateFrom, promoCodesDateTo],
+    );
 
     const handlePromoCodesDateFromChange = useCallback((date: string) => {
         setPromoCodesDateFrom(date);
@@ -136,19 +139,22 @@ export const useAnalyticsPage = () => {
     }, []);
 
     // Обработчики для пользователей
-    const handleUsersDatePresetChange = useCallback((preset: DatePreset) => {
-        setUsersDatePreset(preset);
-        const { dateFrom, dateTo } = calculateDatesForPreset(preset);
-        setUsersDateFrom(dateFrom);
-        setUsersDateTo(dateTo);
-        setUsersParams((prev) => ({
-            ...prev,
-            page: 1,
-            datePreset: preset,
-            dateFrom: preset === 'custom' ? usersDateFrom : dateFrom,
-            dateTo: preset === 'custom' ? usersDateTo : dateTo,
-        }));
-    }, [calculateDatesForPreset, usersDateFrom, usersDateTo]);
+    const handleUsersDatePresetChange = useCallback(
+        (preset: DatePreset) => {
+            setUsersDatePreset(preset);
+            const { dateFrom, dateTo } = calculateDatesForPreset(preset);
+            setUsersDateFrom(dateFrom);
+            setUsersDateTo(dateTo);
+            setUsersParams((prev) => ({
+                ...prev,
+                page: 1,
+                datePreset: preset,
+                dateFrom: preset === 'custom' ? usersDateFrom : dateFrom,
+                dateTo: preset === 'custom' ? usersDateTo : dateTo,
+            }));
+        },
+        [calculateDatesForPreset, usersDateFrom, usersDateTo],
+    );
 
     const handleUsersDateFromChange = useCallback((date: string) => {
         setUsersDateFrom(date);
@@ -169,19 +175,22 @@ export const useAnalyticsPage = () => {
     }, []);
 
     // Обработчики для истории
-    const handleHistoryDatePresetChange = useCallback((preset: DatePreset) => {
-        setHistoryDatePreset(preset);
-        const { dateFrom, dateTo } = calculateDatesForPreset(preset);
-        setHistoryDateFrom(dateFrom);
-        setHistoryDateTo(dateTo);
-        setHistoryParams((prev) => ({
-            ...prev,
-            page: 1,
-            datePreset: preset,
-            dateFrom: preset === 'custom' ? historyDateFrom : dateFrom,
-            dateTo: preset === 'custom' ? historyDateTo : dateTo,
-        }));
-    }, [calculateDatesForPreset, historyDateFrom, historyDateTo]);
+    const handleHistoryDatePresetChange = useCallback(
+        (preset: DatePreset) => {
+            setHistoryDatePreset(preset);
+            const { dateFrom, dateTo } = calculateDatesForPreset(preset);
+            setHistoryDateFrom(dateFrom);
+            setHistoryDateTo(dateTo);
+            setHistoryParams((prev) => ({
+                ...prev,
+                page: 1,
+                datePreset: preset,
+                dateFrom: preset === 'custom' ? historyDateFrom : dateFrom,
+                dateTo: preset === 'custom' ? historyDateTo : dateTo,
+            }));
+        },
+        [calculateDatesForPreset, historyDateFrom, historyDateTo],
+    );
 
     const handleHistoryDateFromChange = useCallback((date: string) => {
         setHistoryDateFrom(date);

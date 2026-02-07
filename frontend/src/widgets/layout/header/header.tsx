@@ -47,7 +47,8 @@ export const Header = () => {
                             onClick={() => navigate(item.path)}
                             variant={location.pathname === item.path ? 'outlined' : 'text'}
                             sx={{
-                                borderColor: location.pathname === item.path ? 'white' : 'transparent',
+                                borderColor:
+                                    location.pathname === item.path ? 'white' : 'transparent',
                             }}
                         >
                             {item.label}
@@ -56,13 +57,8 @@ export const Header = () => {
                 </Box>
                 {user && (
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                        <Typography variant="body2">
-                            {user.name}
-                        </Typography>
-                        <Button
-                            color="inherit"
-                            onClick={handleLogout}
-                        >
+                        <Typography variant="body2">{user.name}</Typography>
+                        <Button color="inherit" onClick={handleLogout}>
                             Выйти
                         </Button>
                     </Box>

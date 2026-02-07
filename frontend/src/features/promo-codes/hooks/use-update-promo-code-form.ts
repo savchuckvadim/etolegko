@@ -8,14 +8,17 @@ import {
     getErrorMessage,
     isSuccessResponse,
 } from '@shared/lib/utils/error.utils';
-import { updatePromoCodeSchema, type UpdatePromoCodeFormData } from '../schemas/update-promo-code.schema';
+import {
+    updatePromoCodeSchema,
+    type UpdatePromoCodeFormData,
+} from '../schemas/update-promo-code.schema';
 
 /**
  * Хук для управления формой обновления промокода
  */
 export const useUpdatePromoCodeForm = (promoCodeId: string, onSuccess?: () => void) => {
     const queryClient = useQueryClient();
-    
+
     const {
         register,
         handleSubmit,
@@ -54,7 +57,7 @@ export const useUpdatePromoCodeForm = (promoCodeId: string, onSuccess?: () => vo
             discountPercent: data.discountPercent,
             isActive: data.isActive,
         };
-        
+
         updatePromoCode({ id: promoCodeId, data: updatePromoCodeData });
     };
 

@@ -41,10 +41,7 @@ export const useRegisterForm = () => {
             onSuccess: (response) => {
                 if (isSuccessResponse(response)) {
                     const authData = response.data;
-                    tokenStorage.setTokens(
-                        authData.accessToken,
-                        authData.refreshToken,
-                    );
+                    tokenStorage.setTokens(authData.accessToken, authData.refreshToken);
                     void queryClient.invalidateQueries({ queryKey: ['/auth/me'] });
                     // AuthGuard автоматически выполнит редирект
                 }

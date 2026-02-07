@@ -9,27 +9,27 @@ import type { AnalyticsGetUsersListDatePreset } from './analyticsGetUsersListDat
 import type { AnalyticsGetUsersListSortOrder } from './analyticsGetUsersListSortOrder';
 
 export type AnalyticsGetUsersListParams = {
-/**
- * @minimum 1
- */
-page?: number;
-/**
- * @minimum 1
- * @maximum 100
- */
-limit?: number;
-sortBy?: string;
-sortOrder?: AnalyticsGetUsersListSortOrder;
-/**
- * Date preset for filtering
- */
-datePreset?: AnalyticsGetUsersListDatePreset;
-/**
- * Start date for filtering (used when datePreset is "custom")
- */
-dateFrom?: string;
-/**
- * End date for filtering (used when datePreset is "custom")
- */
-dateTo?: string;
+    /**
+     * @minimum 1
+     */
+    page?: number;
+    /**
+     * @minimum 1
+     * @maximum 100
+     */
+    limit?: number;
+    sortBy?: string;
+    sortOrder?: AnalyticsGetUsersListSortOrder;
+    /**
+     * Date preset for filtering
+     */
+    datePreset?: AnalyticsGetUsersListDatePreset;
+    /**
+     * Start date for filtering (used when datePreset is "custom")
+     */
+    dateFrom?: string;
+    /**
+     * End date for filtering (used when datePreset is "custom")
+     */
+    dateTo?: string;
 };

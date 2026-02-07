@@ -6,12 +6,12 @@
  * OpenAPI spec version: 1.0
  */
 
-export type AnalyticsGetUsersListDatePreset = typeof AnalyticsGetUsersListDatePreset[keyof typeof AnalyticsGetUsersListDatePreset];
-
+export type AnalyticsGetUsersListDatePreset =
+    (typeof AnalyticsGetUsersListDatePreset)[keyof typeof AnalyticsGetUsersListDatePreset];
 
 export const AnalyticsGetUsersListDatePreset = {
-  today: 'today',
-  last7days: 'last7days',
-  last30days: 'last30days',
-  custom: 'custom',
+    today: 'today',
+    last7days: 'last7days',
+    last30days: 'last30days',
+    custom: 'custom',
 } as const;

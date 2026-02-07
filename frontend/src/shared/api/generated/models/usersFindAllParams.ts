@@ -8,20 +8,20 @@
 import type { UsersFindAllSortOrder } from './usersFindAllSortOrder';
 
 export type UsersFindAllParams = {
-/**
- * @minimum 1
- */
-page?: number;
-/**
- * @minimum 1
- * @maximum 100
- */
-limit?: number;
-sortBy?: string;
-sortOrder?: UsersFindAllSortOrder;
-/**
- * Search by email or name
- */
-search?: string;
-isActive?: boolean;
+    /**
+     * @minimum 1
+     */
+    page?: number;
+    /**
+     * @minimum 1
+     * @maximum 100
+     */
+    limit?: number;
+    sortBy?: string;
+    sortOrder?: UsersFindAllSortOrder;
+    /**
+     * Search by email or name
+     */
+    search?: string;
+    isActive?: boolean;
 };

@@ -15,7 +15,7 @@ import { updateOrderSchema, type UpdateOrderFormData } from '../schemas/update-o
  */
 export const useUpdateOrderForm = (orderId: string, onSuccess?: () => void) => {
     const queryClient = useQueryClient();
-    
+
     const {
         register,
         handleSubmit,
@@ -52,7 +52,7 @@ export const useUpdateOrderForm = (orderId: string, onSuccess?: () => void) => {
         const updateOrderData: UpdateOrderDto = {
             amount: data.amount,
         };
-        
+
         updateOrder({ id: orderId, data: updateOrderData });
     };
 

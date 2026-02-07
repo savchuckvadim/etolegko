@@ -7,12 +7,12 @@
  */
 
 export interface UserAnalyticsDto {
-  /** User ID */
-  user_id: string;
-  /** Total orders count */
-  orders_count: number;
-  /** Total amount spent */
-  total_amount: number;
-  /** Promo codes used count */
-  promo_codes_used: number;
+    /** User ID */
+    user_id: string;
+    /** Total orders count */
+    orders_count: number;
+    /** Total amount spent */
+    total_amount: number;
+    /** Promo codes used count */
+    promo_codes_used: number;
 }

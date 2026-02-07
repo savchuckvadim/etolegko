@@ -5,438 +5,477 @@
  * API для управления промокодами
  * OpenAPI spec version: 1.0
  */
-import {
-  useMutation,
-  useQuery
-} from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import type {
-  DataTag,
-  DefinedInitialDataOptions,
-  DefinedUseQueryResult,
-  MutationFunction,
-  QueryClient,
-  QueryFunction,
-  QueryKey,
-  UndefinedInitialDataOptions,
-  UseMutationOptions,
-  UseMutationResult,
-  UseQueryOptions,
-  UseQueryResult
+    DataTag,
+    DefinedInitialDataOptions,
+    DefinedUseQueryResult,
+    MutationFunction,
+    QueryClient,
+    QueryFunction,
+    QueryKey,
+    UndefinedInitialDataOptions,
+    UseMutationOptions,
+    UseMutationResult,
+    UseQueryOptions,
+    UseQueryResult,
 } from '@tanstack/react-query';
 
 import type {
-  ApiErrorResponseDto,
-  AuthResponseDto,
-  LoginDto,
-  RefreshTokenDto,
-  RefreshTokenResponseDto,
-  RegisterDto,
-  UserMeResponseDto
+    ApiErrorResponseDto,
+    AuthResponseDto,
+    LoginDto,
+    RefreshTokenDto,
+    RefreshTokenResponseDto,
+    RegisterDto,
+    UserMeResponseDto,
 } from '.././models';
 
 import { customInstance } from '../../axios-instance';
 
-
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
-
-
 
 /**
  * @summary Register new user
  */
 export type authRegisterResponse201 = {
-  data: AuthResponseDto
-  status: 201
-}
+    data: AuthResponseDto;
+    status: 201;
+};
 
 export type authRegisterResponse400 = {
-  data: ApiErrorResponseDto
-  status: 400
-}
+    data: ApiErrorResponseDto;
+    status: 400;
+};
 
 export type authRegisterResponse409 = {
-  data: ApiErrorResponseDto
-  status: 409
-}
-    
-export type authRegisterResponseSuccess = (authRegisterResponse201) & {
-  headers: Headers;
+    data: ApiErrorResponseDto;
+    status: 409;
+};
+
+export type authRegisterResponseSuccess = authRegisterResponse201 & {
+    headers: Headers;
 };
 export type authRegisterResponseError = (authRegisterResponse400 | authRegisterResponse409) & {
-  headers: Headers;
+    headers: Headers;
 };
 
-export type authRegisterResponse = (authRegisterResponseSuccess | authRegisterResponseError)
+export type authRegisterResponse = authRegisterResponseSuccess | authRegisterResponseError;
 
 export const getAuthRegisterUrl = () => {
+    return `/auth/register`;
+};
 
+export const authRegister = async (
+    registerDto: RegisterDto,
+    options?: RequestInit,
+): Promise<authRegisterResponse> => {
+    return customInstance<authRegisterResponse>(getAuthRegisterUrl(), {
+        ...options,
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...options?.headers },
+        body: JSON.stringify(registerDto),
+    });
+};
 
-  
-
-  return `/auth/register`
-}
-
-export const authRegister = async (registerDto: RegisterDto, options?: RequestInit): Promise<authRegisterResponse> => {
-  
-  return customInstance<authRegisterResponse>(getAuthRegisterUrl(),
-  {      
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      registerDto,)
-  }
-);}
-
-
-
-
-export const getAuthRegisterMutationOptions = <TError = ApiErrorResponseDto,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authRegister>>, TError,{data: RegisterDto}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof authRegister>>, TError,{data: RegisterDto}, TContext> => {
-
-const mutationKey = ['authRegister'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
-
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof authRegister>>, {data: RegisterDto}> = (props) => {
-          const {data} = props ?? {};
-
-          return  authRegister(data,requestOptions)
-        }
-
-
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type AuthRegisterMutationResult = NonNullable<Awaited<ReturnType<typeof authRegister>>>
-    export type AuthRegisterMutationBody = RegisterDto
-    export type AuthRegisterMutationError = ApiErrorResponseDto
-
-    /**
- * @summary Register new user
- */
-export const useAuthRegister = <TError = ApiErrorResponseDto,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authRegister>>, TError,{data: RegisterDto}, TContext>, request?: SecondParameter<typeof customInstance>}
- , queryClient?: QueryClient): UseMutationResult<
+export const getAuthRegisterMutationOptions = <
+    TError = ApiErrorResponseDto,
+    TContext = unknown,
+>(options?: {
+    mutation?: UseMutationOptions<
         Awaited<ReturnType<typeof authRegister>>,
         TError,
-        {data: RegisterDto},
+        { data: RegisterDto },
         TContext
-      > => {
-      return useMutation(getAuthRegisterMutationOptions(options), queryClient);
-    }
-    /**
+    >;
+    request?: SecondParameter<typeof customInstance>;
+}): UseMutationOptions<
+    Awaited<ReturnType<typeof authRegister>>,
+    TError,
+    { data: RegisterDto },
+    TContext
+> => {
+    const mutationKey = ['authRegister'];
+    const { mutation: mutationOptions, request: requestOptions } = options
+        ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
+            ? options
+            : { ...options, mutation: { ...options.mutation, mutationKey } }
+        : { mutation: { mutationKey }, request: undefined };
+
+    const mutationFn: MutationFunction<
+        Awaited<ReturnType<typeof authRegister>>,
+        { data: RegisterDto }
+    > = (props) => {
+        const { data } = props ?? {};
+
+        return authRegister(data, requestOptions);
+    };
+
+    return { mutationFn, ...mutationOptions };
+};
+
+export type AuthRegisterMutationResult = NonNullable<Awaited<ReturnType<typeof authRegister>>>;
+export type AuthRegisterMutationBody = RegisterDto;
+export type AuthRegisterMutationError = ApiErrorResponseDto;
+
+/**
+ * @summary Register new user
+ */
+export const useAuthRegister = <TError = ApiErrorResponseDto, TContext = unknown>(
+    options?: {
+        mutation?: UseMutationOptions<
+            Awaited<ReturnType<typeof authRegister>>,
+            TError,
+            { data: RegisterDto },
+            TContext
+        >;
+        request?: SecondParameter<typeof customInstance>;
+    },
+    queryClient?: QueryClient,
+): UseMutationResult<
+    Awaited<ReturnType<typeof authRegister>>,
+    TError,
+    { data: RegisterDto },
+    TContext
+> => {
+    return useMutation(getAuthRegisterMutationOptions(options), queryClient);
+};
+/**
  * @summary Login user
  */
 export type authLoginResponse200 = {
-  data: AuthResponseDto
-  status: 200
-}
+    data: AuthResponseDto;
+    status: 200;
+};
 
 export type authLoginResponse400 = {
-  data: ApiErrorResponseDto
-  status: 400
-}
+    data: ApiErrorResponseDto;
+    status: 400;
+};
 
 export type authLoginResponse401 = {
-  data: ApiErrorResponseDto
-  status: 401
-}
-    
-export type authLoginResponseSuccess = (authLoginResponse200) & {
-  headers: Headers;
+    data: ApiErrorResponseDto;
+    status: 401;
+};
+
+export type authLoginResponseSuccess = authLoginResponse200 & {
+    headers: Headers;
 };
 export type authLoginResponseError = (authLoginResponse400 | authLoginResponse401) & {
-  headers: Headers;
+    headers: Headers;
 };
 
-export type authLoginResponse = (authLoginResponseSuccess | authLoginResponseError)
+export type authLoginResponse = authLoginResponseSuccess | authLoginResponseError;
 
 export const getAuthLoginUrl = () => {
+    return `/auth/login`;
+};
 
+export const authLogin = async (
+    loginDto: LoginDto,
+    options?: RequestInit,
+): Promise<authLoginResponse> => {
+    return customInstance<authLoginResponse>(getAuthLoginUrl(), {
+        ...options,
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...options?.headers },
+        body: JSON.stringify(loginDto),
+    });
+};
 
-  
-
-  return `/auth/login`
-}
-
-export const authLogin = async (loginDto: LoginDto, options?: RequestInit): Promise<authLoginResponse> => {
-  
-  return customInstance<authLoginResponse>(getAuthLoginUrl(),
-  {      
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      loginDto,)
-  }
-);}
-
-
-
-
-export const getAuthLoginMutationOptions = <TError = ApiErrorResponseDto,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authLogin>>, TError,{data: LoginDto}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof authLogin>>, TError,{data: LoginDto}, TContext> => {
-
-const mutationKey = ['authLogin'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
-
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof authLogin>>, {data: LoginDto}> = (props) => {
-          const {data} = props ?? {};
-
-          return  authLogin(data,requestOptions)
-        }
-
-
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type AuthLoginMutationResult = NonNullable<Awaited<ReturnType<typeof authLogin>>>
-    export type AuthLoginMutationBody = LoginDto
-    export type AuthLoginMutationError = ApiErrorResponseDto
-
-    /**
- * @summary Login user
- */
-export const useAuthLogin = <TError = ApiErrorResponseDto,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authLogin>>, TError,{data: LoginDto}, TContext>, request?: SecondParameter<typeof customInstance>}
- , queryClient?: QueryClient): UseMutationResult<
+export const getAuthLoginMutationOptions = <
+    TError = ApiErrorResponseDto,
+    TContext = unknown,
+>(options?: {
+    mutation?: UseMutationOptions<
         Awaited<ReturnType<typeof authLogin>>,
         TError,
-        {data: LoginDto},
+        { data: LoginDto },
         TContext
-      > => {
-      return useMutation(getAuthLoginMutationOptions(options), queryClient);
-    }
-    /**
+    >;
+    request?: SecondParameter<typeof customInstance>;
+}): UseMutationOptions<
+    Awaited<ReturnType<typeof authLogin>>,
+    TError,
+    { data: LoginDto },
+    TContext
+> => {
+    const mutationKey = ['authLogin'];
+    const { mutation: mutationOptions, request: requestOptions } = options
+        ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
+            ? options
+            : { ...options, mutation: { ...options.mutation, mutationKey } }
+        : { mutation: { mutationKey }, request: undefined };
+
+    const mutationFn: MutationFunction<
+        Awaited<ReturnType<typeof authLogin>>,
+        { data: LoginDto }
+    > = (props) => {
+        const { data } = props ?? {};
+
+        return authLogin(data, requestOptions);
+    };
+
+    return { mutationFn, ...mutationOptions };
+};
+
+export type AuthLoginMutationResult = NonNullable<Awaited<ReturnType<typeof authLogin>>>;
+export type AuthLoginMutationBody = LoginDto;
+export type AuthLoginMutationError = ApiErrorResponseDto;
+
+/**
+ * @summary Login user
+ */
+export const useAuthLogin = <TError = ApiErrorResponseDto, TContext = unknown>(
+    options?: {
+        mutation?: UseMutationOptions<
+            Awaited<ReturnType<typeof authLogin>>,
+            TError,
+            { data: LoginDto },
+            TContext
+        >;
+        request?: SecondParameter<typeof customInstance>;
+    },
+    queryClient?: QueryClient,
+): UseMutationResult<
+    Awaited<ReturnType<typeof authLogin>>,
+    TError,
+    { data: LoginDto },
+    TContext
+> => {
+    return useMutation(getAuthLoginMutationOptions(options), queryClient);
+};
+/**
  * @summary Refresh access token
  */
 export type authRefreshResponse200 = {
-  data: RefreshTokenResponseDto
-  status: 200
-}
+    data: RefreshTokenResponseDto;
+    status: 200;
+};
 
 export type authRefreshResponse400 = {
-  data: ApiErrorResponseDto
-  status: 400
-}
+    data: ApiErrorResponseDto;
+    status: 400;
+};
 
 export type authRefreshResponse401 = {
-  data: ApiErrorResponseDto
-  status: 401
-}
-    
-export type authRefreshResponseSuccess = (authRefreshResponse200) & {
-  headers: Headers;
+    data: ApiErrorResponseDto;
+    status: 401;
+};
+
+export type authRefreshResponseSuccess = authRefreshResponse200 & {
+    headers: Headers;
 };
 export type authRefreshResponseError = (authRefreshResponse400 | authRefreshResponse401) & {
-  headers: Headers;
+    headers: Headers;
 };
 
-export type authRefreshResponse = (authRefreshResponseSuccess | authRefreshResponseError)
+export type authRefreshResponse = authRefreshResponseSuccess | authRefreshResponseError;
 
 export const getAuthRefreshUrl = () => {
+    return `/auth/refresh`;
+};
 
+export const authRefresh = async (
+    refreshTokenDto: RefreshTokenDto,
+    options?: RequestInit,
+): Promise<authRefreshResponse> => {
+    return customInstance<authRefreshResponse>(getAuthRefreshUrl(), {
+        ...options,
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...options?.headers },
+        body: JSON.stringify(refreshTokenDto),
+    });
+};
 
-  
-
-  return `/auth/refresh`
-}
-
-export const authRefresh = async (refreshTokenDto: RefreshTokenDto, options?: RequestInit): Promise<authRefreshResponse> => {
-  
-  return customInstance<authRefreshResponse>(getAuthRefreshUrl(),
-  {      
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      refreshTokenDto,)
-  }
-);}
-
-
-
-
-export const getAuthRefreshMutationOptions = <TError = ApiErrorResponseDto,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authRefresh>>, TError,{data: RefreshTokenDto}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof authRefresh>>, TError,{data: RefreshTokenDto}, TContext> => {
-
-const mutationKey = ['authRefresh'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
-
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof authRefresh>>, {data: RefreshTokenDto}> = (props) => {
-          const {data} = props ?? {};
-
-          return  authRefresh(data,requestOptions)
-        }
-
-
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type AuthRefreshMutationResult = NonNullable<Awaited<ReturnType<typeof authRefresh>>>
-    export type AuthRefreshMutationBody = RefreshTokenDto
-    export type AuthRefreshMutationError = ApiErrorResponseDto
-
-    /**
- * @summary Refresh access token
- */
-export const useAuthRefresh = <TError = ApiErrorResponseDto,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authRefresh>>, TError,{data: RefreshTokenDto}, TContext>, request?: SecondParameter<typeof customInstance>}
- , queryClient?: QueryClient): UseMutationResult<
+export const getAuthRefreshMutationOptions = <
+    TError = ApiErrorResponseDto,
+    TContext = unknown,
+>(options?: {
+    mutation?: UseMutationOptions<
         Awaited<ReturnType<typeof authRefresh>>,
         TError,
-        {data: RefreshTokenDto},
+        { data: RefreshTokenDto },
         TContext
-      > => {
-      return useMutation(getAuthRefreshMutationOptions(options), queryClient);
-    }
-    /**
+    >;
+    request?: SecondParameter<typeof customInstance>;
+}): UseMutationOptions<
+    Awaited<ReturnType<typeof authRefresh>>,
+    TError,
+    { data: RefreshTokenDto },
+    TContext
+> => {
+    const mutationKey = ['authRefresh'];
+    const { mutation: mutationOptions, request: requestOptions } = options
+        ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
+            ? options
+            : { ...options, mutation: { ...options.mutation, mutationKey } }
+        : { mutation: { mutationKey }, request: undefined };
+
+    const mutationFn: MutationFunction<
+        Awaited<ReturnType<typeof authRefresh>>,
+        { data: RefreshTokenDto }
+    > = (props) => {
+        const { data } = props ?? {};
+
+        return authRefresh(data, requestOptions);
+    };
+
+    return { mutationFn, ...mutationOptions };
+};
+
+export type AuthRefreshMutationResult = NonNullable<Awaited<ReturnType<typeof authRefresh>>>;
+export type AuthRefreshMutationBody = RefreshTokenDto;
+export type AuthRefreshMutationError = ApiErrorResponseDto;
+
+/**
+ * @summary Refresh access token
+ */
+export const useAuthRefresh = <TError = ApiErrorResponseDto, TContext = unknown>(
+    options?: {
+        mutation?: UseMutationOptions<
+            Awaited<ReturnType<typeof authRefresh>>,
+            TError,
+            { data: RefreshTokenDto },
+            TContext
+        >;
+        request?: SecondParameter<typeof customInstance>;
+    },
+    queryClient?: QueryClient,
+): UseMutationResult<
+    Awaited<ReturnType<typeof authRefresh>>,
+    TError,
+    { data: RefreshTokenDto },
+    TContext
+> => {
+    return useMutation(getAuthRefreshMutationOptions(options), queryClient);
+};
+/**
  * @summary Get current user
  */
 export type authGetMeResponse200 = {
-  data: UserMeResponseDto
-  status: 200
-}
+    data: UserMeResponseDto;
+    status: 200;
+};
 
 export type authGetMeResponse401 = {
-  data: ApiErrorResponseDto
-  status: 401
-}
-    
-export type authGetMeResponseSuccess = (authGetMeResponse200) & {
-  headers: Headers;
-};
-export type authGetMeResponseError = (authGetMeResponse401) & {
-  headers: Headers;
+    data: ApiErrorResponseDto;
+    status: 401;
 };
 
-export type authGetMeResponse = (authGetMeResponseSuccess | authGetMeResponseError)
+export type authGetMeResponseSuccess = authGetMeResponse200 & {
+    headers: Headers;
+};
+export type authGetMeResponseError = authGetMeResponse401 & {
+    headers: Headers;
+};
+
+export type authGetMeResponse = authGetMeResponseSuccess | authGetMeResponseError;
 
 export const getAuthGetMeUrl = () => {
+    return `/auth/me`;
+};
 
-
-  
-
-  return `/auth/me`
-}
-
-export const authGetMe = async ( options?: RequestInit): Promise<authGetMeResponse> => {
-  
-  return customInstance<authGetMeResponse>(getAuthGetMeUrl(),
-  {      
-    ...options,
-    method: 'GET'
-    
-    
-  }
-);}
-
-
-
-
+export const authGetMe = async (options?: RequestInit): Promise<authGetMeResponse> => {
+    return customInstance<authGetMeResponse>(getAuthGetMeUrl(), {
+        ...options,
+        method: 'GET',
+    });
+};
 
 export const getAuthGetMeQueryKey = () => {
-    return [
-    `/auth/me`
-    ] as const;
-    }
+    return [`/auth/me`] as const;
+};
 
-    
-export const getAuthGetMeQueryOptions = <TData = Awaited<ReturnType<typeof authGetMe>>, TError = ApiErrorResponseDto>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authGetMe>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
-) => {
+export const getAuthGetMeQueryOptions = <
+    TData = Awaited<ReturnType<typeof authGetMe>>,
+    TError = ApiErrorResponseDto,
+>(options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof authGetMe>>, TError, TData>>;
+    request?: SecondParameter<typeof customInstance>;
+}) => {
+    const { query: queryOptions, request: requestOptions } = options ?? {};
 
-const {query: queryOptions, request: requestOptions} = options ?? {};
+    const queryKey = queryOptions?.queryKey ?? getAuthGetMeQueryKey();
 
-  const queryKey =  queryOptions?.queryKey ?? getAuthGetMeQueryKey();
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof authGetMe>>> = ({ signal }) =>
+        authGetMe({ signal, ...requestOptions });
 
-  
+    return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+        Awaited<ReturnType<typeof authGetMe>>,
+        TError,
+        TData
+    > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof authGetMe>>> = ({ signal }) => authGetMe({ signal, ...requestOptions });
+export type AuthGetMeQueryResult = NonNullable<Awaited<ReturnType<typeof authGetMe>>>;
+export type AuthGetMeQueryError = ApiErrorResponseDto;
 
-      
-
-      
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof authGetMe>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type AuthGetMeQueryResult = NonNullable<Awaited<ReturnType<typeof authGetMe>>>
-export type AuthGetMeQueryError = ApiErrorResponseDto
-
-
-export function useAuthGetMe<TData = Awaited<ReturnType<typeof authGetMe>>, TError = ApiErrorResponseDto>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof authGetMe>>, TError, TData>> & Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof authGetMe>>,
-          TError,
-          Awaited<ReturnType<typeof authGetMe>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof customInstance>}
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useAuthGetMe<TData = Awaited<ReturnType<typeof authGetMe>>, TError = ApiErrorResponseDto>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authGetMe>>, TError, TData>> & Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof authGetMe>>,
-          TError,
-          Awaited<ReturnType<typeof authGetMe>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof customInstance>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useAuthGetMe<TData = Awaited<ReturnType<typeof authGetMe>>, TError = ApiErrorResponseDto>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authGetMe>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAuthGetMe<
+    TData = Awaited<ReturnType<typeof authGetMe>>,
+    TError = ApiErrorResponseDto,
+>(
+    options: {
+        query: Partial<UseQueryOptions<Awaited<ReturnType<typeof authGetMe>>, TError, TData>> &
+            Pick<
+                DefinedInitialDataOptions<
+                    Awaited<ReturnType<typeof authGetMe>>,
+                    TError,
+                    Awaited<ReturnType<typeof authGetMe>>
+                >,
+                'initialData'
+            >;
+        request?: SecondParameter<typeof customInstance>;
+    },
+    queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useAuthGetMe<
+    TData = Awaited<ReturnType<typeof authGetMe>>,
+    TError = ApiErrorResponseDto,
+>(
+    options?: {
+        query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof authGetMe>>, TError, TData>> &
+            Pick<
+                UndefinedInitialDataOptions<
+                    Awaited<ReturnType<typeof authGetMe>>,
+                    TError,
+                    Awaited<ReturnType<typeof authGetMe>>
+                >,
+                'initialData'
+            >;
+        request?: SecondParameter<typeof customInstance>;
+    },
+    queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useAuthGetMe<
+    TData = Awaited<ReturnType<typeof authGetMe>>,
+    TError = ApiErrorResponseDto,
+>(
+    options?: {
+        query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof authGetMe>>, TError, TData>>;
+        request?: SecondParameter<typeof customInstance>;
+    },
+    queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 /**
  * @summary Get current user
  */
 
-export function useAuthGetMe<TData = Awaited<ReturnType<typeof authGetMe>>, TError = ApiErrorResponseDto>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authGetMe>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
- , queryClient?: QueryClient 
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+export function useAuthGetMe<
+    TData = Awaited<ReturnType<typeof authGetMe>>,
+    TError = ApiErrorResponseDto,
+>(
+    options?: {
+        query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof authGetMe>>, TError, TData>>;
+        request?: SecondParameter<typeof customInstance>;
+    },
+    queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+    const queryOptions = getAuthGetMeQueryOptions(options);
 
-  const queryOptions = getAuthGetMeQueryOptions(options)
+    const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+        queryKey: DataTag<QueryKey, TData, TError>;
+    };
 
-  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return { ...query, queryKey: queryOptions.queryKey };
+    return { ...query, queryKey: queryOptions.queryKey };
 }
-
-
-
-

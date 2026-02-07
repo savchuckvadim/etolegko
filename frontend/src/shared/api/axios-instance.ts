@@ -20,7 +20,7 @@ setupResponseInterceptor();
 /**
  * Custom instance для Orval
  * Используется для кодогенерации API клиентов
- * 
+ *
  * Orval передает URL как первый параметр (string), а конфигурацию как второй (RequestInit)
  */
 export const customInstance = <T>(
@@ -28,7 +28,7 @@ export const customInstance = <T>(
     options?: RequestInit | AxiosRequestConfig,
 ): Promise<T> => {
     const source = axios.CancelToken.source();
-    
+
     let axiosConfig: AxiosRequestConfig;
 
     if (typeof config === 'string') {

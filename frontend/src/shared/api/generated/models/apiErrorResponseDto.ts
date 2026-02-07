@@ -7,8 +7,8 @@
  */
 
 export interface ApiErrorResponseDto {
-  /** Error message */
-  message: string;
-  /** Array of validation errors (for validation errors) */
-  errors?: string[];
+    /** Error message */
+    message: string;
+    /** Array of validation errors (for validation errors) */
+    errors?: string[];
 }

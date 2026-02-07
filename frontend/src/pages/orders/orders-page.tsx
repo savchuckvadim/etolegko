@@ -50,7 +50,14 @@ export const OrdersPage = () => {
 
     return (
         <MainLayout>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+            <Box
+                sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    mb: 3,
+                }}
+            >
                 <Typography variant="h4">Заказы</Typography>
                 <Button
                     variant="contained"
@@ -101,8 +108,10 @@ export const OrdersPage = () => {
                                     <Typography variant="body1">Заказ #{order.id}</Typography>
                                     <Typography variant="body2" color="text.secondary">
                                         Сумма: {order.amount} ₽
-                                        {order.promoCodeId && ` | Промокод ID: ${order.promoCodeId}`}
-                                        {order.discountAmount && ` | Скидка: ${order.discountAmount} ₽`}
+                                        {order.promoCodeId &&
+                                            ` | Промокод ID: ${order.promoCodeId}`}
+                                        {order.discountAmount &&
+                                            ` | Скидка: ${order.discountAmount} ₽`}
                                     </Typography>
                                 </Box>
                                 <Box sx={{ display: 'flex', gap: 1 }}>
@@ -116,7 +125,11 @@ export const OrdersPage = () => {
                                     <IconButton
                                         size="small"
                                         onClick={() => {
-                                            if (window.confirm('Вы уверены, что хотите удалить заказ?')) {
+                                            if (
+                                                window.confirm(
+                                                    'Вы уверены, что хотите удалить заказ?',
+                                                )
+                                            ) {
                                                 remove.mutate({ id: order.id });
                                             }
                                         }}
