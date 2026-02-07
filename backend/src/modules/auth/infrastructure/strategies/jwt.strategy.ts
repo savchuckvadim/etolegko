@@ -1,4 +1,8 @@
 import { AuthService } from '@auth/application/services/auth.service';
+import {
+    JWT_ENV_KEYS,
+    JWT_ERROR_MESSAGES,
+} from '@auth/domain/constants/jwt.constants';
 import { JwtPayload } from '@auth/domain/interfaces/jwt-payload.interface';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
@@ -12,9 +16,9 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
         private readonly authService: AuthService,
         private readonly configService: ConfigService,
     ) {
-        const secretOrKey = configService.get<string>('JWT_SECRET');
+        const secretOrKey = configService.get<string>(JWT_ENV_KEYS.SECRET);
         if (!secretOrKey) {
-            throw new Error('JWT_SECRET is not configured');
+            throw new Error(JWT_ERROR_MESSAGES.SECRET_NOT_CONFIGURED);
         }
         // eslint-disable-next-line @typescript-eslint/no-unsafe-call
         super({

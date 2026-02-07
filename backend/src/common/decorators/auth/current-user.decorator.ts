@@ -18,9 +18,21 @@ interface RequestWithUser extends Request {
  *   return user;
  * }
  * ```
+ *
+ * @example
+ * ```typescript
+ * @Get('me')
+ * @UseGuards(JwtAuthGuard)
+ * async getMe(@CurrentUser('id') userId: string) {
+ *   return userId;
+ * }
+ * ```
  */
 export const CurrentUser = createParamDecorator(
-    (data: string | undefined, ctx: ExecutionContext): User | string | null => {
+    <K extends keyof User>(
+        data: K | undefined,
+        ctx: ExecutionContext,
+    ): User | User[K] | null => {
         const request = ctx.switchToHttp().getRequest<RequestWithUser>();
         const user = request.user;
 
@@ -30,7 +42,7 @@ export const CurrentUser = createParamDecorator(
 
         // Если передан параметр, возвращаем конкретное поле
         if (data) {
-            return (user as Record<string, unknown>)[data] as string;
+            return user[data];
         }
         return user;
     },

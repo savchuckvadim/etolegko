@@ -1,6 +1,10 @@
 import { AuthResponseDto } from '@auth/api/dto/auth-response.dto';
 import { LoginDto } from '@auth/api/dto/login.dto';
 import { RegisterDto } from '@auth/api/dto/register.dto';
+import {
+    JWT_DEFAULTS,
+    JWT_ENV_KEYS,
+} from '@auth/domain/constants/jwt.constants';
 import { JwtPayload } from '@auth/domain/interfaces/jwt-payload.interface';
 import * as bcrypt from 'bcrypt';
 import {
@@ -137,8 +141,8 @@ export class AuthService {
     async refreshToken(refreshToken: string): Promise<{ accessToken: string }> {
         try {
             const refreshSecret =
-                this.configService.get<string>('JWT_REFRESH_SECRET') ||
-                this.configService.get<string>('JWT_SECRET');
+                this.configService.get<string>(JWT_ENV_KEYS.REFRESH_SECRET) ||
+                this.configService.get<string>(JWT_ENV_KEYS.SECRET);
 
             const payload = await this.jwtService.verifyAsync<JwtPayload>(
                 refreshToken,
@@ -158,13 +162,15 @@ export class AuthService {
                 name: user.name,
             };
 
-            const jwtSecret = this.configService.get<string>('JWT_SECRET');
+            const jwtSecret =
+                this.configService.get<string>(JWT_ENV_KEYS.SECRET);
             const accessTokenExpiresIn: string =
-                this.configService.get<string>('JWT_ACCESS_TOKEN_EXPIRES_IN') ||
-                '15m';
+                this.configService.get<string>(
+                    JWT_ENV_KEYS.ACCESS_TOKEN_EXPIRES_IN,
+                ) || JWT_DEFAULTS.ACCESS_TOKEN_EXPIRES_IN;
 
             const signOptions = {
-                secret: jwtSecret || 'default-secret',
+                secret: jwtSecret || JWT_DEFAULTS.SECRET,
                 expiresIn: accessTokenExpiresIn,
             } as { secret: string; expiresIn: string };
             // @ts-expect-error - JWT library type mismatch: expiresIn accepts string but types expect StringValue
@@ -192,22 +198,26 @@ export class AuthService {
             name: user.name,
         };
 
-        const jwtSecret = this.configService.get<string>('JWT_SECRET');
+        const jwtSecret =
+            this.configService.get<string>(JWT_ENV_KEYS.SECRET);
         const refreshSecret =
-            this.configService.get<string>('JWT_REFRESH_SECRET') || jwtSecret;
+            this.configService.get<string>(JWT_ENV_KEYS.REFRESH_SECRET) ||
+            jwtSecret;
         const accessTokenExpiresIn =
-            this.configService.get<string>('JWT_ACCESS_TOKEN_EXPIRES_IN') ||
-            '15m';
+            this.configService.get<string>(
+                JWT_ENV_KEYS.ACCESS_TOKEN_EXPIRES_IN,
+            ) || JWT_DEFAULTS.ACCESS_TOKEN_EXPIRES_IN;
         const refreshTokenExpiresIn =
-            this.configService.get<string>('JWT_REFRESH_TOKEN_EXPIRES_IN') ||
-            '7d';
+            this.configService.get<string>(
+                JWT_ENV_KEYS.REFRESH_TOKEN_EXPIRES_IN,
+            ) || JWT_DEFAULTS.REFRESH_TOKEN_EXPIRES_IN;
 
         const signOptions = {
-            secret: jwtSecret || 'default-secret',
+            secret: jwtSecret || JWT_DEFAULTS.SECRET,
             expiresIn: accessTokenExpiresIn,
         } as { secret: string; expiresIn: string };
         const refreshSignOptions = {
-            secret: refreshSecret || 'default-secret',
+            secret: refreshSecret || JWT_DEFAULTS.SECRET,
             expiresIn: refreshTokenExpiresIn,
         } as { secret: string; expiresIn: string };
 

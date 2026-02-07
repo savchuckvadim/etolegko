@@ -1,4 +1,5 @@
 import { INestApplication } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import {
     DocumentBuilder,
     SwaggerDocumentOptions,
@@ -6,11 +7,16 @@ import {
 } from '@nestjs/swagger';
 
 export const getSwaggerConfig = (app: INestApplication) => {
+    const configService = app.get(ConfigService);
+    const appName = configService.get<string>('APP_NAME') || 'API';
+    const appDescription =
+        configService.get<string>('APP_DESCRIPTION') || 'API Documentation';
+
     const config = new DocumentBuilder()
-        .setTitle(process.env.APP_NAME || 'API')
-        .setDescription(process.env.APP_DESCRIPTION || 'API')
+        .setTitle(appName)
+        .setDescription(appDescription)
         .setVersion('1.0')
-        .addTag(process.env.APP_NAME || 'API')
+        .addTag(appName)
         .build();
 
     const options: SwaggerDocumentOptions = {
