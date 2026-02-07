@@ -107,6 +107,24 @@
 - ✅ Обработка ошибок с логированием и повторными попытками
 - ✅ Создана документация по системе Event Bus & Queue
 
+### 12. Orders Module
+- ✅ Создан модуль orders с полной архитектурой (api, application, domain, infrastructure)
+- ✅ Реализованы CRUD операции для заказов
+- ✅ Создана Domain Entity Order с бизнес-логикой (applyPromoCode, getFinalAmount)
+- ✅ Реализована защита данных: пользователи видят только свои заказы
+- ✅ Реализована фильтрация заказов:
+  - По userId
+  - По диапазону дат (dateFrom, dateTo)
+  - Пагинация и сортировка
+- ✅ Создан Use Case `CreateOrderUseCase` для координации создания заказа и публикации события
+- ✅ Реализована Event-Driven архитектура:
+  - Событие `OrderCreatedEvent` при создании заказа
+  - Consumer `OrderAnalyticsConsumer` для записи аналитики в ClickHouse
+  - Автоматическая запись в таблицу `orders_analytics`
+- ✅ Настроена Swagger документация для всех эндпоинтов
+- ✅ Настроены TypeScript path aliases (@orders)
+- ✅ Модуль зарегистрирован в AppModule
+
 ## Структура
 
 ```
@@ -141,6 +159,12 @@ project/backend/
 │   │   │   ├── domain/         # Доменные сущности и константы
 │   │   │   ├── infrastructure/ # Репозитории, схемы, consumers
 │   │   │   └── __tests__/      # Тесты
+│   │   ├── orders/              # Модуль заказов
+│   │   │   ├── api/            # Контроллеры и DTO
+│   │   │   ├── application/    # Бизнес-логика, сервисы, use cases, события
+│   │   │   ├── domain/         # Доменные сущности
+│   │   │   ├── infrastructure/ # Репозитории, схемы, consumers
+│   │   │   └── index.ts        # Экспорты модуля
 │   │   └── shared/              # Общие модули
 │   │       ├── database/        # MongoDB, ClickHouse
 │   │       └── events/          # EventBus (Redis/Bull)

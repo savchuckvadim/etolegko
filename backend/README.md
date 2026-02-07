@@ -127,6 +127,24 @@ curl http://localhost:8123/ping
 
 Подробнее: [Event Bus & Queue System](../../documentation/event-bus-queue-clickhouse.md)
 
+### Orders Module
+- ✅ CRUD операции для заказов
+- ✅ Применение промокодов к заказам (через Promo Codes Module)
+- ✅ Защита данных: пользователи видят только свои заказы
+- ✅ Фильтрация по пользователю и диапазону дат
+- ✅ Event-driven архитектура для записи аналитики в ClickHouse
+- ✅ Use Cases для координации бизнес-логики
+
+**API Endpoints:**
+- `POST /orders` - Создание заказа
+- `GET /orders` - Список заказов с пагинацией (только свои)
+- `GET /orders/:id` - Получение заказа по ID (только свой)
+- `PATCH /orders/:id` - Обновление заказа (только свой)
+- `DELETE /orders/:id` - Удаление заказа (только свой)
+
+**Event-Driven Analytics:**
+Создание заказа автоматически публикует событие `OrderCreatedEvent` в очередь Redis/Bull, которое обрабатывается Consumer'ом и записывается в ClickHouse для аналитики.
+
 ## Project setup
 
 ```bash

@@ -1,4 +1,5 @@
 import { AuthModule } from '@auth';
+import { OrdersModule } from '@orders';
 import { PromoCodesModule } from '@promo-codes';
 import { UsersModule } from '@users';
 import { BullModule } from '@nestjs/bull';
@@ -33,6 +34,7 @@ import { EventBusModule } from './modules/shared/events/event-bus.module';
         UsersModule,
         AuthModule,
         PromoCodesModule,
+        OrdersModule,
     ],
 })
 export class AppModule {}

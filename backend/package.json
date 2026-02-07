@@ -95,7 +95,9 @@
       "^@auth$": "<rootDir>/modules/auth",
       "^@auth/(.*)$": "<rootDir>/modules/auth/$1",
       "^@promo-codes$": "<rootDir>/modules/promo-codes",
-      "^@promo-codes/(.*)$": "<rootDir>/modules/promo-codes/$1"
+      "^@promo-codes/(.*)$": "<rootDir>/modules/promo-codes/$1",
+      "^@orders$": "<rootDir>/modules/orders",
+      "^@orders/(.*)$": "<rootDir>/modules/orders/$1"
     }
   }
 }

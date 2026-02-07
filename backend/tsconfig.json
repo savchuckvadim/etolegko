@@ -22,7 +22,9 @@
       "@auth": ["src/modules/auth"],
       "@auth/*": ["src/modules/auth/*"],
       "@promo-codes": ["src/modules/promo-codes"],
-      "@promo-codes/*": ["src/modules/promo-codes/*"]
+      "@promo-codes/*": ["src/modules/promo-codes/*"],
+      "@orders": ["src/modules/orders"],
+      "@orders/*": ["src/modules/orders/*"]
     },
     "incremental": true,
     "skipLibCheck": true,
