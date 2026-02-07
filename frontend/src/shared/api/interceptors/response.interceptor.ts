@@ -2,6 +2,7 @@ import type { AxiosError, AxiosResponse, InternalAxiosRequestConfig } from 'axio
 import { axiosInstance } from '../axios-instance';
 import { HTTP_STATUS } from '../constants/error-codes.const';
 import { refreshAccessToken } from '../utils/refresh-token.util';
+import { tokenStorage } from '@shared/lib';
 import {
     isBackendSuccessResponse,
     isBackendErrorResponse,
@@ -36,17 +37,16 @@ export function setupResponseInterceptor(): void {
 
                 if (isRefreshRequest || alreadyRetried) {
                     // Refresh token невалиден или истёк, перенаправляем на логин
-                    localStorage.removeItem('accessToken');
-                    localStorage.removeItem('refreshToken');
+                    tokenStorage.clearTokens();
                     window.location.href = '/login';
                     return Promise.reject(error);
                 }
 
                 // Пытаемся обновить токен
-                const refreshToken = localStorage.getItem('refreshToken');
+                const refreshToken = tokenStorage.getRefreshToken();
                 if (!refreshToken) {
                     // Refresh token отсутствует, перенаправляем на логин
-                    localStorage.removeItem('accessToken');
+                    tokenStorage.clearTokens();
                     window.location.href = '/login';
                     return Promise.reject(error);
                 }
@@ -59,7 +59,7 @@ export function setupResponseInterceptor(): void {
                     const newAccessToken = await refreshAccessToken(
                         refreshToken,
                     );
-                    localStorage.setItem('accessToken', newAccessToken);
+                    tokenStorage.setAccessToken(newAccessToken);
 
                     // Повторяем оригинальный запрос с новым токеном
                     if (originalRequest.headers) {
@@ -68,8 +68,7 @@ export function setupResponseInterceptor(): void {
                     return axiosInstance.request(originalRequest);
                 } catch (refreshError) {
                     // Refresh token невалиден или истёк, перенаправляем на логин
-                    localStorage.removeItem('accessToken');
-                    localStorage.removeItem('refreshToken');
+                    tokenStorage.clearTokens();
                     window.location.href = '/login';
                     return Promise.reject(refreshError);
                 }

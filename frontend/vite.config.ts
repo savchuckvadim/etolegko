@@ -13,6 +13,7 @@ export default defineConfig({
             '@features': path.resolve(__dirname, './src/features'),
             '@widgets': path.resolve(__dirname, './src/widgets'),
             '@pages': path.resolve(__dirname, './src/pages'),
+            '@processes': path.resolve(__dirname, './src/processes'),
         },
     },
 });

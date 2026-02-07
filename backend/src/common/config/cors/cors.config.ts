@@ -1,8 +1,8 @@
 export const cors = {
-    origin: (process.env.CORS_ORIGIN ?? '')
+    origin: (process.env.CORS_ORIGIN ?? 'http://localhost:5173')
         .split(',')
-        .map(origin => origin.trim()),
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-
+        .map(origin => origin.trim())
+        .filter(origin => origin.length > 0), // Убираем пустые строки
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
     credentials: true,
 };

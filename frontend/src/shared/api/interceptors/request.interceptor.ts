@@ -1,5 +1,6 @@
 import type { InternalAxiosRequestConfig } from 'axios';
 import { axiosInstance } from '../axios-instance';
+import { tokenStorage } from '@shared/lib';
 
 /**
  * Request interceptor для добавления токена авторизации
@@ -7,7 +8,7 @@ import { axiosInstance } from '../axios-instance';
 export function setupRequestInterceptor(): void {
     axiosInstance.interceptors.request.use(
         (config: InternalAxiosRequestConfig) => {
-            const token = localStorage.getItem('accessToken');
+            const token = tokenStorage.getAccessToken();
             if (token && config.headers) {
                 config.headers.Authorization = `Bearer ${token}`;
             }

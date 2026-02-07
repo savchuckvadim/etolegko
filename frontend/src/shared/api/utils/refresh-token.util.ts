@@ -1,8 +1,9 @@
 import axios from 'axios';
 import { HTTP_STATUS } from '../constants/error-codes.const';
 import type { BackendSuccessResponse } from '../types/backend-response.types';
+import { API_BASE_URL } from '@shared/config/api.config';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+// const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
 
 /**
  * Интерфейс ответа от /auth/refresh

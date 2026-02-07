@@ -1,16 +1,30 @@
 import { createBrowserRouter } from 'react-router-dom';
+import { LoginPage, RegisterPage } from '@pages/auth';
+import { AuthGuard } from '@processes/auth';
+import { HomePage } from '@pages/home';
+
+
+/**
+ * Компонент главной страницы с примером использования useAuth
+ */
+
 
 export const router = createBrowserRouter([
     {
-        path: '/',
-        element: <div>Home Page</div>,
-    },
-    {
-        path: '/login',
-        element: <div>Login Page</div>,
-    },
-    {
-        path: '/register',
-        element: <div>Register Page</div>,
+        element: <AuthGuard />,
+        children: [
+            {
+                path: '/',
+                element: <HomePage />,
+            },
+            {
+                path: '/login',
+                element: <LoginPage />,
+            },
+            {
+                path: '/register',
+                element: <RegisterPage />,
+            },
+        ],
     },
 ]);
