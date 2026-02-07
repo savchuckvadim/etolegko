@@ -134,6 +134,7 @@ curl http://localhost:8123/ping
 - ✅ Фильтрация по пользователю и диапазону дат
 - ✅ Event-driven архитектура для записи аналитики в ClickHouse
 - ✅ Use Cases для координации бизнес-логики
+- ✅ Полное покрытие тестами (service, controller, use case, consumer)
 
 **API Endpoints:**
 - `POST /orders` - Создание заказа
