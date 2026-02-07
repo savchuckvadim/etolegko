@@ -97,7 +97,9 @@
       "^@promo-codes$": "<rootDir>/modules/promo-codes",
       "^@promo-codes/(.*)$": "<rootDir>/modules/promo-codes/$1",
       "^@orders$": "<rootDir>/modules/orders",
-      "^@orders/(.*)$": "<rootDir>/modules/orders/$1"
+      "^@orders/(.*)$": "<rootDir>/modules/orders/$1",
+      "^@analytics$": "<rootDir>/modules/analytics",
+      "^@analytics/(.*)$": "<rootDir>/modules/analytics/$1"
     }
   }
 }

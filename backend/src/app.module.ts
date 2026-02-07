@@ -1,3 +1,4 @@
+import { AnalyticsModule } from '@analytics';
 import { AuthModule } from '@auth';
 import { OrdersModule } from '@orders';
 import { PromoCodesModule } from '@promo-codes';
@@ -35,6 +36,7 @@ import { EventBusModule } from './modules/shared/events/event-bus.module';
         AuthModule,
         PromoCodesModule,
         OrdersModule,
+        AnalyticsModule,
     ],
 })
 export class AppModule {}

@@ -1,4 +1,3 @@
-import type { EventBus } from '@shared/events/event-bus.interface';
 import { CreateOrderDto } from '@orders/api/dto/create-order.dto';
 import { OrderResponseDto } from '@orders/api/dto/order-response.dto';
 import { OrderCreatedEvent } from '@orders/application/events/order-created.event';
@@ -8,8 +7,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 
 describe('CreateOrderUseCase', () => {
     let useCase: CreateOrderUseCase;
-    let mockOrderService: jest.Mocked<OrderService>;
-    let mockEventBus: jest.Mocked<EventBus>;
 
     const mockOrderResponse: OrderResponseDto = {
         id: '507f1f77bcf86cd799439011',
@@ -55,9 +52,6 @@ describe('CreateOrderUseCase', () => {
         }).compile();
 
         useCase = module.get<CreateOrderUseCase>(CreateOrderUseCase);
-        mockOrderService =
-            module.get<jest.Mocked<OrderService>>(OrderService);
-        mockEventBus = module.get<jest.Mocked<EventBus>>('EventBus');
 
         jest.clearAllMocks();
     });
@@ -90,15 +84,19 @@ describe('CreateOrderUseCase', () => {
 
             await useCase.execute(createDto, userId);
 
-            const publishedEvent = mockEventBusValue.publish.mock
-                .calls[0][0] as OrderCreatedEvent;
+            const publishedEvent =
+                (
+                    mockEventBusValue.publish.mock.calls[0] as
+                        | [OrderCreatedEvent]
+                        | undefined
+                )?.[0] ?? null;
             expect(publishedEvent).toBeInstanceOf(OrderCreatedEvent);
-            expect(publishedEvent.orderId).toBe(mockOrderResponse.id);
-            expect(publishedEvent.userId).toBe(mockOrderResponse.userId);
-            expect(publishedEvent.amount).toBe(mockOrderResponse.amount);
-            expect(publishedEvent.promoCodeId).toBeUndefined();
-            expect(publishedEvent.discountAmount).toBeUndefined();
-            expect(publishedEvent.createdAt).toBeInstanceOf(Date);
+            expect(publishedEvent?.orderId).toBe(mockOrderResponse.id);
+            expect(publishedEvent?.userId).toBe(mockOrderResponse.userId);
+            expect(publishedEvent?.amount).toBe(mockOrderResponse.amount);
+            expect(publishedEvent?.promoCodeId).toBeUndefined();
+            expect(publishedEvent?.discountAmount).toBeUndefined();
+            expect(publishedEvent?.createdAt).toBeInstanceOf(Date);
         });
 
         it('should publish event with promo code data if present', async () => {
@@ -109,12 +107,17 @@ describe('CreateOrderUseCase', () => {
 
             await useCase.execute(createDto, userId);
 
-            const publishedEvent = mockEventBusValue.publish.mock
-                .calls[0][0] as OrderCreatedEvent;
-            expect(publishedEvent.promoCodeId).toBe(
+            const publishedEvent =
+                (
+                    mockEventBusValue.publish.mock.calls[0] as
+                        | [OrderCreatedEvent]
+                        | undefined
+                )?.[0] ?? null;
+            expect(publishedEvent).not.toBeNull();
+            expect(publishedEvent?.promoCodeId).toBe(
                 mockOrderWithPromoCode.promoCodeId,
             );
-            expect(publishedEvent.discountAmount).toBe(
+            expect(publishedEvent?.discountAmount).toBe(
                 mockOrderWithPromoCode.discountAmount,
             );
         });

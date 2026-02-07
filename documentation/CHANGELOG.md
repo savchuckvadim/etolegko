@@ -131,6 +131,29 @@
   - Unit тесты для consumer (6 тестов)
 - ✅ Все тесты проходят успешно (40 тестов)
 
+### 13. Analytics Module
+- ✅ Создан модуль analytics для получения аналитических данных из ClickHouse
+- ✅ Реализован `AnalyticsService` с методами для запросов к ClickHouse:
+  - `getPromoCodeStats` - статистика по промокоду (использования, выручка, уникальные пользователи)
+  - `getPromoCodesList` - список промокодов с аналитикой (пагинация, сортировка, фильтрация по датам)
+  - `getUsersList` - список пользователей с агрегированной статистикой (пагинация, сортировка, фильтрация по датам)
+  - `getPromoCodeUsageHistory` - история использований промокодов (пагинация, фильтрация по промокоду и датам)
+- ✅ Реализован `UserAnalyticsConsumer` для обновления агрегированной статистики пользователей:
+  - Обработка `OrderCreatedEvent` - обновление статистики заказов
+  - Обработка `PromoCodeAppliedEvent` - обновление статистики использований промокодов
+  - Использование SummingMergeTree для автоматического суммирования значений
+- ✅ Созданы DTO для запросов и ответов:
+  - `PromoCodeAnalyticsQueryDto`, `UserAnalyticsQueryDto`, `PromoCodeUsageHistoryQueryDto` - для запросов с пагинацией и фильтрацией
+  - `PromoCodeStatsDto`, `PromoCodeAnalyticsDto`, `UserAnalyticsDto`, `PromoCodeUsageHistoryDto` - для ответов
+- ✅ Настроена Swagger документация для всех эндпоинтов
+- ✅ Настроены TypeScript path aliases (@analytics)
+- ✅ Модуль зарегистрирован в AppModule
+- ✅ Созданы тесты для всех компонентов:
+  - Unit тесты для сервиса (9 тестов)
+  - Unit тесты для контроллера (4 теста)
+  - Unit тесты для consumer (5 тестов)
+- ✅ Все тесты проходят успешно (18 тестов)
+
 ## Структура
 
 ```
@@ -171,6 +194,11 @@ project/backend/
 │   │   │   ├── domain/         # Доменные сущности
 │   │   │   ├── infrastructure/ # Репозитории, схемы, consumers
 │   │   │   └── index.ts        # Экспорты модуля
+│   │   ├── analytics/           # Модуль аналитики
+│   │   │   ├── api/            # Контроллеры и DTO
+│   │   │   ├── application/    # AnalyticsService (запросы к ClickHouse)
+│   │   │   ├── infrastructure/ # Consumers (обновление users_analytics)
+│   │   │   └── __tests__/      # Тесты
 │   │   └── shared/              # Общие модули
 │   │       ├── database/        # MongoDB, ClickHouse
 │   │       └── events/          # EventBus (Redis/Bull)

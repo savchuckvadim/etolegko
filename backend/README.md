@@ -188,6 +188,11 @@ src/
     │   ├── domain/            # Domain Entity
     │   └── infrastructure/    # Repositories, Schemas, Consumers
     │
+    ├── analytics/             # Модуль аналитики
+    │   ├── api/               # Controllers, DTOs
+    │   ├── application/       # AnalyticsService (запросы к ClickHouse)
+    │   └── infrastructure/    # Consumers (обновление users_analytics)
+    │
     └── shared/                # Общие модули
         ├── database/          # MongoDB, ClickHouse сервисы
         └── events/            # EventBus (Redis/Bull)
@@ -440,6 +445,7 @@ pnpm run test -- promo-codes
 - ✅ Auth Module — полное покрытие
 - ✅ Promo Codes Module — 41 тест (service, controller, use case, consumer)
 - ✅ Orders Module — 40 тестов (service, controller, use case, consumer)
+- ✅ Analytics Module — 18 тестов (service, controller, consumer)
 
 ## 📝 API Endpoints
 
@@ -470,6 +476,12 @@ pnpm run test -- promo-codes
 - `GET /orders/:id` — Получение заказа (только свой)
 - `PATCH /orders/:id` — Обновление заказа (только свой)
 - `DELETE /orders/:id` — Удаление заказа (только свой)
+
+### Analytics
+- `GET /analytics/promo-codes` — Список промокодов с аналитикой (пагинация, фильтр по датам)
+- `GET /analytics/promo-codes/:id/stats` — Статистика по промокоду (фильтр по датам)
+- `GET /analytics/users` — Список пользователей с аналитикой (пагинация, фильтр по датам)
+- `GET /analytics/promo-code-usages` — История использований промокодов (пагинация, фильтр по датам и промокоду)
 
 Все endpoints защищены JWT аутентификацией (кроме `/auth/register` и `/auth/login`).
 

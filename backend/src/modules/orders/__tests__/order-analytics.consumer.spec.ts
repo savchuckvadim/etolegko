@@ -6,7 +6,6 @@ import { ClickHouseService } from '@shared/database/clickhouse/clickhouse.servic
 
 describe('OrderAnalyticsConsumer', () => {
     let consumer: OrderAnalyticsConsumer;
-    let mockClickHouseService: jest.Mocked<ClickHouseService>;
 
     const mockClickHouseServiceValue = {
         insert: jest.fn(),
@@ -74,12 +73,7 @@ describe('OrderAnalyticsConsumer', () => {
             ],
         }).compile();
 
-        consumer = module.get<OrderAnalyticsConsumer>(
-            OrderAnalyticsConsumer,
-        );
-        mockClickHouseService = module.get<jest.Mocked<ClickHouseService>>(
-            ClickHouseService,
-        );
+        consumer = module.get<OrderAnalyticsConsumer>(OrderAnalyticsConsumer);
 
         jest.clearAllMocks();
     });
@@ -161,9 +155,9 @@ describe('OrderAnalyticsConsumer', () => {
             const error = new Error('ClickHouse connection failed');
             mockClickHouseServiceValue.insert.mockRejectedValue(error);
 
-            await expect(
-                consumer.handleOrderCreated(mockJob),
-            ).rejects.toThrow('ClickHouse connection failed');
+            await expect(consumer.handleOrderCreated(mockJob)).rejects.toThrow(
+                'ClickHouse connection failed',
+            );
 
             expect(mockClickHouseServiceValue.insert).toHaveBeenCalled();
         });
@@ -173,8 +167,9 @@ describe('OrderAnalyticsConsumer', () => {
 
             await consumer.handleOrderCreated(mockJob);
 
-            const insertCall = mockClickHouseServiceValue.insert.mock.calls[0];
-            const insertedData = insertCall[1] as Record<string, unknown>;
+            const insertCall = mockClickHouseServiceValue.insert.mock
+                .calls[0] as [string, Record<string, unknown>] | undefined;
+            const insertedData = insertCall?.[1] ?? {};
 
             expect(insertedData.order_id).toBe(mockEvent.orderId);
             expect(insertedData.user_id).toBe(mockEvent.userId);

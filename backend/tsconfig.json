@@ -24,7 +24,9 @@
       "@promo-codes": ["src/modules/promo-codes"],
       "@promo-codes/*": ["src/modules/promo-codes/*"],
       "@orders": ["src/modules/orders"],
-      "@orders/*": ["src/modules/orders/*"]
+      "@orders/*": ["src/modules/orders/*"],
+      "@analytics": ["src/modules/analytics"],
+      "@analytics/*": ["src/modules/analytics/*"]
     },
     "incremental": true,
     "skipLibCheck": true,

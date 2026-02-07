@@ -3,8 +3,8 @@ import { CreateOrderDto } from '@orders/api/dto/create-order.dto';
 import { OrderQueryDto } from '@orders/api/dto/order-query.dto';
 import { OrderResponseDto } from '@orders/api/dto/order-response.dto';
 import { UpdateOrderDto } from '@orders/api/dto/update-order.dto';
-import { CreateOrderUseCase } from '@orders/application/use-cases/create-order.use-case';
 import { OrderService } from '@orders/application/services/order.service';
+import { CreateOrderUseCase } from '@orders/application/use-cases/create-order.use-case';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { PaginatedResult } from '@common/paginate/interfaces/paginated-result.interface';
@@ -18,17 +18,6 @@ describe('OrdersController', () => {
         userId: '507f1f77bcf86cd799439012',
         amount: 1000,
         finalAmount: 1000,
-        createdAt: new Date('2024-01-01'),
-        updatedAt: new Date('2024-01-01'),
-    };
-
-    const mockOrderWithPromoCode: OrderResponseDto = {
-        id: '507f1f77bcf86cd799439011',
-        userId: '507f1f77bcf86cd799439012',
-        amount: 1000,
-        promoCodeId: '507f1f77bcf86cd799439013',
-        discountAmount: 200,
-        finalAmount: 800,
         createdAt: new Date('2024-01-01'),
         updatedAt: new Date('2024-01-01'),
     };
@@ -217,7 +206,7 @@ describe('OrdersController', () => {
         it('should update order for owner', async () => {
             const updatedOrder: OrderResponseDto = {
                 ...mockOrderResponse,
-                amount: updateDto.amount,
+                amount: updateDto.amount ?? mockOrderResponse.amount,
             };
 
             mockOrderService.findById.mockResolvedValue(mockOrderResponse);

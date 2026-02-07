@@ -109,9 +109,9 @@ describe('OrderService', () => {
 
             expect(mockOrderRepository.create).toHaveBeenCalledWith(
                 expect.objectContaining({
-                    createdAt: expect.any(Date),
-                    updatedAt: expect.any(Date),
-                }),
+                    createdAt: expect.any(Date) as Date,
+                    updatedAt: expect.any(Date) as Date,
+                }) as Record<string, unknown>,
             );
         });
     });
@@ -179,7 +179,7 @@ describe('OrderService', () => {
                     createdAt: expect.objectContaining({
                         $gte: dateQuery.dateFrom,
                         $lte: dateQuery.dateTo,
-                    }),
+                    }) as Record<string, unknown>,
                 }) as Record<string, unknown>,
             );
         });
@@ -240,7 +240,9 @@ describe('OrderService', () => {
         });
 
         it('should calculate finalAmount correctly', async () => {
-            mockOrderRepository.findById.mockResolvedValue(mockOrderWithPromoCode);
+            mockOrderRepository.findById.mockResolvedValue(
+                mockOrderWithPromoCode,
+            );
 
             const result = await service.findById(mockOrderWithPromoCode.id);
 
