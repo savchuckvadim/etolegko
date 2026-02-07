@@ -1,179 +1,506 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Promo Code Manager API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Backend приложение для управления промокодами с аналитикой на базе NestJS.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## 🚀 Инструкция по запуску
 
-## Description
+### Требования
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- Node.js 18+
+- pnpm (или npm/yarn)
+- Docker и Docker Compose
 
-## Database Setup
-
-Проект использует три базы данных:
-- **MongoDB** (OLTP) - транзакционная БД, используется Mongoose ODM
-- **ClickHouse** (OLAP) - аналитическая БД
-- **Redis** - для EventBus и кеширования
-
-### Запуск баз данных
+### Шаг 1: Установка зависимостей
 
 ```bash
-# Запуск всех БД через Docker Compose
-docker-compose up -d
-
-# Проверка статуса
-docker-compose ps
-
-# Остановка
-docker-compose down
+pnpm install
 ```
 
-### Подключение к MongoDB через Compass
+### Шаг 2: Настройка окружения
 
-1. Установите [MongoDB Compass](https://www.mongodb.com/try/download/compass) (если еще не установлен)
-2. Откройте MongoDB Compass
-3. Вставьте connection string:
-   ```
-   mongodb://admin:admin123@localhost:27017/promo_code_manager?authSource=admin
-   ```
-4. Нажмите "Connect"
+Скопируйте файл с примером конфигурации:
 
-**Реквизиты для подключения:**
-- **Host:** `localhost`
-- **Port:** `27017`
-- **Username:** `admin`
-- **Password:** `admin123`
-- **Database:** `promo_code_manager`
-- **Auth Source:** `admin`
-
-### Настройка окружения
-
-1. Скопируйте файл с примером конфигурации:
 ```bash
 cp env.example .env
 ```
 
-2. Настройте параметры подключения в `.env` файле (уже настроено для локального MongoDB)
+Файл `.env` уже содержит настройки для локальной разработки. При необходимости измените значения.
 
-Подробная документация: [Database Setup](../../documentation/database-setup.md)
+### Шаг 3: Запуск баз данных
 
-### Проверка ClickHouse
+Запустите все базы данных через Docker Compose:
 
-ClickHouse запускается через Docker Compose, но миграции отключены автоматически.
-
-**Проверка работы:**
 ```bash
-# Проверка через Docker
-docker exec -it promo_code_manager_clickhouse clickhouse-client --query "SELECT 1"
+docker-compose up -d
+```
 
-# Проверка HTTP интерфейса
+Это запустит:
+- **MongoDB** (порт 27017) - транзакционная БД
+- **ClickHouse** (порты 8123, 9000) - аналитическая БД
+- **Redis** (порт 6379) - для EventBus и очередей
+- **ClickHouse Init** - автоматическая инициализация таблиц
+
+#### Проверка статуса контейнеров
+
+```bash
+docker-compose ps
+```
+
+Все контейнеры должны быть в статусе `Up` и `healthy`.
+
+#### Проверка ClickHouse инициализации
+
+ClickHouse автоматически инициализируется через init-контейнер при первом запуске:
+
+```bash
+# Проверить логи init-контейнера
+docker logs promo_code_manager_clickhouse_init
+```
+
+**⚠️ Важно:** Init-контейнер ждёт готовности ClickHouse (может занять 10-30 секунд). В логах вы увидите:
+```
+🚀 ClickHouse Init Script
+Target container: promo_code_manager_clickhouse
+Waiting for ClickHouse to be ready...
+⏳ ClickHouse is not ready yet, waiting... (5/60)
+⏳ ClickHouse is not ready yet, waiting... (10/60)
+...
+✅ ClickHouse is ready!
+📦 Applying migrations...
+Creating database 'analytics'...
+Creating tables...
+✅ Migrations completed successfully!
+📊 Verifying tables...
+orders_analytics
+promo_code_usages_analytics
+users_analytics
+```
+
+**Дождитесь завершения инициализации**, затем проверьте таблицы:
+
+```bash
+# Проверить, что таблицы созданы
+docker exec promo_code_manager_clickhouse clickhouse-client --database=analytics --query "SHOW TABLES"
+```
+
+Должны быть созданы таблицы:
+- `promo_code_usages_analytics`
+- `orders_analytics`
+- `users_analytics`
+
+**Если таблицы не созданы** (init-контейнер может не успеть выполниться с первого раза), примените миграции вручную:
+
+```bash
+# Создать базу данных
+docker exec promo_code_manager_clickhouse clickhouse-client --query "CREATE DATABASE IF NOT EXISTS analytics"
+
+# Применить миграции
+Get-Content clickhouse/init/001-create-tables.sql | docker exec -i promo_code_manager_clickhouse clickhouse-client --database=analytics --multiquery
+```
+
+**Примечание:** Init-контейнер может потребовать несколько секунд для полной инициализации ClickHouse. Если таблицы не созданы сразу, подождите 10-15 секунд и проверьте снова.
+
+**Для повторного запуска init-контейнера** (если изменили скрипты):
+
+```bash
+docker-compose stop clickhouse-init
+docker-compose rm -f clickhouse-init
+docker-compose up -d clickhouse-init
+```
+
+### Шаг 4: Запуск приложения
+
+```bash
+# Режим разработки (с hot-reload)
+pnpm run start:dev
+
+# Production режим
+pnpm run start:prod
+```
+
+Приложение будет доступно по адресу: `http://localhost:3000`
+
+### Шаг 5: Проверка работы
+
+#### Swagger документация
+
+Откройте в браузере: `http://localhost:3000/docs`
+
+#### Проверка API
+
+```bash
+# Проверка здоровья приложения
+curl http://localhost:3000
+
+# Проверка подключения к ClickHouse
 curl http://localhost:8123/ping
 ```
 
-**Запуск миграций:**
-Миграции можно запустить вручную через `ClickHouseMigrationService.runMigrations()` когда ClickHouse настроен.
-
-## Модули
-
-### Users Module
-- ✅ CRUD операции для пользователей
-- ✅ Пагинация и фильтрация
-- ✅ Валидация данных
-- ✅ Полное покрытие тестами
-
-### Auth Module
-- ✅ Регистрация пользователей (POST /auth/register)
-- ✅ Вход пользователей (POST /auth/login)
-- ✅ Обновление токена (POST /auth/refresh)
-- ✅ Получение текущего пользователя (GET /auth/me)
-- ✅ JWT аутентификация с access и refresh токенами
-- ✅ Swagger документация
-
-### Promo Codes Module
-- ✅ CRUD операции для промокодов
-- ✅ Применение промокодов к заказам (POST /promo-codes/apply)
-- ✅ Валидация использования промокодов (лимиты, сроки действия)
-- ✅ Event-driven архитектура для записи аналитики в ClickHouse
-- ✅ Use Cases для координации бизнес-логики
-- ✅ Полное покрытие тестами (service, controller, use case, consumer)
-
-**API Endpoints:**
-- `POST /promo-codes` - Создание промокода
-- `GET /promo-codes` - Список промокодов с пагинацией
-- `GET /promo-codes/:id` - Получение промокода по ID
-- `PATCH /promo-codes/:id` - Обновление промокода
-- `DELETE /promo-codes/:id` - Удаление промокода
-- `POST /promo-codes/apply` - Применение промокода к заказу
-
-**Event-Driven Analytics:**
-Применение промокода автоматически публикует событие `PromoCodeAppliedEvent` в очередь Redis/Bull, которое обрабатывается Consumer'ом и записывается в ClickHouse для аналитики.
-
-Подробнее: [Event Bus & Queue System](../../documentation/event-bus-queue-clickhouse.md)
-
-### Orders Module
-- ✅ CRUD операции для заказов
-- ✅ Применение промокодов к заказам (через Promo Codes Module)
-- ✅ Защита данных: пользователи видят только свои заказы
-- ✅ Фильтрация по пользователю и диапазону дат
-- ✅ Event-driven архитектура для записи аналитики в ClickHouse
-- ✅ Use Cases для координации бизнес-логики
-- ✅ Полное покрытие тестами (service, controller, use case, consumer)
-
-**API Endpoints:**
-- `POST /orders` - Создание заказа
-- `GET /orders` - Список заказов с пагинацией (только свои)
-- `GET /orders/:id` - Получение заказа по ID (только свой)
-- `PATCH /orders/:id` - Обновление заказа (только свой)
-- `DELETE /orders/:id` - Удаление заказа (только свой)
-
-**Event-Driven Analytics:**
-Создание заказа автоматически публикует событие `OrderCreatedEvent` в очередь Redis/Bull, которое обрабатывается Consumer'ом и записывается в ClickHouse для аналитики.
-
-## Project setup
+### Остановка
 
 ```bash
-$ pnpm install
+# Остановить приложение (Ctrl+C)
+
+# Остановить все контейнеры
+docker-compose down
+
+# Остановить и удалить volumes (⚠️ удалит все данные)
+docker-compose down -v
 ```
 
-## Compile and run the project
+## 📁 Структура проекта
+
+```
+src/
+├── main.ts                    # Точка входа приложения
+├── app.module.ts              # Корневой модуль
+│
+├── common/                     # Общие компоненты
+│   ├── config/                # Конфигурация (CORS, Swagger)
+│   ├── decorators/            # Декораторы (auth, response, validation)
+│   ├── dto/                   # Общие DTO
+│   ├── filters/               # Exception filters
+│   ├── interceptors/         # Response interceptors
+│   └── paginate/             # Утилиты пагинации
+│
+└── modules/                   # Бизнес-модули
+    ├── users/                 # Модуль пользователей
+    │   ├── api/               # API слой (controllers, dto)
+    │   ├── application/       # Application слой (services)
+    │   ├── domain/            # Domain слой (entities)
+    │   └── infrastructure/    # Infrastructure слой (repositories, schemas)
+    │
+    ├── auth/                  # Модуль аутентификации
+    │   ├── api/               # Controllers, DTOs
+    │   ├── application/       # AuthService
+    │   ├── domain/            # JWT interfaces, constants
+    │   └── infrastructure/    # Guards, Strategies (JWT, Local)
+    │
+    ├── promo-codes/           # Модуль промокодов
+    │   ├── api/               # Controllers, DTOs
+    │   ├── application/       # Services, Use Cases, Events
+    │   ├── domain/            # Domain Entity, Constants
+    │   └── infrastructure/    # Repositories, Schemas, Consumers
+    │
+    ├── orders/                # Модуль заказов
+    │   ├── api/               # Controllers, DTOs
+    │   ├── application/       # Services, Use Cases, Events
+    │   ├── domain/            # Domain Entity
+    │   └── infrastructure/    # Repositories, Schemas, Consumers
+    │
+    └── shared/                # Общие модули
+        ├── database/          # MongoDB, ClickHouse сервисы
+        └── events/            # EventBus (Redis/Bull)
+```
+
+### Архитектура модулей (Clean Architecture)
+
+Каждый бизнес-модуль следует принципам Clean Architecture:
+
+```
+module/
+├── domain/              # Бизнес-логика (чистая, без зависимостей)
+│   ├── entity/          # Domain entities с бизнес-правилами
+│   └── constants/       # Константы домена
+│
+├── application/         # Use Cases и Application Services
+│   ├── services/       # Application services
+│   ├── use-cases/      # Use Cases (координация бизнес-логики)
+│   └── events/         # Доменные события
+│
+├── infrastructure/      # Внешние зависимости
+│   ├── repositories/    # Репозитории (MongoDB)
+│   ├── schemas/        # Mongoose schemas
+│   └── consumers/      # Event consumers (ClickHouse)
+│
+└── api/                # API слой
+    ├── controllers/    # REST контроллеры
+    └── dto/            # Data Transfer Objects
+```
+
+## 🏗️ Архитектурные особенности
+
+### 1. Разделение ответственности баз данных
+
+**MongoDB (OLTP)** — источник истины:
+- Хранение пользователей, промокодов, заказов
+- CRUD операции
+- Транзакционная целостность данных
+
+**ClickHouse (OLAP)** — аналитика:
+- Денормализованные данные для аналитики
+- Агрегированная статистика
+- Оптимизация для чтения и аналитических запросов
+
+**Синхронизация:** Event-Driven архитектура через Redis/BullMQ
+
+### 2. Event-Driven синхронизация MongoDB → ClickHouse
+
+```
+┌─────────────┐
+│   MongoDB   │ (OLTP - источник истины)
+└──────┬──────┘
+       │
+       │ Создание/Обновление
+       │
+┌──────▼──────────────────┐
+│   EventBus (Redis/Bull)  │
+└──────┬───────────────────┘
+       │
+       │ Асинхронная обработка
+       │
+┌──────▼──────────┐
+│   Consumers     │
+│   (Bull Queue)  │
+└──────┬──────────┘
+       │
+       │ Запись в ClickHouse
+       │
+┌──────▼──────────┐
+│   ClickHouse    │ (OLAP - аналитика)
+└─────────────────┘
+```
+
+**Как это работает:**
+
+1. **События публикуются** при бизнес-операциях:
+   - `PromoCodeAppliedEvent` — при применении промокода
+   - `OrderCreatedEvent` — при создании заказа
+
+2. **Use Cases координируют** бизнес-логику и публикацию событий:
+   ```typescript
+   // ApplyPromoCodeUseCase
+   async execute() {
+     // 1. Бизнес-логика (через Service)
+     const result = await this.service.applyPromoCode(...);
+     
+     // 2. Публикация события
+     await this.eventBus.publish(new PromoCodeAppliedEvent(...));
+     
+     return result;
+   }
+   ```
+
+3. **Consumers обрабатывают** события асинхронно:
+   ```typescript
+   @Process('PromoCodeAppliedEvent')
+   async handle(event: PromoCodeAppliedEvent) {
+     await this.clickhouse.insert('promo_code_usages_analytics', {
+       // денормализованные данные
+     });
+   }
+   ```
+
+**Преимущества:**
+- ✅ Асинхронность — не блокирует основной поток
+- ✅ Надёжность — retry механизм через Bull
+- ✅ Масштабируемость — можно добавить больше consumers
+- ✅ Разделение ответственности — OLTP и OLAP независимы
+
+### 3. Domain-Driven Design
+
+**Domain Entities** содержат бизнес-логику:
+
+```typescript
+// PromoCode Entity
+class PromoCode {
+  validateUsage(userId: string, userUsageCount: number): void {
+    if (!this.isActive) throw new BadRequestException('Not active');
+    if (this.usedCount >= this.totalLimit) throw new BadRequestException('Limit exceeded');
+    // ... другие правила
+  }
+  
+  calculateDiscount(amount: number): number {
+    return (amount * this.discountPercent) / 100;
+  }
+}
+```
+
+**Use Cases** координируют бизнес-процессы:
+- Отделяют координацию от бизнес-логики
+- Упрощают тестирование
+- Улучшают читаемость кода
+
+### 4. Автоматическая инициализация ClickHouse
+
+**Проблема:** ClickHouse не поддерживает автоматическую инициализацию как PostgreSQL.
+
+**Решение:** Init-контейнер, который:
+1. Ждёт готовности ClickHouse (healthcheck)
+2. Создаёт базу данных `analytics`
+3. Применяет SQL-миграции из `clickhouse/init/001-create-tables.sql`
+
+**Как работает:**
+
+```yaml
+clickhouse-init:
+  image: curlimages/curl:latest
+  depends_on:
+    clickhouse:
+      condition: service_healthy  # Ждёт готовности
+  entrypoint: ["/bin/sh", "/schema/init-http.sh"]
+  restart: "no"  # Запускается один раз
+```
+
+**Идемпотентность:** Используется `IF NOT EXISTS` для безопасного повторного запуска.
+
+### 5. JWT Аутентификация
+
+**Двухуровневая система токенов:**
+- **Access Token** (15 минут) — для API запросов
+- **Refresh Token** (7 дней) — для обновления access token
+
+**Защита роутов:**
+- `@JwtAuth()` — декоратор для защиты роутов
+- `@Public()` — для публичных эндпоинтов
+- `@CurrentUser()` — получение текущего пользователя
+
+### 6. Swagger документация
+
+Автоматическая генерация API документации:
+- Доступна по адресу: `http://localhost:3000/docs`
+- Все endpoints документированы
+- Можно тестировать API прямо из браузера
+
+### 7. Обработка ошибок
+
+**Глобальный Exception Filter:**
+- Единообразные ответы об ошибках
+- Логирование ошибок
+- Валидация через class-validator
+
+**Response Interceptor:**
+- Автоматическая обёртка ответов в `{ result: ... }`
+- Упрощает работу с API на фронтенде
+
+## 📊 Базы данных
+
+### MongoDB
+
+**Подключение через Compass:**
+```
+mongodb://admin:admin123@localhost:27017/promo_code_manager?authSource=admin
+```
+
+**Реквизиты:**
+- Host: `localhost`
+- Port: `27017`
+- Username: `admin`
+- Password: `admin123`
+- Database: `promo_code_manager`
+
+### ClickHouse
+
+**Просмотр данных:**
 
 ```bash
-# development
-$ pnpm run start
+# Подключиться к ClickHouse
+docker exec -it promo_code_manager_clickhouse clickhouse-client --database=analytics
 
-# watch mode
-$ pnpm run start:dev
+# Показать таблицы
+SHOW TABLES;
 
-# production mode
-$ pnpm run start:prod
+# Посмотреть данные
+SELECT * FROM promo_code_usages_analytics LIMIT 10;
+SELECT * FROM orders_analytics LIMIT 10;
 ```
 
-## Run tests
+**HTTP API:**
+```bash
+curl "http://localhost:8123/?database=analytics&query=SHOW+TABLES"
+```
+
+Подробнее: [ClickHouse Guide](../../documentation/clickhouse-guide.md)
+
+### Redis
+
+**Проверка работы:**
+```bash
+docker exec promo_code_manager_redis redis-cli ping
+```
+
+## 🧪 Тестирование
 
 ```bash
-# unit tests
-$ pnpm run test
+# Unit тесты
+pnpm run test
 
-# e2e tests
-$ pnpm run test:e2e
+# E2E тесты
+pnpm run test:e2e
 
-# test coverage
-$ pnpm run test:cov
+# Покрытие кода
+pnpm run test:cov
+
+# Тесты конкретного модуля
+pnpm run test -- promo-codes
 ```
+
+**Покрытие тестами:**
+- ✅ Users Module — полное покрытие
+- ✅ Auth Module — полное покрытие
+- ✅ Promo Codes Module — 41 тест (service, controller, use case, consumer)
+- ✅ Orders Module — 40 тестов (service, controller, use case, consumer)
+
+## 📝 API Endpoints
+
+### Auth
+- `POST /auth/register` — Регистрация
+- `POST /auth/login` — Вход
+- `POST /auth/refresh` — Обновление токена
+- `GET /auth/me` — Текущий пользователь
+
+### Users
+- `POST /users` — Создание пользователя
+- `GET /users` — Список пользователей (пагинация)
+- `GET /users/:id` — Получение пользователя
+- `PATCH /users/:id` — Обновление пользователя
+- `DELETE /users/:id` — Удаление пользователя
+
+### Promo Codes
+- `POST /promo-codes` — Создание промокода
+- `GET /promo-codes` — Список промокодов (пагинация)
+- `GET /promo-codes/:id` — Получение промокода
+- `PATCH /promo-codes/:id` — Обновление промокода
+- `DELETE /promo-codes/:id` — Удаление промокода
+- `POST /promo-codes/apply` — Применение промокода
+
+### Orders
+- `POST /orders` — Создание заказа
+- `GET /orders` — Список заказов (только свои, пагинация)
+- `GET /orders/:id` — Получение заказа (только свой)
+- `PATCH /orders/:id` — Обновление заказа (только свой)
+- `DELETE /orders/:id` — Удаление заказа (только свой)
+
+Все endpoints защищены JWT аутентификацией (кроме `/auth/register` и `/auth/login`).
+
+## 🔧 Команды разработки
+
+```bash
+# Установка зависимостей
+pnpm install
+
+# Запуск в режиме разработки
+pnpm run start:dev
+
+# Сборка проекта
+pnpm run build
+
+# Запуск production
+pnpm run start:prod
+
+# Линтинг
+pnpm run lint
+
+# Форматирование кода
+pnpm run format
+
+# Тесты
+pnpm run test
+```
+
+## 📚 Дополнительная документация
+
+- [Database Setup](../../documentation/database-setup.md)
+- [ClickHouse Guide](../../documentation/clickhouse-guide.md)
+- [Event Bus & Queue System](../../documentation/event-bus-queue-clickhouse.md)
+- [CHANGELOG](../../documentation/CHANGELOG.md)

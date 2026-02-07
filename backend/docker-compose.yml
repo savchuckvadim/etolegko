@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 services:
   mongodb:
@@ -27,8 +27,8 @@ services:
     container_name: promo_code_manager_clickhouse
     restart: unless-stopped
     ports:
-      - "8123:8123"  # HTTP interface
-      - "9000:9000"  # Native interface
+      - "8123:8123" # HTTP interface
+      - "9000:9000" # Native interface
     environment:
       CLICKHOUSE_DB: analytics
     volumes:
@@ -45,6 +45,22 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+
+  clickhouse-init:
+    image: docker:latest
+    container_name: promo_code_manager_clickhouse_init
+    depends_on:
+      clickhouse:
+        condition: service_healthy
+    environment:
+      CLICKHOUSE_CONTAINER: promo_code_manager_clickhouse
+    volumes:
+      - ./clickhouse/init:/schema:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - db_network
+    entrypoint: ["/bin/sh", "/schema/init-http.sh"]
+    restart: "no" # Запускается один раз
 
   redis:
     image: redis:7-alpine
