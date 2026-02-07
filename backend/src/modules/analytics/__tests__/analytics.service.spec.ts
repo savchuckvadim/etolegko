@@ -1,4 +1,5 @@
 import {
+    DatePreset,
     PromoCodeAnalyticsQueryDto,
     PromoCodeUsageHistoryQueryDto,
     UserAnalyticsQueryDto,
@@ -119,6 +120,7 @@ describe('AnalyticsService', () => {
             const query: PromoCodeAnalyticsQueryDto = {
                 page: 1,
                 limit: 10,
+                datePreset: DatePreset.CUSTOM,
                 dateFrom: new Date('2024-01-01'),
                 dateTo: new Date('2024-12-31'),
                 sortBy: 'usage_count',
@@ -201,6 +203,7 @@ describe('AnalyticsService', () => {
             const query: UserAnalyticsQueryDto = {
                 page: 1,
                 limit: 10,
+                datePreset: DatePreset.CUSTOM,
                 dateFrom: new Date('2024-01-01'),
                 dateTo: new Date('2024-12-31'),
                 sortBy: 'total_amount',
@@ -247,6 +250,7 @@ describe('AnalyticsService', () => {
             const query: PromoCodeUsageHistoryQueryDto = {
                 page: 1,
                 limit: 10,
+                datePreset: DatePreset.CUSTOM,
                 dateFrom: new Date('2024-01-01'),
                 dateTo: new Date('2024-12-31'),
                 sortBy: 'created_at',
@@ -297,6 +301,7 @@ describe('AnalyticsService', () => {
                 page: 1,
                 limit: 10,
                 promoCodeId: '507f1f77bcf86cd799439011',
+                datePreset: DatePreset.CUSTOM,
                 dateFrom: new Date('2024-01-01'),
                 dateTo: new Date('2024-12-31'),
             };

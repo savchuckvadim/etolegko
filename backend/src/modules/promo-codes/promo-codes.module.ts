@@ -1,3 +1,4 @@
+import { AnalyticsModule } from '@analytics/analytics.module';
 import { OrdersModule } from '@orders/orders.module';
 import { PromoCodesController } from '@promo-codes/api/controllers/promo-codes.controller';
 import { PromoCodeService } from '@promo-codes/application/services/promo-code.service';
@@ -19,6 +20,7 @@ import { EventBusModule } from '@shared/events/event-bus.module';
         ]),
         EventBusModule,
         OrdersModule,
+        AnalyticsModule,
     ],
     controllers: [PromoCodesController],
     providers: [

@@ -228,4 +228,26 @@ export class AnalyticsRepository {
             totalPages: Math.ceil(total / limit),
         };
     }
+
+    /**
+     * Получить количество использований промокода пользователем
+     */
+    async getUserPromoCodeUsageCount(
+        userId: string,
+        promoCodeId: string,
+    ): Promise<number> {
+        const query = `
+            SELECT count() as count
+            FROM promo_code_usages_analytics
+            WHERE user_id = {userId:String}
+                AND promo_code_id = {promoCodeId:String}
+        `;
+
+        const result = await this.clickhouse.query<{ count: number }>(query, {
+            userId,
+            promoCodeId,
+        });
+
+        return result[0]?.count || 0;
+    }
 }

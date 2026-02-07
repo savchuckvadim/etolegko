@@ -1,4 +1,5 @@
 import {
+    DatePreset,
     PromoCodeAnalyticsQueryDto,
     PromoCodeUsageHistoryQueryDto,
     UserAnalyticsQueryDto,
@@ -17,6 +18,93 @@ export class AnalyticsService {
     private readonly logger = new Logger(AnalyticsService.name);
 
     constructor(private readonly analyticsRepository: AnalyticsRepository) {}
+
+    /**
+     * Вычислить диапазон дат на основе пресета
+     */
+    private calculateDateRange(
+        preset: DatePreset,
+        dateFrom?: Date,
+        dateTo?: Date,
+    ): { dateFrom: Date; dateTo: Date } {
+        const now = new Date();
+        const toDate: Date = dateTo
+            ? new Date(
+                  Date.UTC(
+                      dateTo.getFullYear(),
+                      dateTo.getMonth(),
+                      dateTo.getDate(),
+                      23,
+                      59,
+                      59,
+                      999,
+                  ),
+              )
+            : new Date(
+                  Date.UTC(
+                      now.getFullYear(),
+                      now.getMonth(),
+                      now.getDate(),
+                      23,
+                      59,
+                      59,
+                      999,
+                  ),
+              );
+
+        let fromDate: Date;
+
+        switch (preset) {
+            case DatePreset.TODAY:
+                fromDate = new Date(
+                    Date.UTC(
+                        now.getFullYear(),
+                        now.getMonth(),
+                        now.getDate(),
+                        0,
+                        0,
+                        0,
+                    ),
+                );
+                break;
+            case DatePreset.LAST_7_DAYS:
+                fromDate = new Date(toDate);
+                fromDate.setUTCDate(fromDate.getUTCDate() - 7);
+                fromDate.setUTCHours(0, 0, 0, 0);
+                break;
+            case DatePreset.LAST_30_DAYS:
+                fromDate = new Date(toDate);
+                fromDate.setUTCDate(fromDate.getUTCDate() - 30);
+                fromDate.setUTCHours(0, 0, 0, 0);
+                break;
+            case DatePreset.CUSTOM:
+                if (!dateFrom) {
+                    // Если custom, но dateFrom не указан, используем последние 30 дней
+                    fromDate = new Date(toDate);
+                    fromDate.setUTCDate(fromDate.getUTCDate() - 30);
+                    fromDate.setUTCHours(0, 0, 0, 0);
+                } else {
+                    fromDate = new Date(
+                        Date.UTC(
+                            dateFrom.getFullYear(),
+                            dateFrom.getMonth(),
+                            dateFrom.getDate(),
+                            0,
+                            0,
+                            0,
+                        ),
+                    );
+                }
+                break;
+            default:
+                // По умолчанию последние 30 дней
+                fromDate = new Date(toDate);
+                fromDate.setUTCDate(fromDate.getUTCDate() - 30);
+                fromDate.setUTCHours(0, 0, 0, 0);
+        }
+
+        return { dateFrom: fromDate, dateTo: toDate };
+    }
 
     /**
      * Получить статистику по промокоду
@@ -50,17 +138,19 @@ export class AnalyticsService {
         const {
             page = 1,
             limit = 10,
+            datePreset = DatePreset.LAST_30_DAYS,
             dateFrom,
             dateTo,
             sortBy = 'usage_count',
             sortOrder = SortOrder.DESC,
         } = query;
 
-        // Устанавливаем дефолтные даты, если не указаны
-        const fromDate =
-            dateFrom ||
-            new Date(new Date().setMonth(new Date().getMonth() - 1));
-        const toDate = dateTo || new Date();
+        // Вычисляем диапазон дат на основе пресета
+        const { dateFrom: fromDate, dateTo: toDate } = this.calculateDateRange(
+            datePreset,
+            dateFrom,
+            dateTo,
+        );
 
         try {
             return await this.analyticsRepository.getPromoCodesList(
@@ -89,17 +179,19 @@ export class AnalyticsService {
         const {
             page = 1,
             limit = 10,
+            datePreset = DatePreset.LAST_30_DAYS,
             dateFrom,
             dateTo,
             sortBy = 'total_amount',
             sortOrder = SortOrder.DESC,
         } = query;
 
-        // Устанавливаем дефолтные даты, если не указаны
-        const fromDate =
-            dateFrom ||
-            new Date(new Date().setMonth(new Date().getMonth() - 1));
-        const toDate = dateTo || new Date();
+        // Вычисляем диапазон дат на основе пресета
+        const { dateFrom: fromDate, dateTo: toDate } = this.calculateDateRange(
+            datePreset,
+            dateFrom,
+            dateTo,
+        );
 
         try {
             return await this.analyticsRepository.getUsersList(
@@ -129,17 +221,19 @@ export class AnalyticsService {
             page = 1,
             limit = 10,
             promoCodeId,
+            datePreset = DatePreset.LAST_30_DAYS,
             dateFrom,
             dateTo,
             sortBy = 'created_at',
             sortOrder = SortOrder.DESC,
         } = query;
 
-        // Устанавливаем дефолтные даты, если не указаны
-        const fromDate =
-            dateFrom ||
-            new Date(new Date().setMonth(new Date().getMonth() - 1));
-        const toDate = dateTo || new Date();
+        // Вычисляем диапазон дат на основе пресета
+        const { dateFrom: fromDate, dateTo: toDate } = this.calculateDateRange(
+            datePreset,
+            dateFrom,
+            dateTo,
+        );
 
         try {
             return await this.analyticsRepository.getPromoCodeUsageHistory(

@@ -1,14 +1,34 @@
 import { Type } from 'class-transformer';
-import { IsDate, IsOptional, IsString } from 'class-validator';
+import { IsDate, IsEnum, IsOptional, IsString } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { PaginationDto, SortOrder } from '@common/paginate/dto/pagination.dto';
+
+/**
+ * Пресеты дат для аналитики
+ */
+export enum DatePreset {
+    TODAY = 'today',
+    LAST_7_DAYS = 'last7days',
+    LAST_30_DAYS = 'last30days',
+    CUSTOM = 'custom',
+}
 
 /**
  * Базовый DTO для аналитических запросов с диапазоном дат
  */
 export class DateRangeQueryDto {
     @ApiPropertyOptional({
-        description: 'Start date for filtering',
+        description: 'Date preset for filtering',
+        enum: DatePreset,
+        example: DatePreset.LAST_30_DAYS,
+    })
+    @IsEnum(DatePreset)
+    @IsOptional()
+    datePreset?: DatePreset = DatePreset.LAST_30_DAYS;
+
+    @ApiPropertyOptional({
+        description:
+            'Start date for filtering (used when datePreset is "custom")',
         example: '2024-01-01',
         type: String,
     })
@@ -18,7 +38,8 @@ export class DateRangeQueryDto {
     dateFrom?: Date;
 
     @ApiPropertyOptional({
-        description: 'End date for filtering',
+        description:
+            'End date for filtering (used when datePreset is "custom")',
         example: '2024-12-31',
         type: String,
     })
@@ -33,7 +54,17 @@ export class DateRangeQueryDto {
  */
 export class PromoCodeAnalyticsQueryDto extends PaginationDto {
     @ApiPropertyOptional({
-        description: 'Start date for filtering',
+        description: 'Date preset for filtering',
+        enum: DatePreset,
+        example: DatePreset.LAST_30_DAYS,
+    })
+    @IsEnum(DatePreset)
+    @IsOptional()
+    datePreset?: DatePreset = DatePreset.LAST_30_DAYS;
+
+    @ApiPropertyOptional({
+        description:
+            'Start date for filtering (used when datePreset is "custom")',
         example: '2024-01-01',
         type: String,
     })
@@ -43,7 +74,8 @@ export class PromoCodeAnalyticsQueryDto extends PaginationDto {
     dateFrom?: Date;
 
     @ApiPropertyOptional({
-        description: 'End date for filtering',
+        description:
+            'End date for filtering (used when datePreset is "custom")',
         example: '2024-12-31',
         type: String,
     })
@@ -67,7 +99,17 @@ export class PromoCodeAnalyticsQueryDto extends PaginationDto {
  */
 export class UserAnalyticsQueryDto extends PaginationDto {
     @ApiPropertyOptional({
-        description: 'Start date for filtering',
+        description: 'Date preset for filtering',
+        enum: DatePreset,
+        example: DatePreset.LAST_30_DAYS,
+    })
+    @IsEnum(DatePreset)
+    @IsOptional()
+    datePreset?: DatePreset = DatePreset.LAST_30_DAYS;
+
+    @ApiPropertyOptional({
+        description:
+            'Start date for filtering (used when datePreset is "custom")',
         example: '2024-01-01',
         type: String,
     })
@@ -77,7 +119,8 @@ export class UserAnalyticsQueryDto extends PaginationDto {
     dateFrom?: Date;
 
     @ApiPropertyOptional({
-        description: 'End date for filtering',
+        description:
+            'End date for filtering (used when datePreset is "custom")',
         example: '2024-12-31',
         type: String,
     })
@@ -106,7 +149,17 @@ export class PromoCodeUsageHistoryQueryDto extends PaginationDto {
     promoCodeId?: string;
 
     @ApiPropertyOptional({
-        description: 'Start date for filtering',
+        description: 'Date preset for filtering',
+        enum: DatePreset,
+        example: DatePreset.LAST_30_DAYS,
+    })
+    @IsEnum(DatePreset)
+    @IsOptional()
+    datePreset?: DatePreset = DatePreset.LAST_30_DAYS;
+
+    @ApiPropertyOptional({
+        description:
+            'Start date for filtering (used when datePreset is "custom")',
         example: '2024-01-01',
         type: String,
     })
@@ -116,7 +169,8 @@ export class PromoCodeUsageHistoryQueryDto extends PaginationDto {
     dateFrom?: Date;
 
     @ApiPropertyOptional({
-        description: 'End date for filtering',
+        description:
+            'End date for filtering (used when datePreset is "custom")',
         example: '2024-12-31',
         type: String,
     })

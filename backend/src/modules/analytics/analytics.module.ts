@@ -15,6 +15,6 @@ import { ClickHouseModule } from '@shared/database/clickhouse/clickhouse.module'
     ],
     controllers: [AnalyticsController],
     providers: [AnalyticsService, AnalyticsRepository, UserAnalyticsConsumer],
-    exports: [AnalyticsService],
+    exports: [AnalyticsService, AnalyticsRepository],
 })
 export class AnalyticsModule {}
