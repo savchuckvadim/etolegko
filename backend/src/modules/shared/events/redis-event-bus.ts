@@ -17,6 +17,7 @@ export class RedisEventBus implements EventBus {
         const eventName = event.constructor.name;
 
         try {
+            // Публикуем основное событие
             await this.queue.add(eventName, event, {
                 attempts: 3,
                 backoff: {
@@ -26,6 +27,23 @@ export class RedisEventBus implements EventBus {
                 removeOnComplete: 100, // Хранить последние 100 завершенных задач
                 removeOnFail: 1000, // Хранить последние 1000 неудачных задач
             });
+
+            // Для событий, которые нужно обработать в UserAnalyticsConsumer,
+            // публикуем дополнительное событие с суффиксом :Users
+            if (
+                eventName === 'OrderCreatedEvent' ||
+                eventName === 'PromoCodeAppliedEvent'
+            ) {
+                await this.queue.add(`${eventName}:Users`, event, {
+                    attempts: 3,
+                    backoff: {
+                        type: 'exponential',
+                        delay: 2000,
+                    },
+                    removeOnComplete: 100,
+                    removeOnFail: 1000,
+                });
+            }
 
             this.logger.debug(`Event published: ${eventName}`);
         } catch (error) {

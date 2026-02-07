@@ -6,7 +6,7 @@ import { ClickHouseService } from '@shared/database/clickhouse/clickhouse.servic
 
 /**
  * Consumer для обработки событий создания заказов
- * Записывает данные в ClickHouse для аналитики
+ * Записывает данные в таблицу orders_analytics
  */
 @Processor('events')
 @Injectable()
@@ -17,7 +17,7 @@ export class OrderAnalyticsConsumer {
 
     /**
      * Обработка события создания заказа
-     * Записывает данные в таблицу orders_analytics
+     * Записывает детальную информацию о заказе
      */
     @Process('OrderCreatedEvent')
     async handleOrderCreated(job: Job<OrderCreatedEvent>): Promise<void> {

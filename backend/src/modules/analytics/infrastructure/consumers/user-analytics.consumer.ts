@@ -8,6 +8,10 @@ import { ClickHouseService } from '@shared/database/clickhouse/clickhouse.servic
 /**
  * Consumer для обновления агрегированной статистики пользователей
  * Записывает данные в таблицу users_analytics
+ *
+ * Примечание: В Bull нельзя иметь два обработчика с одинаковым именем в одной очереди.
+ * Поэтому мы используем один обработчик на событие, который вызывает отдельный метод
+ * для обновления users_analytics. Это позволяет разделить ответственность между consumer'ами.
  */
 @Processor('events')
 @Injectable()
@@ -17,15 +21,18 @@ export class UserAnalyticsConsumer {
     constructor(private readonly clickhouse: ClickHouseService) {}
 
     /**
-     * Обработка события создания заказа
-     * Обновляет статистику пользователя (заказы, суммы)
+     * Обработка события создания заказа для обновления статистики пользователя
+     * Вызывается через отдельный обработчик с уникальным именем
      */
-    @Process('OrderCreatedEvent')
-    async handleOrderCreated(job: Job<OrderCreatedEvent>): Promise<void> {
+    @Process('OrderCreatedEvent:Users')
+    async handleOrderCreatedForUsers(
+        job: Job<OrderCreatedEvent>,
+    ): Promise<void> {
         const event = job.data;
         const eventDate = new Date(event.createdAt);
 
         try {
+            // Обновляем агрегированную статистику пользователя
             await this.clickhouse.insert('users_analytics', {
                 event_date: eventDate.toISOString().split('T')[0], // YYYY-MM-DD
                 user_id: event.userId,
@@ -48,11 +55,11 @@ export class UserAnalyticsConsumer {
     }
 
     /**
-     * Обработка события применения промокода
-     * Обновляет статистику использования промокодов пользователем
+     * Обработка события применения промокода для обновления статистики пользователя
+     * Вызывается через отдельный обработчик с уникальным именем
      */
-    @Process('PromoCodeAppliedEvent')
-    async handlePromoCodeApplied(
+    @Process('PromoCodeAppliedEvent:Users')
+    async handlePromoCodeAppliedForUsers(
         job: Job<PromoCodeAppliedEvent>,
     ): Promise<void> {
         const event = job.data;

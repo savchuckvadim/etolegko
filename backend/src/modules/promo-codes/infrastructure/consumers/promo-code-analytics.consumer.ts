@@ -6,7 +6,7 @@ import { ClickHouseService } from '@shared/database/clickhouse/clickhouse.servic
 
 /**
  * Consumer для обработки событий применения промокодов
- * Записывает данные в ClickHouse для аналитики
+ * Записывает данные в таблицу promo_code_usages_analytics
  */
 @Processor('events')
 @Injectable()
@@ -17,7 +17,7 @@ export class PromoCodeAnalyticsConsumer {
 
     /**
      * Обработка события применения промокода
-     * Записывает данные в таблицу promo_code_usages_analytics
+     * Записывает детальную информацию о применении промокода
      */
     @Process('PromoCodeAppliedEvent')
     async handlePromoCodeApplied(

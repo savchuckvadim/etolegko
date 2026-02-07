@@ -1,4 +1,9 @@
-import { ClientSession, Model, UpdateQuery } from 'mongoose';
+import {
+    ClientSession,
+    Model,
+    UpdateQuery,
+    type CreateOptions,
+} from 'mongoose';
 
 /**
  * Базовый репозиторий с маппингом Document -> Entity
@@ -74,13 +79,16 @@ export abstract class BaseRepository<TDocument, TEntity> {
     ): Promise<TEntity> {
         // TEntity и TDocument могут иметь разные поля, но в runtime они совместимы
         // через маппинг. Это безопасное приведение типов для создания документа.
+        // Mongoose create требует более специфичные типы, поэтому используем приведение через unknown
 
-        const options = session ? { session } : {};
+        const options: CreateOptions = session ? { session } : {};
+        // @ts-expect-error - Mongoose create expects DeepPartial<ApplyBasicCreateCasting<Require_id<TDocument>>>[]
+        // but we control the data structure and it's compatible at runtime
         const doc = await this.model.create(
             [data as unknown as Partial<TDocument>],
             options,
         );
-        return this.mapToEntity(doc[0]);
+        return this.mapToEntity(doc[0] as TDocument);
     }
 
     /**
