@@ -1,21 +1,20 @@
 import { useAuth } from '@processes/auth';
-import { Box, Typography, Button } from '@mui/material';
-import { tokenStorage } from '@shared/lib';
+import { Box, Typography } from '@mui/material';
+import { MainLayout } from '@widgets/layout/main-layout';
 
 export const HomePage = () => {
     const { user, isAuthenticated, isLoading } = useAuth();
 
-    const handleLogout = () => {
-        tokenStorage.clearTokens();
-        window.location.href = '/login';
-    };
-
     if (isLoading) {
-        return <div>Загрузка...</div>;
+        return (
+            <MainLayout>
+                <div>Загрузка...</div>
+            </MainLayout>
+        );
     }
 
     return (
-        <Box sx={{ p: 3 }}>
+        <MainLayout>
             <Typography variant="h4" gutterBottom>
                 Главная страница
             </Typography>
@@ -32,20 +31,12 @@ export const HomePage = () => {
                             Телефон: {user.phone}
                         </Typography>
                     )}
-                    <Button
-                        variant="contained"
-                        color="error"
-                        onClick={handleLogout}
-                        sx={{ mt: 2 }}
-                    >
-                        Выйти
-                    </Button>
                 </Box>
             ) : (
                 <Typography variant="body1">
                     Вы не авторизованы
                 </Typography>
             )}
-        </Box>
+        </MainLayout>
     );
 };
