@@ -476,7 +476,7 @@ Get-Content clickhouse/init/001-create-tables.sql | docker exec -i promo_code_ma
   - Компонент фильтрации в `shared/ui/date-filter/`
   - Экспорты через index.ts файлы
 
-## Планы на будущее (в соответствии с заданием)
+
 
 ### Frontend - Дополнительные улучшения
 
@@ -501,7 +501,18 @@ Get-Content clickhouse/init/001-create-tables.sql | docker exec -i promo_code_ma
   - Тесты для хука `use-login-form` (11 тестов)
   - Тесты для хука `use-register-form` (13 тестов)
   - Покрытие: валидация полей, нормализация данных, структура хуков
-- 🔄 Unit тесты для остальных features (users, promo-codes, orders)
+- ✅ Unit тесты для features/orders (Vitest + React Testing Library)
+  - Тесты для схем валидации `create-order.schema` (5 тестов), `update-order.schema` (5 тестов)
+  - Тесты для хуков `use-orders` (4 теста), `use-create-order-form` (6 тестов), `use-update-order-form` (4 теста)
+  - Покрытие: валидация amount, CRUD операции
+- ✅ Unit тесты для features/promo-codes (Vitest + React Testing Library)
+  - Тесты для схем валидации `create-promo-code.schema` (16 тестов), `update-promo-code.schema` (8 тестов), `apply-promo-code.schema` (5 тестов)
+  - Тесты для хуков `use-promo-codes` (4 теста), `use-create-promo-code-form` (4 теста), `use-update-promo-code-form` (3 теста), `use-apply-promo-code-form` (3 теста)
+  - Покрытие: валидация кода, процента скидки, лимитов, дат, применение промокода
+- ✅ Unit тесты для features/users (Vitest + React Testing Library)
+  - Тесты для схемы валидации `create-user.schema` (12 тестов)
+  - Тесты для хуков `use-users` (7 тестов), `use-create-user-form` (4 теста)
+  - Покрытие: валидация полей пользователя, CRUD операции
 
 
 **Дополнительно:**

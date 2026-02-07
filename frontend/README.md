@@ -322,6 +322,18 @@ pnpm test src/features/analytics/__tests__/
   - Тестирование валидации полей (email, password, name, phone)
   - Тестирование нормализации данных (trim, lowercase)
   - Тестирование структуры возвращаемых значений
+- ✅ `features/orders` — тесты для работы с заказами
+  - Тесты схем валидации (`create-order.schema`, `update-order.schema`) — 10 тестов
+  - Тесты хуков (`use-orders`, `use-create-order-form`, `use-update-order-form`) — 14 тестов
+  - Тестирование валидации amount, CRUD операций
+- ✅ `features/promo-codes` — тесты для работы с промокодами
+  - Тесты схем валидации (`create-promo-code.schema`, `update-promo-code.schema`, `apply-promo-code.schema`) — 29 тестов
+  - Тесты хуков (`use-promo-codes`, `use-create-promo-code-form`, `use-update-promo-code-form`, `use-apply-promo-code-form`) — 14 тестов
+  - Тестирование валидации кода, процента скидки, лимитов, дат
+- ✅ `features/users` — тесты для работы с пользователями
+  - Тесты схемы валидации (`create-user.schema`) — 12 тестов
+  - Тесты хуков (`use-users`, `use-create-user-form`) — 11 тестов
+  - Тестирование валидации полей пользователя, CRUD операций
 
 **Другие команды:**
 ```bash
