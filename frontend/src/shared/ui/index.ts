@@ -4,4 +4,5 @@
 
 export * from './pagination';
 export * from './card';
+export * from './date-filter';
 export * from './types';

@@ -1,10 +1,12 @@
 import { useState } from 'react';
-import { Typography, Box, Button, CircularProgress, Alert } from '@mui/material';
+import { Typography, Box, Button, CircularProgress, Alert, IconButton } from '@mui/material';
+import { Edit, Delete } from '@mui/icons-material';
 import { MainLayout } from '@widgets/layout/main-layout';
 import { useOrders } from '@features/orders';
-import type { OrdersFindAllParams } from '@entities/orders';
+import type { OrdersFindAllParams, OrderResponseDto } from '@entities/orders';
 import { isSuccessResponse } from '@shared/lib/utils/error.utils';
 import { Pagination } from '@shared/ui';
+import { CreateOrderDialog, UpdateOrderDialog } from '@widgets/orders';
 
 /**
  * Страница управления заказами
@@ -16,8 +18,10 @@ export const OrdersPage = () => {
         sortBy: 'createdAt',
         sortOrder: 'desc',
     });
+    const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+    const [editingOrder, setEditingOrder] = useState<OrderResponseDto | null>(null);
 
-    const { findAll, create, update, remove } = useOrders(params);
+    const { findAll, remove } = useOrders(params);
 
     const handlePageChange = (page: number) => {
         setParams((prev) => ({ ...prev, page }));
@@ -48,10 +52,27 @@ export const OrdersPage = () => {
         <MainLayout>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
                 <Typography variant="h4">Заказы</Typography>
-                <Button variant="contained" color="primary">
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => setIsCreateDialogOpen(true)}
+                >
                     Создать заказ
                 </Button>
             </Box>
+
+            <CreateOrderDialog
+                open={isCreateDialogOpen}
+                onClose={() => setIsCreateDialogOpen(false)}
+            />
+
+            {editingOrder && (
+                <UpdateOrderDialog
+                    open={!!editingOrder}
+                    onClose={() => setEditingOrder(null)}
+                    order={editingOrder}
+                />
+            )}
 
             {data && (
                 <>
@@ -71,12 +92,40 @@ export const OrdersPage = () => {
                                     border: '1px solid',
                                     borderColor: 'divider',
                                     borderRadius: 1,
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center',
                                 }}
                             >
-                                <Typography variant="body1">Заказ #{order.id}</Typography>
-                                <Typography variant="body2" color="text.secondary">
-                                    Сумма: {order.amount} ₽
-                                </Typography>
+                                <Box>
+                                    <Typography variant="body1">Заказ #{order.id}</Typography>
+                                    <Typography variant="body2" color="text.secondary">
+                                        Сумма: {order.amount} ₽
+                                        {order.promoCodeId && ` | Промокод ID: ${order.promoCodeId}`}
+                                        {order.discountAmount && ` | Скидка: ${order.discountAmount} ₽`}
+                                    </Typography>
+                                </Box>
+                                <Box sx={{ display: 'flex', gap: 1 }}>
+                                    <IconButton
+                                        size="small"
+                                        onClick={() => setEditingOrder(order)}
+                                        color="primary"
+                                    >
+                                        <Edit />
+                                    </IconButton>
+                                    <IconButton
+                                        size="small"
+                                        onClick={() => {
+                                            if (window.confirm('Вы уверены, что хотите удалить заказ?')) {
+                                                remove.mutate({ id: order.id });
+                                            }
+                                        }}
+                                        color="error"
+                                        disabled={remove.isPending}
+                                    >
+                                        <Delete />
+                                    </IconButton>
+                                </Box>
                             </Box>
                         ))}
                     </Box>

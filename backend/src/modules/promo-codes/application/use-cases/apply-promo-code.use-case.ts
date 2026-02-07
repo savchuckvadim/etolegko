@@ -9,6 +9,7 @@ import {
     BadRequestException,
     Inject,
     Injectable,
+    Logger,
     NotFoundException,
 } from '@nestjs/common';
 import { MongoService } from '@shared/database/mongo/mongo.service';
@@ -20,6 +21,8 @@ import { MongoService } from '@shared/database/mongo/mongo.service';
  */
 @Injectable()
 export class ApplyPromoCodeUseCase {
+    private readonly logger = new Logger(ApplyPromoCodeUseCase.name);
+
     constructor(
         private readonly promoCodeService: PromoCodeService,
         private readonly promoCodeRepository: PromoCodeRepository,
@@ -46,85 +49,123 @@ export class ApplyPromoCodeUseCase {
         userId: string,
         orderAmount: number,
     ): Promise<ApplyPromoCodeResponseDto> {
-        const session = await this.mongoService.startSession();
+        // Для локальной разработки без replica set используем fallback без транзакций
+        // В production с replica set транзакции будут работать
+        let session: any = null;
+        
+        try {
+            session = await this.mongoService.startSession();
+        } catch (error) {
+            // Если не удалось создать сессию, продолжаем без транзакций
+            this.logger.warn('MongoDB session not available, proceeding without transaction');
+        }
+
+        const executeOperation = async () => {
+            // 1. Получаем промокод
+            const promoCodeEntity = await this.promoCodeService.findByCode(
+                promoCode,
+                session,
+            );
+            if (!promoCodeEntity) {
+                throw new NotFoundException(
+                    `Promo code ${promoCode} not found`,
+                );
+            }
+
+            // 2. Получаем количество использований промокода пользователем из ClickHouse
+            // (ClickHouse не участвует в транзакции, но используется для валидации)
+            const userUsageCount =
+                await this.analyticsRepository.getUserPromoCodeUsageCount(
+                    userId,
+                    promoCodeEntity.id,
+                );
+
+            // 3. Валидация использования промокода (активность, срок действия, лимит пользователя)
+            promoCodeEntity.validateUsage(userId, userUsageCount);
+
+            // 4. Рассчитываем скидку
+            const discountAmount =
+                promoCodeEntity.calculateDiscount(orderAmount);
+            const finalAmount = orderAmount - discountAmount;
+
+            // 5. Атомарно увеличиваем счётчик использований с проверкой общего лимита
+            // Это предотвращает race condition - если лимит превышен, операция не выполнится
+            const updatedPromoCode =
+                await this.promoCodeRepository.incrementUsageIfWithinLimit(
+                    promoCodeEntity.id,
+                    promoCodeEntity.totalLimit,
+                    session,
+                );
+
+            if (!updatedPromoCode) {
+                throw new BadRequestException(
+                    'Promo code total limit exceeded',
+                );
+            }
+
+            // 6. Сохраняем скидку в заказ
+            await this.orderRepository.update(
+                orderId,
+                {
+                    promoCodeId: promoCodeEntity.id,
+                    discountAmount,
+                },
+                session,
+            );
+
+            // 7. Публикуем событие для записи в ClickHouse (после успешной транзакции)
+            // Событие публикуется вне транзакции, так как ClickHouse не поддерживает транзакции
+            await this.eventBus.publish(
+                new PromoCodeAppliedEvent(
+                    promoCodeEntity.id,
+                    promoCodeEntity.code,
+                    userId,
+                    orderId,
+                    orderAmount,
+                    discountAmount,
+                    new Date(),
+                ),
+            );
+
+            // 8. Возвращаем результат
+            return {
+                discountAmount,
+                finalAmount,
+                promoCode: promoCodeEntity.code,
+            };
+        };
 
         try {
-            return await session.withTransaction(async () => {
-                // 1. Получаем промокод в транзакции
-                const promoCodeEntity = await this.promoCodeService.findByCode(
-                    promoCode,
-                    session,
-                );
-                if (!promoCodeEntity) {
-                    throw new NotFoundException(
-                        `Promo code ${promoCode} not found`,
-                    );
+            if (session) {
+                // Пытаемся использовать транзакцию
+                try {
+                    return await session.withTransaction(executeOperation);
+                } catch (transactionError: any) {
+                    // Если транзакции не поддерживаются (локальный MongoDB без replica set),
+                    // выполняем без транзакции
+                    if (
+                        transactionError?.code === 20 ||
+                        transactionError?.codeName === 'IllegalOperation' ||
+                        transactionError?.message?.includes('replica set')
+                    ) {
+                        this.logger.warn(
+                            'MongoDB transactions not supported, executing without transaction',
+                        );
+                        await session.endSession();
+                        session = null;
+                        return await executeOperation();
+                    }
+                    // Если другая ошибка - пробрасываем дальше
+                    throw transactionError;
                 }
-
-                // 2. Получаем количество использований промокода пользователем из ClickHouse
-                // (ClickHouse не участвует в транзакции, но используется для валидации)
-                const userUsageCount =
-                    await this.analyticsRepository.getUserPromoCodeUsageCount(
-                        userId,
-                        promoCodeEntity.id,
-                    );
-
-                // 3. Валидация использования промокода (активность, срок действия, лимит пользователя)
-                promoCodeEntity.validateUsage(userId, userUsageCount);
-
-                // 4. Рассчитываем скидку
-                const discountAmount =
-                    promoCodeEntity.calculateDiscount(orderAmount);
-                const finalAmount = orderAmount - discountAmount;
-
-                // 5. Атомарно увеличиваем счётчик использований с проверкой общего лимита
-                // Это предотвращает race condition - если лимит превышен, операция не выполнится
-                const updatedPromoCode =
-                    await this.promoCodeRepository.incrementUsageIfWithinLimit(
-                        promoCodeEntity.id,
-                        promoCodeEntity.totalLimit,
-                        session,
-                    );
-
-                if (!updatedPromoCode) {
-                    throw new BadRequestException(
-                        'Promo code total limit exceeded',
-                    );
-                }
-
-                // 6. Сохраняем скидку в заказ в транзакции
-                await this.orderRepository.update(
-                    orderId,
-                    {
-                        promoCodeId: promoCodeEntity.id,
-                        discountAmount,
-                    },
-                    session,
-                );
-
-                // 7. Публикуем событие для записи в ClickHouse (после успешной транзакции)
-                // Событие публикуется вне транзакции, так как ClickHouse не поддерживает транзакции
-                await this.eventBus.publish(
-                    new PromoCodeAppliedEvent(
-                        promoCodeEntity.id,
-                        promoCodeEntity.code,
-                        userId,
-                        orderId,
-                        orderAmount,
-                        discountAmount,
-                        new Date(),
-                    ),
-                );
-
-                // 8. Возвращаем результат
-                return {
-                    discountAmount,
-                    finalAmount,
-                    promoCode: promoCodeEntity.code,
-                };
-            });
+            } else {
+                // Выполняем без транзакции
+                return await executeOperation();
+            }
         } finally {
-            await session.endSession();
+            if (session) {
+                await session.endSession();
+            }
         }
     }
 }

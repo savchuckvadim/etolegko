@@ -22,12 +22,19 @@ export class OrderAnalyticsConsumer {
     @Process('OrderCreatedEvent')
     async handleOrderCreated(job: Job<OrderCreatedEvent>): Promise<void> {
         const event = job.data;
-        const eventDate = new Date(event.createdAt);
+        // При сериализации через Bull/Redis Date превращается в строку
+        const createdAt = event.createdAt instanceof Date 
+            ? event.createdAt 
+            : new Date(event.createdAt);
+        const eventDate = createdAt;
 
         try {
+            // Форматируем дату для ClickHouse DateTime: 'YYYY-MM-DD HH:MM:SS'
+            const createdAtFormatted = createdAt.toISOString().replace('T', ' ').split('.')[0];
+            
             await this.clickhouse.insert('orders_analytics', {
                 event_date: eventDate.toISOString().split('T')[0], // YYYY-MM-DD
-                created_at: event.createdAt.toISOString(),
+                created_at: createdAtFormatted, // YYYY-MM-DD HH:MM:SS
                 order_id: event.orderId,
                 user_id: event.userId,
                 amount: event.amount,
