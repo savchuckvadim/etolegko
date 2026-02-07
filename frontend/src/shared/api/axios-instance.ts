@@ -1,7 +1,6 @@
 import axios, { type AxiosRequestConfig } from 'axios';
 import { setupRequestInterceptor, setupResponseInterceptor } from './interceptors';
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+import { API_BASE_URL } from '@shared/config/api.config';
 
 /**
  * Axios instance для API запросов
