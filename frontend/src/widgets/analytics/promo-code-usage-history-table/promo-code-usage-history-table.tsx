@@ -33,7 +33,7 @@ export const PromoCodeUsageHistoryTable = ({
     const columns = useMemo<MRT_ColumnDef<PromoCodeUsageHistoryDto>[]>(
         () => [
             {
-                accessorKey: '',
+                accessorKey: 'promo_code',
                 header: 'Промокод',
                 size: 150,
             },

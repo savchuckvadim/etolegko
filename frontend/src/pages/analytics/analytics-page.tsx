@@ -12,7 +12,14 @@ import type {
     AnalyticsGetPromoCodeUsageHistoryParams,
 } from '@entities/analytics';
 import { isSuccessResponse } from '@shared/lib/utils/error.utils';
-import { Pagination } from '@shared/ui';
+import { DateFilter, type DatePreset } from '@shared/ui';
+import {
+    PromoCodesAnalyticsTable,
+    UsersAnalyticsTable,
+    PromoCodeUsageHistoryTable,
+} from '@widgets/analytics';
+import type { MRT_PaginationState, MRT_SortingState } from 'material-react-table';
+import type { OnChangeFn } from '@tanstack/react-table';
 
 /**
  * Страница аналитики
@@ -20,19 +27,54 @@ import { Pagination } from '@shared/ui';
 export const AnalyticsPage = () => {
     const [activeTab, setActiveTab] = useState(0);
 
+    // Инициализация дат для промокодов
+    const getInitialDates = () => {
+        const today = new Date();
+        const todayStr = today.toISOString().split('T')[0];
+        const last30Days = new Date(today);
+        last30Days.setDate(today.getDate() - 30);
+        return {
+            from: last30Days.toISOString().split('T')[0],
+            to: todayStr,
+        };
+    };
+
+    const initialDates = getInitialDates();
+
+    // Промокоды
+    const [promoCodesDatePreset, setPromoCodesDatePreset] = useState<DatePreset>('last30days');
+    const [promoCodesDateFrom, setPromoCodesDateFrom] = useState<string>(initialDates.from);
+    const [promoCodesDateTo, setPromoCodesDateTo] = useState<string>(initialDates.to);
     const [promoCodesParams, setPromoCodesParams] = useState<AnalyticsGetPromoCodesListParams>({
         page: 1,
         limit: 10,
+        datePreset: 'last30days',
+        dateFrom: initialDates.from,
+        dateTo: initialDates.to,
     });
 
+    // Пользователи
+    const [usersDatePreset, setUsersDatePreset] = useState<DatePreset>('last30days');
+    const [usersDateFrom, setUsersDateFrom] = useState<string>(initialDates.from);
+    const [usersDateTo, setUsersDateTo] = useState<string>(initialDates.to);
     const [usersParams, setUsersParams] = useState<AnalyticsGetUsersListParams>({
         page: 1,
         limit: 10,
+        datePreset: 'last30days',
+        dateFrom: initialDates.from,
+        dateTo: initialDates.to,
     });
 
+    // История
+    const [historyDatePreset, setHistoryDatePreset] = useState<DatePreset>('last30days');
+    const [historyDateFrom, setHistoryDateFrom] = useState<string>(initialDates.from);
+    const [historyDateTo, setHistoryDateTo] = useState<string>(initialDates.to);
     const [historyParams, setHistoryParams] = useState<AnalyticsGetPromoCodeUsageHistoryParams>({
         page: 1,
         limit: 10,
+        datePreset: 'last30days',
+        dateFrom: initialDates.from,
+        dateTo: initialDates.to,
     });
 
     const promoCodesQuery = usePromoCodesAnalytics(promoCodesParams);
@@ -41,6 +83,159 @@ export const AnalyticsPage = () => {
 
     const handleTabChange = (_: unknown, newValue: number) => {
         setActiveTab(newValue);
+    };
+
+    // Обработчики для промокодов
+    const handlePromoCodesDatePresetChange = (preset: DatePreset) => {
+        setPromoCodesDatePreset(preset);
+        const today = new Date();
+        const todayStr = today.toISOString().split('T')[0];
+
+        let dateFrom = '';
+        let dateTo = todayStr;
+
+        if (preset === 'today') {
+            dateFrom = todayStr;
+            dateTo = todayStr;
+        } else if (preset === 'last7days') {
+            const last7Days = new Date(today);
+            last7Days.setDate(today.getDate() - 7);
+            dateFrom = last7Days.toISOString().split('T')[0];
+        } else if (preset === 'last30days') {
+            const last30Days = new Date(today);
+            last30Days.setDate(today.getDate() - 30);
+            dateFrom = last30Days.toISOString().split('T')[0];
+        }
+
+        setPromoCodesDateFrom(dateFrom);
+        setPromoCodesDateTo(dateTo);
+        setPromoCodesParams({
+            ...promoCodesParams,
+            page: 1,
+            datePreset: preset,
+            dateFrom: preset === 'custom' ? promoCodesDateFrom : dateFrom,
+            dateTo: preset === 'custom' ? promoCodesDateTo : dateTo,
+        });
+    };
+
+    const handlePromoCodesDateFromChange = (date: string) => {
+        setPromoCodesDateFrom(date);
+        setPromoCodesParams({
+            ...promoCodesParams,
+            page: 1,
+            dateFrom: date,
+        });
+    };
+
+    const handlePromoCodesDateToChange = (date: string) => {
+        setPromoCodesDateTo(date);
+        setPromoCodesParams({
+            ...promoCodesParams,
+            page: 1,
+            dateTo: date,
+        });
+    };
+
+    // Обработчики для пользователей
+    const handleUsersDatePresetChange = (preset: DatePreset) => {
+        setUsersDatePreset(preset);
+        const today = new Date();
+        const todayStr = today.toISOString().split('T')[0];
+
+        let dateFrom = '';
+        let dateTo = todayStr;
+
+        if (preset === 'today') {
+            dateFrom = todayStr;
+            dateTo = todayStr;
+        } else if (preset === 'last7days') {
+            const last7Days = new Date(today);
+            last7Days.setDate(today.getDate() - 7);
+            dateFrom = last7Days.toISOString().split('T')[0];
+        } else if (preset === 'last30days') {
+            const last30Days = new Date(today);
+            last30Days.setDate(today.getDate() - 30);
+            dateFrom = last30Days.toISOString().split('T')[0];
+        }
+
+        setUsersDateFrom(dateFrom);
+        setUsersDateTo(dateTo);
+        setUsersParams({
+            ...usersParams,
+            page: 1,
+            datePreset: preset,
+            dateFrom: preset === 'custom' ? usersDateFrom : dateFrom,
+            dateTo: preset === 'custom' ? usersDateTo : dateTo,
+        });
+    };
+
+    const handleUsersDateFromChange = (date: string) => {
+        setUsersDateFrom(date);
+        setUsersParams({
+            ...usersParams,
+            page: 1,
+            dateFrom: date,
+        });
+    };
+
+    const handleUsersDateToChange = (date: string) => {
+        setUsersDateTo(date);
+        setUsersParams({
+            ...usersParams,
+            page: 1,
+            dateTo: date,
+        });
+    };
+
+    // Обработчики для истории
+    const handleHistoryDatePresetChange = (preset: DatePreset) => {
+        setHistoryDatePreset(preset);
+        const today = new Date();
+        const todayStr = today.toISOString().split('T')[0];
+
+        let dateFrom = '';
+        let dateTo = todayStr;
+
+        if (preset === 'today') {
+            dateFrom = todayStr;
+            dateTo = todayStr;
+        } else if (preset === 'last7days') {
+            const last7Days = new Date(today);
+            last7Days.setDate(today.getDate() - 7);
+            dateFrom = last7Days.toISOString().split('T')[0];
+        } else if (preset === 'last30days') {
+            const last30Days = new Date(today);
+            last30Days.setDate(today.getDate() - 30);
+            dateFrom = last30Days.toISOString().split('T')[0];
+        }
+
+        setHistoryDateFrom(dateFrom);
+        setHistoryDateTo(dateTo);
+        setHistoryParams({
+            ...historyParams,
+            page: 1,
+            datePreset: preset,
+            dateFrom: preset === 'custom' ? historyDateFrom : dateFrom,
+            dateTo: preset === 'custom' ? historyDateTo : dateTo,
+        });
+    };
+
+    const handleHistoryDateFromChange = (date: string) => {
+        setHistoryDateFrom(date);
+        setHistoryParams({
+            ...historyParams,
+            page: 1,
+            dateFrom: date,
+        });
+    };
+
+    const handleHistoryDateToChange = (date: string) => {
+        setHistoryDateTo(date);
+        setHistoryParams({
+            ...historyParams,
+            page: 1,
+            dateTo: date,
+        });
     };
 
     return (
@@ -58,45 +253,97 @@ export const AnalyticsPage = () => {
             </Box>
 
             {activeTab === 0 && (
-                <AnalyticsTab
+                <PromoCodesAnalyticsTab
                     query={promoCodesQuery}
                     params={promoCodesParams}
                     onParamsChange={setPromoCodesParams}
-                    title="Аналитика промокодов"
+                    datePreset={promoCodesDatePreset}
+                    dateFrom={promoCodesDateFrom}
+                    dateTo={promoCodesDateTo}
+                    onDatePresetChange={handlePromoCodesDatePresetChange}
+                    onDateFromChange={handlePromoCodesDateFromChange}
+                    onDateToChange={handlePromoCodesDateToChange}
                 />
             )}
 
             {activeTab === 1 && (
-                <AnalyticsTab
+                <UsersAnalyticsTab
                     query={usersQuery}
                     params={usersParams}
                     onParamsChange={setUsersParams}
-                    title="Аналитика пользователей"
+                    datePreset={usersDatePreset}
+                    dateFrom={usersDateFrom}
+                    dateTo={usersDateTo}
+                    onDatePresetChange={handleUsersDatePresetChange}
+                    onDateFromChange={handleUsersDateFromChange}
+                    onDateToChange={handleUsersDateToChange}
                 />
             )}
 
             {activeTab === 2 && (
-                <AnalyticsTab
+                <HistoryAnalyticsTab
                     query={historyQuery}
                     params={historyParams}
                     onParamsChange={setHistoryParams}
-                    title="История использований промокодов"
+                    datePreset={historyDatePreset}
+                    dateFrom={historyDateFrom}
+                    dateTo={historyDateTo}
+                    onDatePresetChange={handleHistoryDatePresetChange}
+                    onDateFromChange={handleHistoryDateFromChange}
+                    onDateToChange={handleHistoryDateToChange}
                 />
             )}
         </MainLayout>
     );
 };
 
-interface AnalyticsTabProps {
-    query: ReturnType<typeof usePromoCodesAnalytics> | ReturnType<typeof useUsersAnalytics> | ReturnType<typeof usePromoCodeUsageHistory>;
-    params: AnalyticsGetPromoCodesListParams | AnalyticsGetUsersListParams | AnalyticsGetPromoCodeUsageHistoryParams;
-    onParamsChange: (params: AnalyticsGetPromoCodesListParams | AnalyticsGetUsersListParams | AnalyticsGetPromoCodeUsageHistoryParams) => void;
-    title: string;
+interface PromoCodesAnalyticsTabProps {
+    query: ReturnType<typeof usePromoCodesAnalytics>;
+    params: AnalyticsGetPromoCodesListParams;
+    onParamsChange: (params: AnalyticsGetPromoCodesListParams) => void;
+    datePreset: DatePreset;
+    dateFrom?: string;
+    dateTo?: string;
+    onDatePresetChange: (preset: DatePreset) => void;
+    onDateFromChange: (date: string) => void;
+    onDateToChange: (date: string) => void;
 }
 
-const AnalyticsTab = ({ query, params, onParamsChange, title }: AnalyticsTabProps) => {
-    const handlePageChange = (page: number) => {
-        onParamsChange({ ...params, page });
+const PromoCodesAnalyticsTab = ({
+    query,
+    params,
+    onParamsChange,
+    datePreset,
+    dateFrom,
+    dateTo,
+    onDatePresetChange,
+    onDateFromChange,
+    onDateToChange,
+}: PromoCodesAnalyticsTabProps) => {
+    const handlePaginationChange: OnChangeFn<MRT_PaginationState> = (updaterOrValue) => {
+        const pagination = typeof updaterOrValue === 'function' 
+            ? updaterOrValue({ pageIndex: (params.page || 1) - 1, pageSize: params.limit || 10 })
+            : updaterOrValue;
+        onParamsChange({
+            ...params,
+            page: pagination.pageIndex + 1,
+            limit: pagination.pageSize,
+        });
+    };
+
+    const handleSortingChange: OnChangeFn<MRT_SortingState> = (updaterOrValue) => {
+        const sorting = typeof updaterOrValue === 'function'
+            ? updaterOrValue([])
+            : updaterOrValue;
+        if (sorting.length > 0) {
+            const sort = sorting[0];
+            onParamsChange({
+                ...params,
+                page: 1,
+                sortBy: sort.id,
+                sortOrder: sort.desc ? 'desc' : 'asc',
+            });
+        }
     };
 
     if (query.isLoading) {
@@ -120,24 +367,208 @@ const AnalyticsTab = ({ query, params, onParamsChange, title }: AnalyticsTabProp
 
     return (
         <>
-            <Box sx={{ mb: 2 }}>
-                <Typography variant="body2" color="text.secondary">
-                    Всего: {data.total} | Страница {data.page} из {data.totalPages}
-                </Typography>
+            <DateFilter
+                preset={datePreset}
+                dateFrom={dateFrom}
+                dateTo={dateTo}
+                onPresetChange={onDatePresetChange}
+                onDateFromChange={onDateFromChange}
+                onDateToChange={onDateToChange}
+            />
+
+            <PromoCodesAnalyticsTable
+                data={data.items}
+                total={data.total}
+                page={data.page}
+                limit={data.limit}
+                onPaginationChange={handlePaginationChange}
+                onSortingChange={handleSortingChange}
+                isLoading={query.isLoading}
+            />
+        </>
+    );
+};
+
+interface UsersAnalyticsTabProps {
+    query: ReturnType<typeof useUsersAnalytics>;
+    params: AnalyticsGetUsersListParams;
+    onParamsChange: (params: AnalyticsGetUsersListParams) => void;
+    datePreset: DatePreset;
+    dateFrom?: string;
+    dateTo?: string;
+    onDatePresetChange: (preset: DatePreset) => void;
+    onDateFromChange: (date: string) => void;
+    onDateToChange: (date: string) => void;
+}
+
+const UsersAnalyticsTab = ({
+    query,
+    params,
+    onParamsChange,
+    datePreset,
+    dateFrom,
+    dateTo,
+    onDatePresetChange,
+    onDateFromChange,
+    onDateToChange,
+}: UsersAnalyticsTabProps) => {
+    const handlePaginationChange: OnChangeFn<MRT_PaginationState> = (updaterOrValue) => {
+        const pagination = typeof updaterOrValue === 'function' 
+            ? updaterOrValue({ pageIndex: (params.page || 1) - 1, pageSize: params.limit || 10 })
+            : updaterOrValue;
+        onParamsChange({
+            ...params,
+            page: pagination.pageIndex + 1,
+            limit: pagination.pageSize,
+        });
+    };
+
+    const handleSortingChange: OnChangeFn<MRT_SortingState> = (updaterOrValue) => {
+        const sorting = typeof updaterOrValue === 'function'
+            ? updaterOrValue([])
+            : updaterOrValue;
+        if (sorting.length > 0) {
+            const sort = sorting[0];
+            onParamsChange({
+                ...params,
+                page: 1,
+                sortBy: sort.id,
+                sortOrder: sort.desc ? 'desc' : 'asc',
+            });
+        }
+    };
+
+    if (query.isLoading) {
+        return (
+            <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
+                <CircularProgress />
             </Box>
+        );
+    }
 
-            {/* Таблица данных будет здесь */}
+    if (query.isError) {
+        return <Alert severity="error">Ошибка при загрузке данных</Alert>;
+    }
 
-            {data.totalPages > 1 && (
-                <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
-                    <Pagination
-                        page={data.page}
-                        totalPages={data.totalPages}
-                        onPageChange={handlePageChange}
-                        disabled={query.isLoading}
-                    />
-                </Box>
-            )}
+    const response = query.data;
+    const data = isSuccessResponse(response) ? response.data : null;
+
+    if (!data) {
+        return <Alert severity="info">Нет данных</Alert>;
+    }
+
+    return (
+        <>
+            <DateFilter
+                preset={datePreset}
+                dateFrom={dateFrom}
+                dateTo={dateTo}
+                onPresetChange={onDatePresetChange}
+                onDateFromChange={onDateFromChange}
+                onDateToChange={onDateToChange}
+            />
+
+            <UsersAnalyticsTable
+                data={data.items}
+                total={data.total}
+                page={data.page}
+                limit={data.limit}
+                onPaginationChange={handlePaginationChange}
+                onSortingChange={handleSortingChange}
+                isLoading={query.isLoading}
+            />
+        </>
+    );
+};
+
+interface HistoryAnalyticsTabProps {
+    query: ReturnType<typeof usePromoCodeUsageHistory>;
+    params: AnalyticsGetPromoCodeUsageHistoryParams;
+    onParamsChange: (params: AnalyticsGetPromoCodeUsageHistoryParams) => void;
+    datePreset: DatePreset;
+    dateFrom?: string;
+    dateTo?: string;
+    onDatePresetChange: (preset: DatePreset) => void;
+    onDateFromChange: (date: string) => void;
+    onDateToChange: (date: string) => void;
+}
+
+const HistoryAnalyticsTab = ({
+    query,
+    params,
+    onParamsChange,
+    datePreset,
+    dateFrom,
+    dateTo,
+    onDatePresetChange,
+    onDateFromChange,
+    onDateToChange,
+}: HistoryAnalyticsTabProps) => {
+    const handlePaginationChange: OnChangeFn<MRT_PaginationState> = (updaterOrValue) => {
+        const pagination = typeof updaterOrValue === 'function' 
+            ? updaterOrValue({ pageIndex: (params.page || 1) - 1, pageSize: params.limit || 10 })
+            : updaterOrValue;
+        onParamsChange({
+            ...params,
+            page: pagination.pageIndex + 1,
+            limit: pagination.pageSize,
+        });
+    };
+
+    const handleSortingChange: OnChangeFn<MRT_SortingState> = (updaterOrValue) => {
+        const sorting = typeof updaterOrValue === 'function'
+            ? updaterOrValue([])
+            : updaterOrValue;
+        if (sorting.length > 0) {
+            const sort = sorting[0];
+            onParamsChange({
+                ...params,
+                page: 1,
+                sortBy: sort.id,
+                sortOrder: sort.desc ? 'desc' : 'asc',
+            });
+        }
+    };
+
+    if (query.isLoading) {
+        return (
+            <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
+                <CircularProgress />
+            </Box>
+        );
+    }
+
+    if (query.isError) {
+        return <Alert severity="error">Ошибка при загрузке данных</Alert>;
+    }
+
+    const response = query.data;
+    const data = isSuccessResponse(response) ? response.data : null;
+
+    if (!data) {
+        return <Alert severity="info">Нет данных</Alert>;
+    }
+
+    return (
+        <>
+            <DateFilter
+                preset={datePreset}
+                dateFrom={dateFrom}
+                dateTo={dateTo}
+                onPresetChange={onDatePresetChange}
+                onDateFromChange={onDateFromChange}
+                onDateToChange={onDateToChange}
+            />
+
+            <PromoCodeUsageHistoryTable
+                data={data.items}
+                total={data.total}
+                page={data.page}
+                limit={data.limit}
+                onPaginationChange={handlePaginationChange}
+                onSortingChange={handleSortingChange}
+                isLoading={query.isLoading}
+            />
         </>
     );
 };
